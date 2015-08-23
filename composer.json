@@ -1,8 +1,7 @@
 {
-    "name": "symfony/framework-standard-edition",
-    "license": "MIT",
+    "name": "jlekowski/battleships-api",
+    "description" : "Battleships (sea battle) game - API",
     "type": "project",
-    "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
         "psr-4": { "": "src/", "SymfonyStandard\\": "app/SymfonyStandard/" }
     },
