@@ -17,3 +17,8 @@ php bin/security-checker security:check
 HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
 sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
 sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
+
+
+composer require "jms/serializer-bundle" "@stable"
+composer require "friendsofsymfony/rest-bundle" "@stable"
+
