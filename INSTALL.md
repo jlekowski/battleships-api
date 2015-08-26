@@ -22,3 +22,9 @@ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
 composer require "jms/serializer-bundle" "@stable"
 composer require "friendsofsymfony/rest-bundle" "@stable"
 
+CREATE DATABASE battleships CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci;
+# GRANT ALL PRIVILEGES ON battleships.* TO 'testr'@'%' WITH GRANT OPTION;
+
+php bin/console doctrine:schema:validate
+php bin/console doctrine:schema:update --force
+php bin/console doctrine:schema:validate
