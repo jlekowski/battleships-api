@@ -4,6 +4,13 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    game_repository:
+        class: AppBundle\Entity\GameRepository
+        factory: [@doctrine, getRepository]
+        arguments: ['AppBundle:Game']
+
+    games_controller:
+        class: AppBundle\Controller\GamesController
+        arguments: [@doctrine.orm.default_entity_manager, @game_repository]
+        calls:
+            - [setContainer, [@service_container]]

@@ -13,10 +13,20 @@ web_profiler:
 
 monolog:
     handlers:
-        main:
+#        main:
+#            type: fingers_crossed
+#            action_level: warning
+#            handler: file
+        # @todo rotation?
+        file:
             type:   stream
             path:   "%kernel.logs_dir%/%kernel.environment%.log"
             level:  debug
+        loggly:
+            type:   loggly
+            token:  ''
+            level:  info
+            tag:    battleships-api
         console:
             type:   console
             bubble: false
@@ -37,9 +47,9 @@ monolog:
         #firephp:
         #    type:   firephp
         #    level:  info
-        #chromephp:
-        #    type:   chromephp
-        #    level:  info
+        chromephp:
+            type:   chromephp
+            level:  warning
 
 assetic:
     use_controller: true
