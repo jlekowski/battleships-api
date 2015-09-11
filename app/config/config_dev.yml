@@ -24,7 +24,7 @@ monolog:
             level:  debug
         loggly:
             type:   loggly
-            token:  ''
+            token:  "%loggly_token%"
             level:  info
             tag:    battleships-api
         console:

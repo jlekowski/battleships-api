@@ -1,7 +1,5 @@
 <?php
 
-use FOS\RestBundle\FOSRestBundle;
-use JMS\SerializerBundle\JMSSerializerBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
@@ -19,8 +17,8 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new AppBundle\AppBundle(),
-            new JMSSerializerBundle(),
-            new FOSRestBundle()
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new FOS\RestBundle\FOSRestBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

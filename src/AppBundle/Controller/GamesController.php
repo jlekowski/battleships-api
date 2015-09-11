@@ -4,12 +4,15 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
+use AppBundle\Exception\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 // @todo headers for specific version?
 // @todo validation + exclusions on object properties (also depends on version)
+//      http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
+//      http://symfony.com/doc/current/bundles/FOSRestBundle/annotations-reference.html
 // @todo ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/
 class GamesController extends Controller
 {
@@ -44,21 +47,23 @@ class GamesController extends Controller
 
     public function postGameAction(Request $request)
     {
-        var_dump($request->getContent(), $request->request->all());
-        exit;
+        $requestBag = $request->request;
+
+        $hash = hash("md5", uniqid(mt_rand(), true));
+        $temphash = hash("md5", uniqid(mt_rand(), true));
 
         $game = new Game();
         $game
-            ->setPlayer1Hash('test1')
-            ->setPlayer1Name('name1')
-            ->setPlayer1Ships(['A1', 'A2'])
-            ->setPlayer2Hash('test2')
-            ->setPlayer2Name('name2')
-            ->setPlayer2Ships(['A1', 'A2'])
+            ->setPlayer1Hash($hash)
+            ->setPlayer1Name($requestBag->get('player1_name'))
+            ->setPlayer1Ships([])
+            ->setPlayer2Hash($temphash)
+            ->setPlayer2Name($requestBag->get('player2_name', 'Player 2'))
+            ->setPlayer2Ships([])
         ;
 
-//        $this->entityManager->persist($game);
-//        $this->entityManager->flush();
+        $this->entityManager->persist($game);
+        $this->entityManager->flush();
 
 //        $response = new Response();
 //        $response->setStatusCode(201);

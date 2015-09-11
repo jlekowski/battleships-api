@@ -5,6 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
 class UsersController extends Controller
 {
@@ -83,10 +86,16 @@ class UsersController extends Controller
     }
 
     /**
+     * Converts an Exception to a Response.
+     *
+     * @param Request $request
+     * @param FlattenException $exception
+     * @param DebugLoggerInterface $logger
+     *
      * @return array
      */
-    public function exceptionAction()
+    public function exceptionAction(Request $request, FlattenException $exception, DebugLoggerInterface $logger = null)
     {
-        return ['exception'];
+        return ['code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'class' => $exception->getClass()];
     }
 }

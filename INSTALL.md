@@ -9,7 +9,7 @@ sudo chmod a+x /usr/local/bin/symfony
 export SENSIOLABS_ENABLE_NEW_DIRECTORY_STRUCTURE=true
 # symfony new rest-api-php7
 composer create-project symfony/framework-standard-edition battleships-api
-cd rest-api-php7
+cd battleships-api
 composer update
 
 php bin/security-checker security:check
@@ -23,7 +23,7 @@ composer require "jms/serializer-bundle" "@stable"
 composer require "friendsofsymfony/rest-bundle" "@stable"
 
 CREATE DATABASE battleships CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci;
-# GRANT ALL PRIVILEGES ON battleships.* TO 'testr'@'%' WITH GRANT OPTION;
+# GRANT ALL PRIVILEGES ON battleships.* TO 'test'@'%' WITH GRANT OPTION;
 
 php bin/console doctrine:schema:validate
 php bin/console doctrine:schema:update --force

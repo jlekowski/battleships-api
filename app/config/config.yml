@@ -35,6 +35,7 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+#    exception_controller: 'AppBundle\Controller\UsersController::exceptionAction'
 
 # Assetic Configuration
 assetic:
@@ -98,10 +99,20 @@ fos_rest:
     view:
         # to return data instead of Response/JsonResponse object
         view_response_listener: force
-#        exception_wrapper_handler: null
+#        exception_wrapper_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
 #    service:
 #        exception_handler:    fos_rest.view.exception_wrapper_handler
+#        exception_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
     exception:
         enabled: true
-        exception_controller: 'AppBundle\Controller\UsersController::exceptionAction'
-#        exception_wrapper_handler: 'AppBundle\Controller\UsersController'
+        codes:
+#            'AppBundle\Exception\Exception': HTTP_NOT_FOUND
+            'AppBundle\Exception\Exception': 500
+            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': 405
+#            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
+            'Doctrine\DBAL\DBALException': 501
+        messages:
+            'AppBundle\Exception\Exception': true
+            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': false
+#            'Doctrine\DBAL\DBALException': true
+#        exception_controller: 'AppBundle\Controller\UsersController::exceptionAction'
