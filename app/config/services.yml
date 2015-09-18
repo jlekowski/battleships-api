@@ -14,3 +14,8 @@ services:
         arguments: [@doctrine.orm.default_entity_manager, @game_repository]
         calls:
             - [setContainer, [@service_container]]
+
+    entity.listener:
+        class: AppBundle\EventListener\EntityListener
+        tags:
+            - { name: doctrine.event_listener, event: preUpdate }

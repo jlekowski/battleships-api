@@ -22,6 +22,7 @@ class Game
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Exclude
      */
     private $id;
 
@@ -42,9 +43,9 @@ class Game
     /**
      * @var array
      *
-     * @ORM\Column(name="player1_ships", type="simple_array")
+     * @ORM\Column(name="player1_ships", type="simple_array", nullable = true)
      */
-    private $player1Ships = [];
+    private $player1Ships;
 
     /**
      * @var string
@@ -63,9 +64,9 @@ class Game
     /**
      * @var array
      *
-     * @ORM\Column(name="player2_ships", type="simple_array")
+     * @ORM\Column(name="player2_ships", type="simple_array", nullable = true)
      */
-    private $player2Ships = [];
+    private $player2Ships;
 
     /**
      * @var \DateTime
@@ -217,7 +218,7 @@ class Game
     /**
      * Get player2Ships
      *
-     * @return string
+     * @return array
      */
     public function getPlayer2Ships()
     {

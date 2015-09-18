@@ -99,7 +99,7 @@ fos_rest:
     view:
         # to return data instead of Response/JsonResponse object
         view_response_listener: force
-#        exception_wrapper_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
+        exception_wrapper_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
 #    service:
 #        exception_handler:    fos_rest.view.exception_wrapper_handler
 #        exception_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
@@ -107,12 +107,14 @@ fos_rest:
         enabled: true
         codes:
 #            'AppBundle\Exception\Exception': HTTP_NOT_FOUND
-            'AppBundle\Exception\Exception': 500
-            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': 405
+#            'AppBundle\Exception\Exception': 500
+#            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': 405
 #            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
-            'Doctrine\DBAL\DBALException': 501
+#            'Doctrine\DBAL\DBALException': 501
+            'AppBundle\Exception\InvalidShipsException': HTTP_UNPROCESSABLE_ENTITY
         messages:
-            'AppBundle\Exception\Exception': true
-            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': false
+#            'AppBundle\Exception\Exception': true
+#            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': false
 #            'Doctrine\DBAL\DBALException': true
+            'AppBundle\Exception\InvalidShipsException': true
 #        exception_controller: 'AppBundle\Controller\UsersController::exceptionAction'
