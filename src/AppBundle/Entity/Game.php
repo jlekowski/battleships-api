@@ -13,6 +13,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\HasLifecycleCallbacks()
  *
  * @Serializer\ExclusionPolicy("none")
+ * @todo Unique field for hash nad other keys(?) + table relations/foreign keys
  */
 class Game
 {

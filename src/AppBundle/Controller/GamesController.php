@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,13 +17,17 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 //      http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
 //      http://symfony.com/doc/current/bundles/FOSRestBundle/annotations-reference.html
 // @todo ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/
-/*
- * events
- *   name_update
- *   start_game
- *   shot
- *   chat
- *   join_game
+/**
+ * /games POST
+ * /games/{id/hash} GET
+ * /games/{id/hash} PATCH
+ * /games/{id/hash}/ships POST
+ * /games/{id/hash}/chats POST
+ * /games/{id/hash}/shots POST
+ * /games/{id/hash}/events?gt={id_last_event} GET
+ *
+ * Class GamesController
+ * @package AppBundle\Controller
  */
 class GamesController extends Controller
 {
@@ -51,7 +57,7 @@ class GamesController extends Controller
      */
     public function getGameAction($id)
     {
-        return $this->gameRepository->find($id);
+        return $this->getGameById($id);
     }
 
     /**
@@ -69,10 +75,10 @@ class GamesController extends Controller
         $game
             ->setPlayer1Hash($hash)
             ->setPlayer1Name($requestBag->get('player1_name'))
-//            ->setPlayer1Ships([])
+            ->setPlayer1Ships($requestBag->get('player1_ships'))
             ->setPlayer2Hash($temphash)
             ->setPlayer2Name($requestBag->get('player2_name', 'Player 2'))
-//            ->setPlayer2Ships([])
+            ->setPlayer2Ships($requestBag->get('player2_ships'))
         ;
 
         $this->entityManager->persist($game);
@@ -83,7 +89,7 @@ class GamesController extends Controller
 
         $response->headers->set(
             'Location',
-            $this->generateUrl('v1_get_game', array('id' => $game->getId()), UrlGeneratorInterface::ABSOLUTE_URL)
+            $this->generateUrl('v1_get_game', ['id' => $game->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
         );
 
         return $response;
@@ -97,12 +103,99 @@ class GamesController extends Controller
      */
     public function patchGameAction(Request $request, $id)
     {
-        /** @var Game $game */
-        $game = $this->gameRepository->find($id);
+        $game = $this->getGameById($id);
         $this->updateGameFromArray($game, $request->request->all());
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
+    }
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function postGameShipAction(Request $request, $id)
+    {
+        $game = $this->getGameById($id);
+        $requestBag = $request->request;
+
+        $game
+            ->setPlayer1Ships($requestBag->get('player1_ships'))
+            ->setPlayer2Ships($requestBag->get('player2_ships'));
+
+        return (new Response())->setStatusCode(201);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function postGameChatAction(Request $request, $id)
+    {
+        $game = $this->getGameById($id);
+        $requestBag = $request->request;
+
+        $event = new Event();
+        $event
+            ->setGameId($game->getId())
+            ->setPlayer($requestBag->get('player'))
+            ->setEventType(EVENT::TYPE_CHAT)
+            ->setEventValue($requestBag->get('text'))
+        ;
+
+        $this->entityManager->persist($event);
+        $this->entityManager->flush();
+
+        return (new Response())->setStatusCode(201);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function postGameShotAction(Request $request, $id)
+    {
+        $game = $this->getGameById($id);
+        $requestBag = $request->request;
+
+        $event = new Event();
+        $event
+            ->setGameId($game->getId())
+            ->setPlayer($requestBag->get('player'))
+            ->setEventType(EVENT::TYPE_SHOT)
+            ->setEventValue($requestBag->get('shot'))
+        ;
+
+        $this->entityManager->persist($event);
+        $this->entityManager->flush();
+
+        return (new Response())->setStatusCode(201);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
+    public function getGameEventsAction(Request $request, $id)
+    {
+        /** @var EventRepository $eventRepository */
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        $eventRepository->find($id);
+
+        return ['list of events'];
+    }
+
+    /**
+     * @param int $id
+     * @return Game
+     */
+    private function getGameById($id)
+    {
+        return $this->gameRepository->find($id);
     }
 
     /**
@@ -130,16 +223,5 @@ class GamesController extends Controller
                     break;
             }
         }
-    }
-
-    private function checkGameUpdates(Game $game)
-    {
-//        $game = $this->gameRepository->find($id);
-//        $game->setPlayer2Name('aaa');
-        $uow = $this->entityManager->getUnitOfWork();
-        $uow->computeChangeSets();
-        echo "<pre>";
-        var_dump($uow->getEntityChangeSet($game));
-        exit;
     }
 }

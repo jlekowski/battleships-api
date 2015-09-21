@@ -33,6 +33,7 @@ php bin/console doctrine:schema:validate
 - create all end points (hash probably, not id yet)
 - go with the DB as it used to be before (think while doing it how to improve it, like user table)
 - combine end points with the DB resources
+- data format as in "old" API (battle etc.) ?
 - port validation, user check etc. to provide functionality as "old" API
 - add unit tests (and e2e from command?)
 - caching (YML file at least, but maybe also redis?)

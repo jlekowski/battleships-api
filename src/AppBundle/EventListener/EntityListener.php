@@ -201,4 +201,16 @@ class EntityListener
 
         return $coordsInfo;
     }
+
+
+    private function checkGameUpdates(Game $game)
+    {
+//        $game = $this->gameRepository->find($id);
+//        $game->setPlayer2Name('aaa');
+        $uow = $this->entityManager->getUnitOfWork();
+        $uow->computeChangeSets();
+        echo "<pre>";
+        var_dump($uow->getEntityChangeSet($game));
+        exit;
+    }
 }

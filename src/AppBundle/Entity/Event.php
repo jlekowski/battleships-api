@@ -3,21 +3,32 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Event
  *
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EventRepository")
+ * @ORM\HasLifecycleCallbacks()
+ *
+ * @Serializer\ExclusionPolicy("none")
  */
 class Event
 {
+    const TYPE_CHAT = 'chat';
+    const TYPE_SHOT = 'shot';
+    const TYPE_JOIN_GAME = 'join_game';
+    const TYPE_START_GAME = 'start_game';
+    const TYPE_NAME_UPDATE = 'name_update';
+
     /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Exclude
      */
     private $id;
 
@@ -53,6 +64,7 @@ class Event
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
+     * @Serializer\Exclude
      */
     private $timestamp;
 
@@ -180,5 +192,13 @@ class Event
     public function getTimestamp()
     {
         return $this->timestamp;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function applyCurrentTimestamp()
+    {
+        $this->setTimestamp(new \DateTime());
     }
 }

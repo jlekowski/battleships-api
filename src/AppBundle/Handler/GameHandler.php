@@ -31,11 +31,11 @@ class GameHandler
      */
     private function processForm($page, array $parameters, $method = "PUT")
     {
-//        $form = $this->formFactory->create(new UserType(), $page, array('method' => $method));
+//        $form = $this->formFactory->create(new UserType(), $page, ['method' => $method]);
         $form = $this->formFactory->create(
             new \Symfony\Component\Form\Extension\Core\Type\ButtonType(),
             $page,
-            array('method' => $method)
+            ['method' => $method]
         );
         $form->submit($parameters, 'PATCH' !== $method);
         if ($form->isValid()) {
