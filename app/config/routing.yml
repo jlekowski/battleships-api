@@ -7,17 +7,26 @@ users_v1:
     resource: 'AppBundle\Controller\UsersController'
     type: rest
     prefix: /v1
-    name_prefix: v1_
+    name_prefix: temp_v1_
 
 users_v2:
     resource: 'AppBundle\Controller\UsersControllerV2'
     type: rest
     prefix: /v2
-    name_prefix: v2_
+    name_prefix: temp_v2_
 
 # @todo routing_v1.yml etc. (maybe import the correct one)
+#routing_v1:
+#    type: rest
+#    resource: "routing_v1.yml"
 games_v1:
     resource: games_controller
     type: rest
     prefix: /v1
-    name_prefix: v1_
+    name_prefix: api_v1_
+
+events_v1:
+    resource: app.controller.events_controller
+    type: rest
+    parent: games_v1
+    name_prefix: api_v1_

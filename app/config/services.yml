@@ -15,7 +15,17 @@ services:
         calls:
             - [setContainer, [@service_container]]
 
+    app.controller.events_controller:
+        class: AppBundle\Controller\EventsController
+        arguments: [@doctrine.orm.default_entity_manager, @game_repository]
+        calls:
+            - [setContainer, [@service_container]]
+
     entity.listener:
         class: AppBundle\EventListener\EntityListener
         tags:
             - { name: doctrine.event_listener, event: preUpdate }
+
+    # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
+    jms_serializer.camel_case_naming_strategy:
+        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'

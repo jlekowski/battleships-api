@@ -7,10 +7,9 @@ use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 // @todo headers for specific version?
 // @todo validation + exclusions on object properties (also depends on version)
@@ -18,18 +17,23 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 //      http://symfony.com/doc/current/bundles/FOSRestBundle/annotations-reference.html
 // @todo ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/
 /**
+ * @todo what URI for shot? It's an update of game/{id/hash}|game/{id/hash}/shots resource and I need a result
+ * @todo what URI for ships? It's an update of game/{id/hash} resource, or adding multiple game/{id/hash}/ships resources?
+ * @todo maybe go with batch requests (to get game for example) https://parse.com/docs/rest/guide
  * /games POST
  * /games/{id/hash} GET
  * /games/{id/hash} PATCH
- * /games/{id/hash}/ships POST
- * /games/{id/hash}/chats POST
- * /games/{id/hash}/shots POST
- * /games/{id/hash}/events?gt={id_last_event} GET
- *
- * Class GamesController
- * @package AppBundle\Controller
+// * /games/{id/hash}/battle GET
+ * /games/{id/hash} PATCH
+ * /games/{id/hash}/events?type={event_type}&gt={id_last_event} GET
+ * /games/{id/hash}/events/{event_id} GET
+ * /games/{id/hash}/events POST
+// * /games/{id/hash}/chats GET
+// * /games/{id/hash}/chats POST
+// * /games/{id/hash}/shots GET
+// * /games/{id/hash}/shots POST
  */
-class GamesController extends Controller
+class GamesController extends FOSRestController
 {
     /**
      * @var EntityManagerInterface
@@ -69,30 +73,24 @@ class GamesController extends Controller
         $requestBag = $request->request;
 
         $hash = hash("md5", uniqid(mt_rand(), true));
-        $temphash = hash("md5", uniqid(mt_rand(), true));
+        $tempHash = hash("md5", uniqid(mt_rand(), true));
 
         $game = new Game();
         $game
             ->setPlayer1Hash($hash)
-            ->setPlayer1Name($requestBag->get('player1_name'))
-            ->setPlayer1Ships($requestBag->get('player1_ships'))
-            ->setPlayer2Hash($temphash)
-            ->setPlayer2Name($requestBag->get('player2_name', 'Player 2'))
-            ->setPlayer2Ships($requestBag->get('player2_ships'))
+            ->setPlayer1Name($requestBag->get('player1Name'))
+            ->setPlayer1Ships($requestBag->get('player1Ships', []))
+            ->setPlayer2Hash($tempHash)
+            ->setPlayer2Name($requestBag->get('player2Name', 'Player 2'))
+            ->setPlayer2Ships($requestBag->get('player2Ships', []))
         ;
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
 
-        $response = new Response();
-        $response->setStatusCode(201);
+        $view = $this->routeRedirectView('api_v1_get_game', ['id' => $game->getId()]);
 
-        $response->headers->set(
-            'Location',
-            $this->generateUrl('v1_get_game', ['id' => $game->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
-        );
-
-        return $response;
+        return $this->handleView($view);
     }
 
     /**
@@ -108,85 +106,6 @@ class GamesController extends Controller
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
-    }
-
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function postGameShipAction(Request $request, $id)
-    {
-        $game = $this->getGameById($id);
-        $requestBag = $request->request;
-
-        $game
-            ->setPlayer1Ships($requestBag->get('player1_ships'))
-            ->setPlayer2Ships($requestBag->get('player2_ships'));
-
-        return (new Response())->setStatusCode(201);
-    }
-
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function postGameChatAction(Request $request, $id)
-    {
-        $game = $this->getGameById($id);
-        $requestBag = $request->request;
-
-        $event = new Event();
-        $event
-            ->setGameId($game->getId())
-            ->setPlayer($requestBag->get('player'))
-            ->setEventType(EVENT::TYPE_CHAT)
-            ->setEventValue($requestBag->get('text'))
-        ;
-
-        $this->entityManager->persist($event);
-        $this->entityManager->flush();
-
-        return (new Response())->setStatusCode(201);
-    }
-
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function postGameShotAction(Request $request, $id)
-    {
-        $game = $this->getGameById($id);
-        $requestBag = $request->request;
-
-        $event = new Event();
-        $event
-            ->setGameId($game->getId())
-            ->setPlayer($requestBag->get('player'))
-            ->setEventType(EVENT::TYPE_SHOT)
-            ->setEventValue($requestBag->get('shot'))
-        ;
-
-        $this->entityManager->persist($event);
-        $this->entityManager->flush();
-
-        return (new Response())->setStatusCode(201);
-    }
-
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return array
-     */
-    public function getGameEventsAction(Request $request, $id)
-    {
-        /** @var EventRepository $eventRepository */
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        $eventRepository->find($id);
-
-        return ['list of events'];
     }
 
     /**
@@ -206,19 +125,19 @@ class GamesController extends Controller
     {
         foreach ($params as $param => $value) {
             switch ($param) {
-                case 'player1_name':
+                case 'player1Name':
                     $game->setPlayer1Name($value);
                     break;
 
-                case 'player2_name':
+                case 'player2Name':
                     $game->setPlayer2Name($value);
                     break;
 
-                case 'player1_ships':
+                case 'player1Ships':
                     $game->setPlayer1Ships($value);
                     break;
 
-                case 'player2_ships':
+                case 'player2Ships':
                     $game->setPlayer2Ships($value);
                     break;
             }

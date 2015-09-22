@@ -196,6 +196,7 @@ class Event
 
     /**
      * @ORM\PrePersist
+     * @todo here and in Game apply only if not already set
      */
     public function applyCurrentTimestamp()
     {
