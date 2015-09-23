@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
-use AppBundle\Entity\GameRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Util\Codes;
@@ -20,18 +20,18 @@ class EventsController extends FOSRestController
     protected $entityManager;
 
     /**
-     * @var GameRepository
+     * @var EventRepository
      */
-    protected $gameRepository;
+    protected $eventRepository;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param GameRepository $gameRepository
+     * @param EventRepository $eventRepository
      */
-    public function __construct(EntityManagerInterface $entityManager,  GameRepository $gameRepository)
+    public function __construct(EntityManagerInterface $entityManager, EventRepository $eventRepository)
     {
         $this->entityManager = $entityManager;
-        $this->gameRepository = $gameRepository;
+        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -42,15 +42,7 @@ class EventsController extends FOSRestController
      */
     public function getEventAction($gameId, $eventId)
     {
-        /** @var EventRepository $eventRepository */
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        /** @var Event $event */
-        $event = $eventRepository->find($eventId);
-        if ($event->getGameId() !== $gameId) {
-            throw $this->createNotFoundException();
-        }
-
-        return $event;
+        return $this->getEventByIdAndGameId($eventId, $gameId);
     }
 
     /**
@@ -60,7 +52,27 @@ class EventsController extends FOSRestController
      */
     public function getEventsAction(Request $request, $gameId)
     {
-        return [];
+        $gt = $request->query->get('gt');
+        $eventType = $request->query->get('type');
+
+        $criteria = new Criteria();
+        $expr = $criteria->expr();
+
+        $criteria->where($expr->eq('gameId', $gameId));
+        if ($gt !== null) {
+            $criteria->andWhere($expr->gt('id', $gt));
+        }
+
+        if ($eventType !== null) {
+            $criteria->andWhere($expr->eq('type', $eventType));
+        }
+
+        /** @var EventRepository $eventRepository */
+        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
+        /** @var Event $event */
+        $events = $eventRepository->matching($criteria);
+
+        return $events;
     }
 
     /**
@@ -72,28 +84,13 @@ class EventsController extends FOSRestController
     public function postEventAction(Request $request, $gameId)
     {
         $requestBag = $request->request;
-        $eventType = $requestBag->get('eventType');
-
-        switch ($eventType) {
-            case Event::TYPE_CHAT:
-            case Event::TYPE_SHOT:
-            case Event::TYPE_START_GAME:
-                break;
-
-            case Event::TYPE_JOIN_GAME:
-            case Event::TYPE_NAME_UPDATE:
-                throw new \Exception('Incorrect event type', Codes::HTTP_BAD_REQUEST);
-
-            default:
-                throw new \Exception('No such event type', Codes::HTTP_BAD_REQUEST);
-        }
 
         $event = new Event();
         $event
             ->setGameId($gameId)
-            ->setPlayer($requestBag->get('player'))
-            ->setEventType($eventType)
-            ->setEventValue($requestBag->get('eventValue', true))
+            ->setPlayer(1)
+            ->setType($requestBag->get('type'))
+            ->setValue($requestBag->get('value', true))
         ;
 
         $this->entityManager->persist($event);
@@ -102,5 +99,19 @@ class EventsController extends FOSRestController
         $view = $this->routeRedirectView('api_v1_get_game_event', ['gameId' => $gameId, 'eventId' => $event->getId()]);
 
         return $this->handleView($view);
+    }
+
+    /**
+     * @param int $id
+     * @param int $gameId
+     * @return Event
+     */
+    protected function getEventByIdAndGameId($id, $gameId)
+    {
+        $event = $this->eventRepository->findOneBy(['id' => $id, 'gameId' => $gameId]);
+        if (!$event) {
+            throw $this->createNotFoundException();
+        }
+        return $event;
     }
 }

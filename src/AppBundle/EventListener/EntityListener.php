@@ -2,18 +2,35 @@
 
 namespace AppBundle\EventListener;
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
 use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidShipsException;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\UnitOfWork;
+use FOS\RestBundle\Util\Codes;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class EntityListener
 {
     /**
+     * @var TokenStorage
+     */
+    protected $tokenStorage;
+
+    /**
      * @var UnitOfWork
      */
     protected $unitOfWork;
+
+    /**
+     * @param TokenStorage $tokenStorage
+     */
+    public function __construct(TokenStorage $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
 
     /**
      * @param PreUpdateEventArgs $eventArgs
@@ -26,9 +43,40 @@ class EntityListener
 
         foreach ($this->unitOfWork->getScheduledEntityUpdates() as $entity) {
             if ($entity instanceof Game) {
-                throw new InvalidCoordinatesException('K11');
+//                throw new InvalidCoordinatesException('K11');
                 $this->handleGameUpdate($entity);
             }
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $eventArgs
+     * @throws \Exception
+     */
+    public function prePersist(LifecycleEventArgs $eventArgs)
+    {
+        $entity = $eventArgs->getObject();
+        if ($entity instanceof Event) {
+            $this->handleEventCreate($entity);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $eventArgs
+     */
+    public function postLoad(LifecycleEventArgs $eventArgs)
+    {
+        $entity = $eventArgs->getObject();
+        if ($entity instanceof Game) {
+//            $user = $this->tokenStorage->getToken()->getUser();
+            $entity
+                ->setPlayerNumber(1)
+//                ->setPlayer2Hash(null)
+//                ->setPlayerStarted(false)
+//                ->setOtherStarted(false)
+//                ->setOtherJoined(false)
+//                ->setWhoseTurn(1)
+            ;
         }
     }
 
@@ -45,6 +93,27 @@ class EntityListener
                     $this->validateShips($diff[1]);
                     break;
             }
+        }
+    }
+
+    /**
+     * @param Event $event
+     * @throws \Exception
+     */
+    private function handleEventCreate(Event $event)
+    {
+        switch ($event->getType()) {
+            case Event::TYPE_CHAT:
+            case Event::TYPE_SHOT:
+            case Event::TYPE_START_GAME:
+                break;
+
+            case Event::TYPE_JOIN_GAME:
+            case Event::TYPE_NAME_UPDATE:
+                throw new \Exception('Incorrect event type', Codes::HTTP_BAD_REQUEST);
+
+            default:
+                throw new \Exception('No such event type', Codes::HTTP_BAD_REQUEST);
         }
     }
 

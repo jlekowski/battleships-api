@@ -6,13 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Game
- *
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="AppBundle\Entity\GameRepository")
  * @ORM\HasLifecycleCallbacks()
  *
- * @Serializer\ExclusionPolicy("none")
+ * @Serializer\ExclusionPolicy("all")
  * @todo Unique field for hash nad other keys(?) + table relations/foreign keys
  */
 class Game
@@ -23,7 +21,6 @@ class Game
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serializer\Exclude
      */
     private $id;
 
@@ -73,9 +70,13 @@ class Game
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
-     * @Serializer\Exclude
      */
     private $timestamp;
+
+    /**
+     * @var int
+     */
+    private $playerNumber;
 
 
     /**
@@ -255,5 +256,94 @@ class Game
     public function applyCurrentTimestamp()
     {
         $this->setTimestamp(new \DateTime());
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     *
+     * @return string
+     */
+    public function getPlayerHash()
+    {
+        return $this->getPlayerNumber() === 2 ? $this->getPlayer2Hash() : $this->getPlayer1Hash();
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     *
+     * @return string
+     */
+    public function getPlayerName()
+    {
+        return $this->getPlayerNumber() === 2 ? $this->getPlayer2Name() : $this->getPlayer1Name();
+    }
+
+    /**
+     * @param string $playerName
+     * @return Game
+     */
+    public function setPlayerName($playerName)
+    {
+        return $this->getPlayerNumber() === 2 ? $this->setPlayer2Name($playerName) : $this->setPlayer1Name($playerName);
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     *
+     * @return array
+     */
+    public function getPlayerShips()
+    {
+        return $this->getPlayerNumber() === 2 ? $this->getPlayer2Ships() : $this->getPlayer1Ships();
+    }
+
+    /**
+     * @param array $playerShips
+     * @return Game
+     */
+    public function setPlayerShips(array $playerShips)
+    {
+        return $this->getPlayerNumber() === 2 ? $this->setPlayer2Ships($playerShips) : $this->setPlayer1Ships($playerShips);
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     *
+     * @return string
+     */
+    public function getOtherHash()
+    {
+        return $this->getPlayerNumber() === 2 ? $this->getPlayer1Hash() : $this->getPlayer2Hash();
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     *
+     * @return string
+     */
+    public function getOtherName()
+    {
+        return $this->getPlayerNumber() === 2 ? $this->getPlayer1Name() : $this->getPlayer2Name();
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     *
+     * @return int
+     */
+    public function getPlayerNumber()
+    {
+        return $this->playerNumber;
+    }
+
+    /**
+     * @param int $playerNumber
+     * @return Game
+     */
+    public function setPlayerNumber($playerNumber)
+    {
+        $this->playerNumber = $playerNumber;
+
+        return $this;
     }
 }

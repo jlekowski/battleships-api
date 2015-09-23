@@ -4,27 +4,42 @@ parameters:
 #    parameter_name: value
 
 services:
-    game_repository:
+    app.security.api_key_authenticator:
+        class:  AppBundle\Security\ApiKeyAuthenticator
+        public: false
+
+    app.security.api_key_user_provider:
+        class: AppBundle\Security\ApiKeyUserProvider
+
+    app.entity.game_repository:
         class: AppBundle\Entity\GameRepository
         factory: [@doctrine, getRepository]
         arguments: ['AppBundle:Game']
 
-    games_controller:
+    app.entity.event_repository:
+        class: AppBundle\Entity\EventRepository
+        factory: [@doctrine, getRepository]
+        arguments: ['AppBundle:Event']
+
+    app.controller.game:
         class: AppBundle\Controller\GamesController
-        arguments: [@doctrine.orm.default_entity_manager, @game_repository]
+        arguments: [@doctrine.orm.default_entity_manager, @app.entity.game_repository]
         calls:
             - [setContainer, [@service_container]]
 
-    app.controller.events_controller:
+    app.controller.event:
         class: AppBundle\Controller\EventsController
-        arguments: [@doctrine.orm.default_entity_manager, @game_repository]
+        arguments: [@doctrine.orm.default_entity_manager, @app.entity.event_repository]
         calls:
             - [setContainer, [@service_container]]
 
-    entity.listener:
+    app.event_listener.entity_listener:
         class: AppBundle\EventListener\EntityListener
+        arguments: [@security.token_storage]
         tags:
             - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.event_listener, event: postLoad }
+            - { name: doctrine.event_listener, event: prePersist }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

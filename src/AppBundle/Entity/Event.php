@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Event
- *
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="AppBundle\Entity\EventRepository")
  * @ORM\HasLifecycleCallbacks()
@@ -28,7 +26,6 @@ class Event
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serializer\Exclude
      */
     private $id;
 
@@ -36,6 +33,7 @@ class Event
      * @var integer
      *
      * @ORM\Column(name="game_id", type="integer")
+     * @Serializer\Exclude
      */
     private $gameId;
 
@@ -49,22 +47,21 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="event_type", type="string", length=255)
+     * @ORM\Column(name="type", type="string", length=255)
      */
-    private $eventType;
+    private $type;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="event_value", type="text")
+     * @ORM\Column(name="value", type="text")
      */
-    private $eventValue;
+    private $value;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
-     * @Serializer\Exclude
      */
     private $timestamp;
 
@@ -128,12 +125,12 @@ class Event
     /**
      * Set eventType
      *
-     * @param string $eventType
+     * @param string $type
      * @return Event
      */
-    public function setEventType($eventType)
+    public function setType($type)
     {
-        $this->eventType = $eventType;
+        $this->type = $type;
 
         return $this;
     }
@@ -143,20 +140,20 @@ class Event
      *
      * @return string
      */
-    public function getEventType()
+    public function getType()
     {
-        return $this->eventType;
+        return $this->type;
     }
 
     /**
      * Set eventValue
      *
-     * @param string $eventValue
+     * @param string $value
      * @return Event
      */
-    public function setEventValue($eventValue)
+    public function setValue($value)
     {
-        $this->eventValue = $eventValue;
+        $this->value = $value;
 
         return $this;
     }
@@ -166,9 +163,9 @@ class Event
      *
      * @return string
      */
-    public function getEventValue()
+    public function getValue()
     {
-        return $this->eventValue;
+        return $this->value;
     }
 
     /**

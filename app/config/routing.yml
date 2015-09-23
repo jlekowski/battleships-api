@@ -20,13 +20,13 @@ users_v2:
 #    type: rest
 #    resource: "routing_v1.yml"
 games_v1:
-    resource: games_controller
+    resource: app.controller.game
     type: rest
     prefix: /v1
     name_prefix: api_v1_
 
 events_v1:
-    resource: app.controller.events_controller
+    resource: app.controller.event
     type: rest
     parent: games_v1
     name_prefix: api_v1_

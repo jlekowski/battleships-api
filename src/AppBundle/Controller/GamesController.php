@@ -2,15 +2,15 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+// @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
 // @todo headers for specific version?
 // @todo validation + exclusions on object properties (also depends on version)
 //      http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
@@ -24,7 +24,6 @@ use Symfony\Component\HttpFoundation\Response;
  * /games/{id/hash} GET
  * /games/{id/hash} PATCH
 // * /games/{id/hash}/battle GET
- * /games/{id/hash} PATCH
  * /games/{id/hash}/events?type={event_type}&gt={id_last_event} GET
  * /games/{id/hash}/events/{event_id} GET
  * /games/{id/hash}/events POST
@@ -72,8 +71,8 @@ class GamesController extends FOSRestController
     {
         $requestBag = $request->request;
 
-        $hash = hash("md5", uniqid(mt_rand(), true));
-        $tempHash = hash("md5", uniqid(mt_rand(), true));
+        $hash = hash('md5', uniqid(mt_rand(), true));
+        $tempHash = hash('md5', uniqid(mt_rand(), true));
 
         $game = new Game();
         $game
@@ -111,34 +110,32 @@ class GamesController extends FOSRestController
     /**
      * @param int $id
      * @return Game
+     * @throws NotFoundHttpException
      */
-    private function getGameById($id)
+    protected function getGameById($id)
     {
-        return $this->gameRepository->find($id);
+        $game = $this->gameRepository->find($id);
+        if (!$game) {
+            throw $this->createNotFoundException();
+        }
+
+        return $game;
     }
 
     /**
      * @param Game $game
      * @param array $params
      */
-    private function updateGameFromArray(Game $game, array $params)
+    protected function updateGameFromArray(Game $game, array $params)
     {
         foreach ($params as $param => $value) {
             switch ($param) {
-                case 'player1Name':
-                    $game->setPlayer1Name($value);
+                case 'playerName':
+                    $game->setPlayerName($value);
                     break;
 
-                case 'player2Name':
-                    $game->setPlayer2Name($value);
-                    break;
-
-                case 'player1Ships':
-                    $game->setPlayer1Ships($value);
-                    break;
-
-                case 'player2Ships':
-                    $game->setPlayer2Ships($value);
+                case 'playerShips':
+                    $game->setPlayerShips($value);
                     break;
             }
         }
