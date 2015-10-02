@@ -26,6 +26,7 @@ class BattleManager
     protected $axisX = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
     /**
+     * @todo maybe pass $shot and $otherShips, but then how to get shots?
      * @param Event $event
      * @return string miss|hit|sunk
      */
