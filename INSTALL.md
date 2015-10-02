@@ -29,6 +29,10 @@ php bin/console doctrine:schema:validate
 php bin/console doctrine:schema:update --force
 php bin/console doctrine:schema:validate
 
+# adding in apache VHOST to catch Authorization headers:
+            RewriteCond %{HTTP:Authorization} ^(.*)
+            RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
 # PLAN
 - create all end points (hash probably, not id yet)
 - go with the DB as it used to be before (think while doing it how to improve it, like user table)

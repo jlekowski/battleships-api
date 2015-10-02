@@ -10,6 +10,7 @@ services:
 
     app.security.api_key_user_provider:
         class: AppBundle\Security\ApiKeyUserProvider
+        arguments: [@app.entity.game_repository]
 
     app.entity.game_repository:
         class: AppBundle\Entity\GameRepository
@@ -29,17 +30,24 @@ services:
 
     app.controller.event:
         class: AppBundle\Controller\EventsController
-        arguments: [@doctrine.orm.default_entity_manager, @app.entity.event_repository]
+        arguments: [@doctrine.orm.default_entity_manager, @app.entity.event_repository, @app.battle.battle_manager]
         calls:
             - [setContainer, [@service_container]]
 
-    app.event_listener.entity_listener:
-        class: AppBundle\EventListener\EntityListener
+    app.event_listener.entity_subscriber:
+        class: AppBundle\EventListener\EntitySubscriber
         arguments: [@security.token_storage]
         tags:
-            - { name: doctrine.event_listener, event: preUpdate }
-            - { name: doctrine.event_listener, event: postLoad }
-            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_subscriber }
+
+    app.battle.battle_manager:
+        class: AppBundle\Battle\BattleManager
+
+#    app.voter.post:
+#        class: AppBundle\Security\GameVoter
+#        public: false
+#        tags:
+#           - { name: security.voter }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

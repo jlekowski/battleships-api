@@ -2,8 +2,11 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Exception\IncorrectResourceException;
+use AppBundle\Exception\UserNotFoundException;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
@@ -41,7 +44,7 @@ class Game
     /**
      * @var array
      *
-     * @ORM\Column(name="player1_ships", type="simple_array", nullable = true)
+     * @ORM\Column(name="player1_ships", type="simple_array", nullable=true)
      */
     private $player1Ships;
 
@@ -62,7 +65,7 @@ class Game
     /**
      * @var array
      *
-     * @ORM\Column(name="player2_ships", type="simple_array", nullable = true)
+     * @ORM\Column(name="player2_ships", type="simple_array", nullable=true)
      */
     private $player2Ships;
 
@@ -77,6 +80,13 @@ class Game
      * @var int
      */
     private $playerNumber;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    // @todo check what SQL queries if mapped events, or getShots() (shot events) (Lazy, Eager, ExtraLazy)
 
 
     /**
@@ -262,6 +272,7 @@ class Game
      * @Serializer\VirtualProperty
      *
      * @return string
+     * @throws \RuntimeException
      */
     public function getPlayerHash()
     {
@@ -272,6 +283,7 @@ class Game
      * @Serializer\VirtualProperty
      *
      * @return string
+     * @throws \RuntimeException
      */
     public function getPlayerName()
     {
@@ -281,6 +293,7 @@ class Game
     /**
      * @param string $playerName
      * @return Game
+     * @throws \RuntimeException
      */
     public function setPlayerName($playerName)
     {
@@ -291,6 +304,7 @@ class Game
      * @Serializer\VirtualProperty
      *
      * @return array
+     * @throws \RuntimeException
      */
     public function getPlayerShips()
     {
@@ -300,6 +314,7 @@ class Game
     /**
      * @param array $playerShips
      * @return Game
+     * @throws \RuntimeException
      */
     public function setPlayerShips(array $playerShips)
     {
@@ -310,6 +325,7 @@ class Game
      * @Serializer\VirtualProperty
      *
      * @return string
+     * @throws \RuntimeException
      */
     public function getOtherHash()
     {
@@ -320,6 +336,7 @@ class Game
      * @Serializer\VirtualProperty
      *
      * @return string
+     * @throws \RuntimeException
      */
     public function getOtherName()
     {
@@ -327,23 +344,64 @@ class Game
     }
 
     /**
+     * @return array
+     * @throws \RuntimeException
+     */
+    public function getOtherShips()
+    {
+        return $this->getPlayerNumber() === 2 ? $this->getPlayer1Ships() : $this->getPlayer2Ships();
+    }
+
+    /**
      * @Serializer\VirtualProperty
      *
      * @return int
+     * @throws UserNotFoundException
+     * @throws IncorrectResourceException
      */
     public function getPlayerNumber()
     {
+        if ($this->playerNumber === null) {
+            if (!$this->belongsToCurrentUser()) {
+                throw new IncorrectResourceException('The game does not belong to the current user');
+            }
+            $this->playerNumber = $this->getUser()->getPlayerHash() === $this->getPlayer2Hash() ? 2 : 1;
+        }
+
         return $this->playerNumber;
     }
 
     /**
-     * @param int $playerNumber
+     * @param TokenStorageInterface $tokenStorage
      * @return Game
      */
-    public function setPlayerNumber($playerNumber)
+    public function setTokenStorage(TokenStorageInterface $tokenStorage)
     {
-        $this->playerNumber = $playerNumber;
+        $this->tokenStorage = $tokenStorage;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     * @throws UserNotFoundException
+     */
+    public function belongsToCurrentUser()
+    {
+        return in_array($this->getUser()->getPlayerHash(), [$this->getPlayer1Hash(), $this->getPlayer2Hash()], true);
+    }
+
+    /**
+     * @return User
+     * @throws UserNotFoundException
+     */
+    private function getUser()
+    {
+        $token = $this->tokenStorage->getToken();
+        if (!$token) {
+            throw new UserNotFoundException('User has not been authenticated yet');
+        }
+
+        return $this->tokenStorage->getToken()->getUser();
     }
 }

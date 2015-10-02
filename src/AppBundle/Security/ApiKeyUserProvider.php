@@ -2,27 +2,49 @@
 
 namespace AppBundle\Security;
 
+use AppBundle\Entity\GameRepository;
+use AppBundle\Entity\User;
+use Doctrine\Common\Collections\Criteria;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 class ApiKeyUserProvider implements UserProviderInterface
 {
     /**
+     * @var GameRepository
+     */
+    protected $gameRepository;
+
+    /**
+     * @param GameRepository $gameRepository
+     */
+    public function __construct(GameRepository $gameRepository)
+    {
+        $this->gameRepository = $gameRepository;
+    }
+
+    /**
      * @param string $apiKey
      * @return User
+     * @throws AuthenticationException
      */
     public function getUserForApiKey($apiKey)
     {
-        return new User(
-            'testUsername',
-            $apiKey,
-            // the roles for the user - you may choose to determine
-            // these dynamically somehow based on the user
-            array('ROLE_USER')
-        );
+        $criteria = new Criteria();
+        $expr = $criteria->expr();
+
+        // @todo those fields must have indexes
+        $criteria->where($expr->eq('player1Hash', $apiKey));
+        $criteria->orWhere($expr->eq('player2Hash', $apiKey));
+
+        if ($this->gameRepository->matching($criteria)->isEmpty()) {
+            throw new AuthenticationException(sprintf('API Key `%s` does not exist.', $apiKey));
+        }
+
+        return new User($apiKey);
     }
 
     /**
@@ -50,6 +72,6 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function supportsClass($class)
     {
-        return 'Symfony\Component\Security\Core\User\User' === $class;
+        return 'AppBundle\Entity\User' === $class;
     }
 }

@@ -11,7 +11,7 @@ class InvalidCoordinatesException extends InvalidShipsException
      * @param int $code
      * @param \Exception $previous
      */
-    public function __construct($coords = "", $code = 0, \Exception $previous = null)
+    public function __construct($coords = '', $code = 0, \Exception $previous = null)
     {
         $message = sprintf('Invalid coordinates provided: %s', $coords);
 

@@ -6,23 +6,19 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
 use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidShipsException;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Events;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
-class EntityListener
+class EntitySubscriber implements EventSubscriber
 {
     /**
      * @var TokenStorage
      */
     protected $tokenStorage;
-
-    /**
-     * @var UnitOfWork
-     */
-    protected $unitOfWork;
 
     /**
      * @param TokenStorage $tokenStorage
@@ -33,19 +29,30 @@ class EntityListener
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getSubscribedEvents()
+    {
+        return [
+            Events::preUpdate,
+            Events::prePersist,
+            Events::postLoad
+        ];
+    }
+
+
+    /**
      * @param PreUpdateEventArgs $eventArgs
      * @throws InvalidShipsException
      */
     public function preUpdate(PreUpdateEventArgs $eventArgs)
     {
-        $entityManager = $eventArgs->getEntityManager();
-        $this->unitOfWork = $entityManager->getUnitOfWork();
+        $unitOfWork = $eventArgs->getEntityManager()->getUnitOfWork();
+        $entity = $eventArgs->getEntity();
+        $changes = $unitOfWork->getEntityChangeSet($entity);
 
-        foreach ($this->unitOfWork->getScheduledEntityUpdates() as $entity) {
-            if ($entity instanceof Game) {
-//                throw new InvalidCoordinatesException('K11');
-                $this->handleGameUpdate($entity);
-            }
+        if ($entity instanceof Game) {
+            $this->handleGameChanges($changes);
         }
     }
 
@@ -55,7 +62,7 @@ class EntityListener
      */
     public function prePersist(LifecycleEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getObject();
+        $entity = $eventArgs->getEntity();
         if ($entity instanceof Event) {
             $this->handleEventCreate($entity);
         }
@@ -63,29 +70,23 @@ class EntityListener
 
     /**
      * @param LifecycleEventArgs $eventArgs
+     * @throws \Exception
      */
     public function postLoad(LifecycleEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getObject();
+        $entity = $eventArgs->getEntity();
         if ($entity instanceof Game) {
-//            $user = $this->tokenStorage->getToken()->getUser();
-            $entity
-                ->setPlayerNumber(1)
-//                ->setPlayer2Hash(null)
-//                ->setPlayerStarted(false)
-//                ->setOtherStarted(false)
-//                ->setOtherJoined(false)
-//                ->setWhoseTurn(1)
-            ;
+            // there may be no user yet (loading entity during authorisation)
+            $entity->setTokenStorage($this->tokenStorage);
         }
     }
 
     /**
-     * @param Game $game
+     * @param array $changes
+     * @throws InvalidShipsException
      */
-    private function handleGameUpdate(Game $game)
+    private function handleGameChanges(array $changes)
     {
-        $changes = $this->unitOfWork->getEntityChangeSet($game);
         foreach ($changes as $property => $diff) {
             switch ($property) {
                 case 'player1Ships':

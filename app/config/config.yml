@@ -82,7 +82,7 @@ doctrine:
 
 sensio_framework_extra:
     view:   { annotations: false }
-    router: { annotations: true }
+#    router: { annotations: true }
 
 fos_rest:
 #    body_listener:

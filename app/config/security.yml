@@ -18,15 +18,11 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-#        main:
-#            anonymous: ~
-            # activate different ways to authenticate
+        new_game:
+            pattern: ^/(v\d+)/games$
+            methods: [POST]
+            security: false
 
-            # http_basic: ~
-            # http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
-
-            # form_login: ~
-            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
         api:
             pattern: ^/
             stateless: true

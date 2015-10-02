@@ -4,11 +4,12 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
+use AppBundle\Http\Headers;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
 // @todo headers for specific version?
@@ -48,19 +49,21 @@ class GamesController extends FOSRestController
      * @param EntityManagerInterface $entityManager
      * @param GameRepository $gameRepository
      */
-    public function __construct(EntityManagerInterface $entityManager,  GameRepository $gameRepository)
+    public function __construct(EntityManagerInterface $entityManager, GameRepository $gameRepository)
     {
         $this->entityManager = $entityManager;
         $this->gameRepository = $gameRepository;
     }
 
     /**
-     * @param int $id
+     * @param Game $game
      * @return Game
+     *
+     * @Security("game.belongsToCurrentUser()")
      */
-    public function getGameAction($id)
+    public function getGameAction(Game $game)
     {
-        return $this->getGameById($id);
+        return $game;
     }
 
     /**
@@ -71,23 +74,25 @@ class GamesController extends FOSRestController
     {
         $requestBag = $request->request;
 
-        $hash = hash('md5', uniqid(mt_rand(), true));
-        $tempHash = hash('md5', uniqid(mt_rand(), true));
+        $player1Hash = hash('md5', uniqid(mt_rand(), true));
+        $player2Hash = hash('md5', uniqid(mt_rand(), true));
 
         $game = new Game();
         $game
-            ->setPlayer1Hash($hash)
-            ->setPlayer1Name($requestBag->get('player1Name'))
-            ->setPlayer1Ships($requestBag->get('player1Ships', []))
-            ->setPlayer2Hash($tempHash)
-            ->setPlayer2Name($requestBag->get('player2Name', 'Player 2'))
-            ->setPlayer2Ships($requestBag->get('player2Ships', []))
+            ->setPlayer1Hash($player1Hash)
+            ->setPlayer1Name($requestBag->get('playerName'))
+            ->setPlayer1Ships($requestBag->get('playerShips', []))
+            ->setPlayer2Hash($player2Hash)
+            ->setPlayer2Name($requestBag->get('otherName', 'Player 2'))
+            ->setPlayer2Ships($requestBag->get('otherShips', []))
         ;
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
 
-        $view = $this->routeRedirectView('api_v1_get_game', ['id' => $game->getId()]);
+        $view = $this
+            ->routeRedirectView('api_v1_get_game', ['game' => $game->getId()])
+            ->setHeader(Headers::GAME_TOKEN, $game->getPlayer1Hash()); // @todo To be removed once there's real authentication with Api-Token
 
         return $this->handleView($view);
     }
@@ -96,30 +101,16 @@ class GamesController extends FOSRestController
      * @todo Think about multiple patching (207 response status) http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
      *
      * @param Request $request
-     * @param int $id
+     * @param Game $game
+     *
+     * @Security("game.belongsToCurrentUser()")
      */
-    public function patchGameAction(Request $request, $id)
+    public function patchGameAction(Request $request, Game $game)
     {
-        $game = $this->getGameById($id);
         $this->updateGameFromArray($game, $request->request->all());
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
-    }
-
-    /**
-     * @param int $id
-     * @return Game
-     * @throws NotFoundHttpException
-     */
-    protected function getGameById($id)
-    {
-        $game = $this->gameRepository->find($id);
-        if (!$game) {
-            throw $this->createNotFoundException();
-        }
-
-        return $game;
     }
 
     /**

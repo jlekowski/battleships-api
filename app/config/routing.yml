@@ -3,18 +3,6 @@ app:
     type:     annotation
     prefix:   /
 
-users_v1:
-    resource: 'AppBundle\Controller\UsersController'
-    type: rest
-    prefix: /v1
-    name_prefix: temp_v1_
-
-users_v2:
-    resource: 'AppBundle\Controller\UsersControllerV2'
-    type: rest
-    prefix: /v2
-    name_prefix: temp_v2_
-
 # @todo routing_v1.yml etc. (maybe import the correct one)
 #routing_v1:
 #    type: rest

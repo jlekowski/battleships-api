@@ -30,12 +30,13 @@ class Event
     private $id;
 
     /**
-     * @var integer
+     * @var Game
      *
-     * @ORM\Column(name="game_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="Game")
+     * @ORM\JoinColumn(name="game_id", referencedColumnName="id", nullable=false)
      * @Serializer\Exclude
      */
-    private $gameId;
+    private $game;
 
     /**
      * @var integer
@@ -77,26 +78,26 @@ class Event
     }
 
     /**
-     * Set gameId
+     * Set game
      *
-     * @param integer $gameId
+     * @param Game $game
      * @return Event
      */
-    public function setGameId($gameId)
+    public function setGame(Game $game)
     {
-        $this->gameId = $gameId;
+        $this->game = $game;
 
         return $this;
     }
 
     /**
-     * Get gameId
+     * Get game
      *
-     * @return integer
+     * @return Game
      */
-    public function getGameId()
+    public function getGame()
     {
-        return $this->gameId;
+        return $this->game;
     }
 
     /**

@@ -19,8 +19,7 @@ class ExceptionWrapperHandler
             'code' => $exception->getStatusCode(),
             'realCode' => $exception->getCode(),
             'message' => $exception->getMessage(),
-            'class' => get_class($exception) . ' cool',
-            'a' => $exception->getClass()
+            'class' => $exception->getClass()
         ];
     }
 }

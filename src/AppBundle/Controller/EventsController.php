@@ -2,16 +2,21 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
+use AppBundle\Entity\Game;
+use AppBundle\Entity\GameRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Util\Codes;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @todo maybe validate params http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
+ */
 class EventsController extends FOSRestController
 {
     /**
@@ -25,32 +30,46 @@ class EventsController extends FOSRestController
     protected $eventRepository;
 
     /**
+     * @var GameRepository
+     */
+    protected $gameRepository;
+
+    /**
+     * @var BattleManager
+     */
+    protected $battleManager;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param EventRepository $eventRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, EventRepository $eventRepository)
+    public function __construct(EntityManagerInterface $entityManager, EventRepository $eventRepository, BattleManager $battleManager)
     {
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
+        $this->battleManager = $battleManager;
     }
 
     /**
-     * @param int $gameId
-     * @param int $eventId
+     * @param Game $game
+     * @param Event $event
      * @return Event
-     * @throws NotFoundHttpException
+     *
+     * @Security("game.belongsToCurrentUser() && (game === event.getGame())")
      */
-    public function getEventAction($gameId, $eventId)
+    public function getEventAction(Game $game, Event $event)
     {
-        return $this->getEventByIdAndGameId($eventId, $gameId);
+        return $event;
     }
 
     /**
      * @param Request $request
-     * @param int $gameId
-     * @return array
+     * @param Game $game
+     * @return \Doctrine\Common\Collections\Collection
+     *
+     * @Security("game.belongsToCurrentUser()")
      */
-    public function getEventsAction(Request $request, $gameId)
+    public function getEventsAction(Request $request, Game $game)
     {
         $gt = $request->query->get('gt');
         $eventType = $request->query->get('type');
@@ -58,37 +77,33 @@ class EventsController extends FOSRestController
         $criteria = new Criteria();
         $expr = $criteria->expr();
 
-        $criteria->where($expr->eq('gameId', $gameId));
+        $criteria->where($expr->eq('game', $game));
         if ($gt !== null) {
             $criteria->andWhere($expr->gt('id', $gt));
         }
-
         if ($eventType !== null) {
             $criteria->andWhere($expr->eq('type', $eventType));
         }
 
-        /** @var EventRepository $eventRepository */
-        $eventRepository = $this->getDoctrine()->getRepository('AppBundle:Event');
-        /** @var Event $event */
-        $events = $eventRepository->matching($criteria);
-
-        return $events;
+        return $this->eventRepository->matching($criteria);
     }
 
     /**
      * @param Request $request
-     * @param int $gameId
+     * @param Game $game
      * @return Response
      * @throws \Exception
+     *
+     * @Security("game.belongsToCurrentUser()")
      */
-    public function postEventAction(Request $request, $gameId)
+    public function postEventAction(Request $request, Game $game)
     {
         $requestBag = $request->request;
 
         $event = new Event();
         $event
-            ->setGameId($gameId)
-            ->setPlayer(1)
+            ->setGame($game)
+            ->setPlayer($game->getPlayerNumber())
             ->setType($requestBag->get('type'))
             ->setValue($requestBag->get('value', true))
         ;
@@ -96,22 +111,22 @@ class EventsController extends FOSRestController
         $this->entityManager->persist($event);
         $this->entityManager->flush();
 
-        $view = $this->routeRedirectView('api_v1_get_game_event', ['gameId' => $gameId, 'eventId' => $event->getId()]);
+        $view = $this->routeRedirectView(
+            'api_v1_get_game_event',
+            ['game' => $game->getId(), 'event' => $event->getId()]
+        );
+
+        switch ($event->getType()) {
+            case Event::TYPE_CHAT:
+                $view->setData(['timestamp' => $event->getTimestamp()]);
+                break;
+
+            case Event::TYPE_SHOT:
+                $result = $this->battleManager->getShotResult($event);
+                $view->setData(['result' => $result]);
+                break;
+        }
 
         return $this->handleView($view);
-    }
-
-    /**
-     * @param int $id
-     * @param int $gameId
-     * @return Event
-     */
-    protected function getEventByIdAndGameId($id, $gameId)
-    {
-        $event = $this->eventRepository->findOneBy(['id' => $id, 'gameId' => $gameId]);
-        if (!$event) {
-            throw $this->createNotFoundException();
-        }
-        return $event;
     }
 }

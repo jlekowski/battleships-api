@@ -4,7 +4,6 @@ namespace AppBundle\Security;
 
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -17,9 +16,8 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
      */
     public function createToken(Request $request, $providerKey)
     {
-        $apiKey = $request->query->get('apikey');
-        // $apiKey = $request->headers->get('apikey');
-        $apiKey = 'temp';
+        preg_match('/^Bearer (\S+)$/', $request->headers->get('Authorization'), $matches);
+        $apiKey = isset($matches[1]) ? $matches[1] : null;
 
         if (!$apiKey) {
             throw new BadCredentialsException('No API key found');
@@ -44,12 +42,6 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 
         $apiKey = $token->getCredentials();
         $user = $userProvider->getUserForApiKey($apiKey);
-
-        if (!$user) {
-            throw new AuthenticationException(
-                sprintf('API Key "%s" does not exist.', $apiKey)
-            );
-        }
 
         return new PreAuthenticatedToken($user, $apiKey, $providerKey, $user->getRoles());
     }
