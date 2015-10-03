@@ -32,7 +32,7 @@ class Event
     /**
      * @var Game
      *
-     * @ORM\ManyToOne(targetEntity="Game")
+     * @ORM\ManyToOne(targetEntity="Game", inversedBy="events")
      * @ORM\JoinColumn(name="game_id", referencedColumnName="id", nullable=false)
      * @Serializer\Exclude
      */

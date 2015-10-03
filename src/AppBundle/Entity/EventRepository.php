@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -12,4 +14,25 @@ use Doctrine\ORM\EntityRepository;
  */
 class EventRepository extends EntityRepository
 {
+    /**
+     * @param Game $game
+     * @param string $eventType
+     * @param int $gt With Id greater than
+     * @return Collection
+     */
+    public function findForGameByType(Game $game, $eventType = null, $gt = null)
+    {
+        $criteria = new Criteria();
+        $expr = $criteria->expr();
+
+        $criteria->where($expr->eq('game', $game));
+        if ($eventType !== null) {
+            $criteria->andWhere($expr->eq('type', $eventType));
+        }
+        if ($gt !== null) {
+            $criteria->andWhere($expr->gt('id', $gt));
+        }
+
+        return $this->matching($criteria);
+    }
 }

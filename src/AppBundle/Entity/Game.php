@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Exception\IncorrectResourceException;
 use AppBundle\Exception\UserNotFoundException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -14,7 +15,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * @ORM\HasLifecycleCallbacks()
  *
  * @Serializer\ExclusionPolicy("all")
- * @todo Unique field for hash nad other keys(?) + table relations/foreign keys
+ * @todo Unique field for hash and other keys(?) + table relations/foreign keys
  */
 class Game
 {
@@ -26,6 +27,13 @@ class Game
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Event", mappedBy="game")
+     */
+    private $events;
 
     /**
      * @var string
@@ -86,8 +94,11 @@ class Game
      */
     private $tokenStorage;
 
-    // @todo check what SQL queries if mapped events, or getShots() (shot events) (Lazy, Eager, ExtraLazy)
 
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -97,6 +108,14 @@ class Game
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return ArrayCollection|Event[]
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 
     /**

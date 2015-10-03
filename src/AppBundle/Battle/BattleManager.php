@@ -3,6 +3,7 @@
 namespace AppBundle\Battle;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Exception\InvalidCoordinatesException;
 
 class BattleManager
@@ -26,17 +27,36 @@ class BattleManager
     protected $axisX = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
     /**
+     * @var EventRepository
+     */
+    protected $eventRepository;
+
+    /**
      * @todo maybe pass $shot and $otherShips, but then how to get shots?
      * @param Event $event
      * @return string miss|hit|sunk
      */
     public function getShotResult(Event $event)
     {
-        $otherShips = $event->getGame()->getOtherShips();
+        $game = $event->getGame();
+        $otherShips = $game->getOtherShips();
         $shot = $event->getValue();
 
         if (in_array($shot, $otherShips, true)) {
-            $result = $this->checkSunk($shot) ? self::SHOT_RESULT_SUNK : self::SHOT_RESULT_HIT;
+            $enemyShips = $game->getOtherShips();
+            // @todo of course I need to get only shots for the player, not everything (do I need getEvents() method?)
+            $attackerShots = [];
+            $shotEvents = $this->eventRepository->findBy([
+                'game' => $game,
+                'type' => Event::TYPE_SHOT,
+                'player' => $game->getPlayerNumber()
+            ]);
+            foreach ($shotEvents as $shotEvent) {
+                $attackerShots[] = $shotEvent->getValue();
+            }
+            $result = $this->checkSunk($shot, $enemyShips, $attackerShots)
+                ? self::SHOT_RESULT_SUNK
+                : self::SHOT_RESULT_HIT;
         } else {
             $result = self::SHOT_RESULT_MISS;
         }
@@ -45,22 +65,19 @@ class BattleManager
     }
 
     /**
+     * @todo maybe CoordsInfo instead of shotCoords
      * Checks if the shot sinks the ship (if all other masts have been hit)
      *
-     * @param string $coords Shot coordinates (Example: 'A1', 'B4', 'J10', ...)
-     * @param string $shooter Whose shot is about to be checked (player|other)
+     * @param string $shotCoords Shot coordinates (Example: 'A1', 'B4', 'J10', ...)
+     * @param array $enemyShips Attacked player ships
+     * @param array $attackerShots Attacker shots
      * @param int $direction Direction which is checked for ship's masts
      * @return bool Whether the ship is sunk after this shot or not
-     * @throws \InvalidArgumentException
      * @throws InvalidCoordinatesException
      */
-    protected function checkSunk($coords, $shooter = 'player', $direction = null)
+    protected function checkSunk($shotCoords, array $enemyShips, array $attackerShots, $direction = null)
     {
-        if (!in_array($shooter, array('player', 'other'))) {
-            throw new \InvalidArgumentException(sprintf('Incorrect shooter (%s)', $shooter));
-        }
-
-        $coordsInfo = new CoordsInfo($coords);
+        $coordsInfo = new CoordsInfo($shotCoords);
         // neighbour coordinates, taking into consideration edge positions (A and J rows, 1 and 10 columns)
         $sunkCoords = $coordsInfo->getSunkCoords();
 
@@ -73,14 +90,12 @@ class BattleManager
                 continue;
             }
 
-            $ships = $shooter == 'player' ? $this->oData->getOtherShips()  : $this->oData->getPlayerShips();
-            $shots = $shooter == 'player' ? $this->oData->getPlayerShots() : $this->oData->getOtherShots();
-            $ship = array_search($value, $ships);
-            $shot = array_search($value, $shots);
+            $ship = array_search($value, $enemyShips);
+            $shot = array_search($value, $attackerShots);
 
             // if there's a mast there and it's been hit, check this direction for more masts
             if ($ship !== false && $shot !== false) {
-                $checkSunk = $this->checkSunk($value, $shooter, $key);
+                $checkSunk = $this->checkSunk($value, $enemyShips, $attackerShots, $key);
             } elseif ($ship !== false) {
                 // if mast hasn't been hit, the the ship can't be sunk
                 $checkSunk = false;

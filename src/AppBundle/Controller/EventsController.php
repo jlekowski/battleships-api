@@ -7,6 +7,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -42,9 +43,13 @@ class EventsController extends FOSRestController
     /**
      * @param EntityManagerInterface $entityManager
      * @param EventRepository $eventRepository
+     * @param BattleManager $battleManager
      */
-    public function __construct(EntityManagerInterface $entityManager, EventRepository $eventRepository, BattleManager $battleManager)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        EventRepository $eventRepository,
+        BattleManager $battleManager
+    ) {
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
         $this->battleManager = $battleManager;
@@ -63,9 +68,10 @@ class EventsController extends FOSRestController
     }
 
     /**
+     * @todo maybe validate event type (gt too?)?
      * @param Request $request
      * @param Game $game
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      *
      * @Security("game.belongsToCurrentUser()")
      */
@@ -74,18 +80,7 @@ class EventsController extends FOSRestController
         $gt = $request->query->get('gt');
         $eventType = $request->query->get('type');
 
-        $criteria = new Criteria();
-        $expr = $criteria->expr();
-
-        $criteria->where($expr->eq('game', $game));
-        if ($gt !== null) {
-            $criteria->andWhere($expr->gt('id', $gt));
-        }
-        if ($eventType !== null) {
-            $criteria->andWhere($expr->eq('type', $eventType));
-        }
-
-        return $this->eventRepository->matching($criteria);
+        return $this->eventRepository->findForGameByType($game, $eventType, $gt);
     }
 
     /**
