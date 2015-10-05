@@ -91,7 +91,7 @@ class GamesController extends FOSRestController
         $this->entityManager->flush();
 
         $view = $this
-            ->routeRedirectView('api_v1_get_game', ['game' => $game->getId()])
+            ->routeRedirectView('api_v1_get_game', ['id' => $game->getId()])
             ->setHeader(Headers::GAME_TOKEN, $game->getPlayer1Hash()); // @todo To be removed once there's real authentication with Api-Token
 
         return $this->handleView($view);

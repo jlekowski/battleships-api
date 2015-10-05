@@ -34,7 +34,7 @@ class ApiKeyUserProvider implements UserProviderInterface
     public function getUserForApiKey($apiKey)
     {
         $criteria = new Criteria();
-        $expr = $criteria->expr();
+        $expr = Criteria::expr();
 
         // @todo those fields must have indexes
         $criteria->where($expr->eq('player1Hash', $apiKey));

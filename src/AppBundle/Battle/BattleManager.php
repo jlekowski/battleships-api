@@ -44,13 +44,13 @@ class BattleManager
 
         if (in_array($shot, $otherShips, true)) {
             $enemyShips = $game->getOtherShips();
-            // @todo of course I need to get only shots for the player, not everything (do I need getEvents() method?)
+            // @todo is there a nicer way to do it (getPlayerShots()), and do I need getEvents() method?
             $attackerShots = [];
-            $shotEvents = $this->eventRepository->findBy([
-                'game' => $game,
-                'type' => Event::TYPE_SHOT,
-                'player' => $game->getPlayerNumber()
-            ]);
+            $shotEvents = $this->eventRepository->findForGameByTypeAndPlayer(
+                $game,
+                Event::TYPE_SHOT,
+                $game->getPlayerNumber()
+            );
             foreach ($shotEvents as $shotEvent) {
                 $attackerShots[] = $shotEvent->getValue();
             }

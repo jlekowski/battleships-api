@@ -9,6 +9,7 @@
 /build/
 /vendor/
 /bin/*
+!bin/e2e.php
 !bin/console
 !bin/symfony_requirements
 /composer.phar
