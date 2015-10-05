@@ -13,7 +13,8 @@ class InvalidCoordinatesException extends InvalidShipsException
      */
     public function __construct($coords = '', $code = 0, \Exception $previous = null)
     {
-        $message = sprintf('Invalid coordinates provided: %s', $coords);
+        // just in case to prevent array to string conversion warning
+        $message = sprintf('Invalid coordinates provided: %s', is_array($coords) ? 'array()' : $coords);
 
         parent::__construct($message, $code, $previous);
     }

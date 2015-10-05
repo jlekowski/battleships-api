@@ -41,7 +41,7 @@ class CoordsInfo
     protected $positionY;
 
     /**
-     * @param string $coords Coordinates (Example: 'A1', 'B4', 'J10', ...)
+     * @param string|array $coords Coordinates (e.g.: 'A1', [0,0], 'B4', [1,3], 'J10', [9,9], ...)
      * @throws InvalidCoordinatesException
      */
     public function __construct($coords)
@@ -50,14 +50,23 @@ class CoordsInfo
             throw new InvalidCoordinatesException($coords);
         }
 
-        $this->coordX = $coords[0];
-        $this->coordY = substr($coords, 1);
-        $this->positionY = array_search($this->coordY, $this->axisY);
-        $this->positionX = array_search($this->coordX, $this->axisX);
+        if (is_array($coords)) {
+            $this->populateDataFromPosition($coords);
+        } else {
+            $this->populateDataFromCoords($coords);
+        }
 
         if ($this->positionY === false || $this->positionX === false) {
             throw new InvalidCoordinatesException($coords);
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCoords()
+    {
+        return $this->getCoordY() . $this->getCoordX();
     }
 
     /**
@@ -93,16 +102,149 @@ class CoordsInfo
     }
 
     /**
-     * @todo add comment and rename to be something more about edges/sides or something
-     * @return array
+     * Neighbour coordinates, taking into consideration edge positions (A and J rows, 1 and 10 columns)
+     *
+     * @return CoordsInfo[]
      */
-    public function getSunkCoords()
+    public function getSidePositions()
     {
         return [
-            $this->getPositionY() > 0 ? $this->axisY[$this->getPositionY() - 1] . $this->getCoordX() : null,
-            $this->getPositionY() < 9 ? $this->axisY[$this->getPositionY() + 1] . $this->getCoordX() : null,
-            $this->getPositionX() < 9 ? $this->getCoordY() . $this->axisX[$this->getPositionX() + 1] : null,
-            $this->getPositionX() > 0 ? $this->getCoordY() . $this->axisX[$this->getPositionX() - 1] : null
+            $this->getTopPosition(),
+            $this->getBottomPosition(),
+            $this->getRightPosition(),
+            $this->getLeftPosition()
         ];
+    }
+
+    /**
+     * @return CoordsInfo[]
+     */
+    public function getCornerPositions()
+    {
+        return [
+            $this->getLeftTopPosition(),
+            $this->getRightTopPosition(),
+            $this->getLeftBottomPosition(),
+            $this->getRightBottomPosition()
+        ];
+    }
+
+    /**
+     * @return CoordsInfo[]
+     */
+    public function getSurroundingPositions()
+    {
+        return [
+            $this->getLeftPosition(),
+            $this->getRightPosition(),
+            $this->getTopPosition(),
+            $this->getBottomPosition(),
+            $this->getLeftTopPosition(),
+            $this->getRightTopPosition(),
+            $this->getLeftBottomPosition(),
+            $this->getRightBottomPosition()
+        ];
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getTopPosition()
+    {
+        return $this->getPositionY() > 0
+            ? new CoordsInfo([$this->getPositionY() - 1, $this->getPositionX()])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getBottomPosition()
+    {
+        return $this->getPositionY() < 9
+            ? new CoordsInfo([$this->getPositionY() + 1, $this->getPositionX()])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getRightPosition()
+    {
+        return $this->getPositionX() < 9
+            ? new CoordsInfo([$this->getPositionY(), $this->getPositionX() + 1])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getLeftPosition()
+    {
+        return $this->getPositionX() > 0
+            ? new CoordsInfo([$this->getPositionY(), $this->getPositionX() - 1])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getRightTopPosition()
+    {
+        return ($this->getPositionY() > 0) && ($this->getPositionX() < 9)
+            ? new CoordsInfo([$this->getPositionY() - 1, $this->getPositionX() + 1])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getLeftTopPosition()
+    {
+        return ($this->getPositionY() > 0) && ($this->getPositionX() > 0)
+            ? new CoordsInfo([$this->getPositionY() - 1, $this->getPositionX() - 1])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getRightBottomPosition()
+    {
+        return ($this->getPositionY() < 9) && ($this->getPositionX() < 9)
+            ? new CoordsInfo([$this->getPositionY() + 1, $this->getPositionX() + 1])
+            : null;
+    }
+
+    /**
+     * @return CoordsInfo|null
+     */
+    public function getLeftBottomPosition()
+    {
+        return ($this->getPositionY() < 9) && ($this->getPositionX() > 0)
+            ? new CoordsInfo([$this->getPositionY() + 1, $this->getPositionX() - 1])
+            : null;
+    }
+
+    /**
+     * @param string $coords
+     */
+    protected function populateDataFromCoords($coords)
+    {
+        $this->coordY = $coords[0];
+        $this->coordX = substr($coords, 1);
+        $this->positionY = array_search($this->coordY, $this->axisY);
+        $this->positionX = array_search($this->coordX, $this->axisX);
+    }
+
+    /**
+     * @param array $position
+     */
+    protected function populateDataFromPosition(array $position)
+    {
+        $this->positionY = $position[0];
+        $this->positionX = $position[1];
+        $this->coordY = $this->axisY[$this->positionY];
+        $this->coordX = $this->axisX[$this->positionX];
     }
 }
