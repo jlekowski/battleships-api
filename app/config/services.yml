@@ -42,6 +42,7 @@ services:
 
     app.battle.battle_manager:
         class: AppBundle\Battle\BattleManager
+        arguments: [@app.entity.event_repository]
 
 #    app.voter.post:
 #        class: AppBundle\Security\GameVoter

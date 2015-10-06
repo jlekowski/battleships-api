@@ -4,7 +4,9 @@ namespace AppBundle\Battle;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
+use AppBundle\Entity\Game;
 use AppBundle\Exception\InvalidCoordinatesException;
+use Doctrine\Common\Collections\Criteria;
 
 class BattleManager
 {
@@ -30,6 +32,14 @@ class BattleManager
      * @var EventRepository
      */
     protected $eventRepository;
+
+    /**
+     * @param EventRepository $eventRepository
+     */
+    public function __construct(EventRepository $eventRepository)
+    {
+        $this->eventRepository = $eventRepository;
+    }
 
     /**
      * @todo maybe pass $shot and $otherShips, but then how to get shots?
@@ -62,6 +72,28 @@ class BattleManager
         }
 
         return $result;
+    }
+
+    /**
+     * Finds which player's turn it is
+     */
+    public function whoseTurn(Game $game)
+    {
+        $event = $this->eventRepository->findLastForGameByType($game, Event::TYPE_SHOT);
+
+        if (empty($event)) {
+            $whoseTurn = 1;
+        } elseif ($event->getPlayer() === $game->getPlayerNumber()) {
+            $whoseTurn = in_array($event->getValue(), $game->getOtherShips())
+                ? $game->getPlayerNumber()
+                : $game->getOtherNumber();
+        } else {
+            $whoseTurn = in_array($event->getValue(), $game->getPlayerShips())
+                ? $game->getOtherNumber()
+                : $game->getPlayerNumber();
+        }
+
+        return $whoseTurn;
     }
 
     /**

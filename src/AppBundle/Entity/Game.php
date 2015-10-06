@@ -391,6 +391,16 @@ class Game
     }
 
     /**
+     * @return int
+     * @throws UserNotFoundException
+     * @throws IncorrectResourceException
+     */
+    public function getOtherNumber()
+    {
+        return $this->getPlayerNumber() === 2 ? 1 : 2;
+    }
+
+    /**
      * @param TokenStorageInterface $tokenStorage
      * @return Game
      */

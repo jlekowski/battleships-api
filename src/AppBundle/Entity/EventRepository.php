@@ -34,14 +34,30 @@ class EventRepository extends EntityRepository
      * @param Game $game
      * @param string $eventType
      * @param int $player 1|2
-     * @return Event[]|Collection
+     * @return Collection|Event[]
      */
     public function findForGameByTypeAndPlayer(Game $game, $eventType, $player)
     {
-        $criteria = $this->createFindForGameByTypeCriteria($game, $eventType);
-        $criteria->andWhere(Criteria::expr()->eq('player', $player));
+        $criteria = $this->createFindForGameByTypeCriteria($game, $eventType)
+            ->andWhere(Criteria::expr()->eq('player', $player))
+        ;
 
         return $this->matching($criteria);
+    }
+
+    /**
+     * @param Game $game
+     * @param string $eventType
+     * @return Event
+     */
+    public function findLastForGameByType(Game $game, $eventType)
+    {
+        $criteria = $this->createFindForGameByTypeCriteria($game, $eventType)
+            ->setMaxResults(1)
+            ->orderBy(['id' => 'DESC'])
+        ;
+
+        return $this->matching($criteria)->first();
     }
 
     /**
