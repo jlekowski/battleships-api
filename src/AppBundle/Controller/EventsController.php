@@ -116,8 +116,8 @@ class EventsController extends FOSRestController
                 break;
 
             case Event::TYPE_SHOT:
-                $result = $this->battleManager->getShotResult($event);
-                $view->setData(['result' => $result]);
+                $shotResult = $this->battleManager->getShotResult($event);
+                $view->setData(['result' => $shotResult]);
                 break;
         }
 

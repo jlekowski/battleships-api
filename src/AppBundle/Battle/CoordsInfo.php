@@ -86,6 +86,14 @@ class CoordsInfo
     }
 
     /**
+     * @return string
+     */
+    public function getPosition()
+    {
+        return $this->getPositionY() . $this->getPositionX();
+    }
+
+    /**
      * @return int
      */
     public function getPositionX()
