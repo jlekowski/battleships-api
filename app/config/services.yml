@@ -36,7 +36,9 @@ services:
 
     app.event_listener.entity_subscriber:
         class: AppBundle\EventListener\EntitySubscriber
-        arguments: [@security.token_storage, @app.battle.battle_manager]
+        arguments: [@security.token_storage]
+        calls:
+            - [setContainer, [@service_container]]
         tags:
             - { name: doctrine.event_subscriber }
 

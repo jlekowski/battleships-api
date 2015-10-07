@@ -39,7 +39,6 @@ class GameHandler
         );
         $form->submit($parameters, 'PATCH' !== $method);
         if ($form->isValid()) {
-
             $page = $form->getData();
 //            $this->om->persist($page);
 //            $this->om->flush($page);

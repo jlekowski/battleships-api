@@ -5,16 +5,17 @@ namespace AppBundle\EventListener;
 use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
-use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidShipsException;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use FOS\RestBundle\Util\Codes;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
-class EntitySubscriber implements EventSubscriber
+class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
 {
     /**
      * @var TokenStorage
@@ -22,17 +23,16 @@ class EntitySubscriber implements EventSubscriber
     protected $tokenStorage;
 
     /**
-     * @var BattleManager
+     * @var ContainerInterface
      */
-    protected $battleManager;
+    protected $container;
 
     /**
      * @param TokenStorage $tokenStorage
      */
-    public function __construct(TokenStorage $tokenStorage, BattleManager $battleManager)
+    public function __construct(TokenStorage $tokenStorage)
     {
         $this->tokenStorage = $tokenStorage;
-        $this->battleManager = $battleManager;
     }
 
     /**
@@ -46,7 +46,6 @@ class EntitySubscriber implements EventSubscriber
             Events::postLoad
         ];
     }
-
 
     /**
      * @param PreUpdateEventArgs $eventArgs
@@ -89,6 +88,24 @@ class EntitySubscriber implements EventSubscriber
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * BattleManager object can't be injected during class instantiation because of circular reference
+     *
+     * @return BattleManager
+     */
+    public function getBattleManager()
+    {
+        return $this->container->get('app.battle.battle_manager');
+    }
+
+    /**
      * @param array $changes
      * @throws InvalidShipsException
      */
@@ -98,7 +115,8 @@ class EntitySubscriber implements EventSubscriber
             switch ($property) {
                 case 'player1Ships':
                 case 'player2Ships':
-                    $this->validateShips($diff[1]);
+                    // @todo check here or somewhere is allowed to update ships (after starting the game)
+                    $this->getBattleManager()->validateShips($diff[1]);
                     break;
             }
         }
@@ -123,16 +141,5 @@ class EntitySubscriber implements EventSubscriber
             default:
                 throw new \Exception('No such event type', Codes::HTTP_BAD_REQUEST);
         }
-    }
-
-    private function checkGameUpdates(Game $game)
-    {
-//        $game = $this->gameRepository->find($id);
-//        $game->setPlayer2Name('aaa');
-        $uow = $this->entityManager->getUnitOfWork();
-        $uow->computeChangeSets();
-        echo "<pre>";
-        var_dump($uow->getEntityChangeSet($game));
-        exit;
     }
 }

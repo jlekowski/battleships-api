@@ -3,9 +3,19 @@
 namespace AppBundle\Battle;
 
 use AppBundle\Exception\InvalidCoordinatesException;
+use AppBundle\Exception\InvalidOffsetException;
 
+/**
+ * @todo rename get*Position to provide CoordsInfo
+ * @todo maybe return CoordsInfoCollection, not array
+ */
 class CoordsInfo
 {
+    const OFFSET_TOP = 'TOP';
+    const OFFSET_BOTTOM = 'BOTTOM';
+    const OFFSET_RIGHT = 'RIGHT';
+    const OFFSET_LEFT = 'LEFT';
+
     /**
      * @todo replace with a constant (and composer update to require 5.6)
      * Array with Y axis elements
@@ -41,7 +51,7 @@ class CoordsInfo
     protected $positionY;
 
     /**
-     * @param string|array $coords Coordinates (e.g.: 'A1', [0,0], 'B4', [1,3], 'J10', [9,9], ...)
+     * @param string|array $coords Coordinates or Position (e.g.: 'A1', [0,0], 'B4', [1,3], 'J10', [9,9], ...)
      * @throws InvalidCoordinatesException
      */
     public function __construct($coords)
@@ -232,6 +242,31 @@ class CoordsInfo
         return ($this->getPositionY() < 9) && ($this->getPositionX() > 0)
             ? new CoordsInfo([$this->getPositionY() + 1, $this->getPositionX() - 1])
             : null;
+    }
+
+    /**
+     * @param string $offset
+     * @return CoordsInfo|null
+     * @throws InvalidOffsetException
+     */
+    public function getOffsetCoords($offset)
+    {
+        switch ($offset) {
+            case self::OFFSET_TOP:
+                return $this->getTopPosition();
+
+            case self::OFFSET_BOTTOM:
+                return $this->getBottomPosition();
+
+            case self::OFFSET_RIGHT:
+                return $this->getRightPosition();
+
+            case self::OFFSET_LEFT:
+                return $this->getLeftPosition();
+
+            default:
+                throw new InvalidOffsetException($offset);
+        }
     }
 
     /**
