@@ -5,12 +5,13 @@ namespace AppBundle\EventListener;
 use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
+use AppBundle\Exception\InvalidEventTypeException;
 use AppBundle\Exception\InvalidShipsException;
+use AppBundle\Exception\UnexpectedEventTypeException;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use FOS\RestBundle\Util\Codes;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -124,7 +125,7 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
 
     /**
      * @param Event $event
-     * @throws \Exception
+     * @throws InvalidEventTypeException
      */
     private function handleEventCreate(Event $event)
     {
@@ -136,10 +137,10 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
 
             case Event::TYPE_JOIN_GAME:
             case Event::TYPE_NAME_UPDATE:
-                throw new \Exception('Incorrect event type', Codes::HTTP_BAD_REQUEST);
+                throw new UnexpectedEventTypeException($event->getType());
 
             default:
-                throw new \Exception('No such event type', Codes::HTTP_BAD_REQUEST);
+                throw new InvalidEventTypeException($event->getType());
         }
     }
 }

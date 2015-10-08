@@ -46,11 +46,12 @@ services:
         class: AppBundle\Battle\BattleManager
         arguments: [@app.entity.event_repository]
 
-#    app.voter.post:
-#        class: AppBundle\Security\GameVoter
-#        public: false
-#        tags:
-#           - { name: security.voter }
+    app.security.game_voter:
+        class: AppBundle\Security\GameVoter
+        arguments: [@request_stack, @app.battle.battle_manager]
+        public: false
+        tags:
+           - { name: security.voter }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

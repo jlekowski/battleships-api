@@ -127,10 +127,10 @@ class CoordsInfo
     public function getSidePositions()
     {
         return [
-            $this->getTopPosition(),
-            $this->getBottomPosition(),
-            $this->getRightPosition(),
-            $this->getLeftPosition()
+            self::OFFSET_TOP => $this->getTopPosition(),
+            self::OFFSET_BOTTOM =>$this->getBottomPosition(),
+            self::OFFSET_RIGHT =>$this->getRightPosition(),
+            self::OFFSET_LEFT =>$this->getLeftPosition()
         ];
     }
 

@@ -7,6 +7,7 @@ use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidShipsException;
+use AppBundle\Exception\UnexpectedEventTypeException;
 
 class BattleManager
 {
@@ -43,28 +44,23 @@ class BattleManager
 
     /**
      * @todo maybe pass $shot and $otherShips, but then how to get shots?
-     * @param Event $event
+     * @param Event $shotEvent
      * @return string miss|hit|sunk
      */
-    public function getShotResult(Event $event)
+    public function getShotResult(Event $shotEvent)
     {
-        $game = $event->getGame();
-        $otherShips = $game->getOtherShips();
-        $shot = $event->getValue();
+        if ($shotEvent->getType() !== Event::TYPE_SHOT) {
+            throw new UnexpectedEventTypeException($shotEvent->getType(), Event::TYPE_SHOT);
+        }
 
-        if (in_array($shot, $otherShips, true)) {
-            $enemyShips = $game->getOtherShips();
+        $game = $shotEvent->getGame();
+        $enemyShips = new CoordsInfoCollection($game->getOtherShips());
+        $shot = new CoordsInfo($shotEvent->getValue());
+
+        if ($enemyShips->contains($shot)) {
             // @todo is there a nicer way to do it (getPlayerShots()), and do I need getEvents() method?
-            $attackerShots = [];
-            $shotEvents = $this->eventRepository->findForGameByTypeAndPlayer(
-                $game,
-                Event::TYPE_SHOT,
-                $game->getPlayerNumber()
-            );
-            foreach ($shotEvents as $shotEvent) {
-                $attackerShots[] = $shotEvent->getValue();
-            }
-            $result = $this->checkSunk(new CoordsInfo($shot), $enemyShips, $attackerShots)
+            $attackerShots = $this->getAttackerShots($shotEvent);
+            $result = $this->isSunk($shot, $enemyShips, $attackerShots)
                 ? self::SHOT_RESULT_SUNK
                 : self::SHOT_RESULT_HIT;
         } else {
@@ -76,6 +72,8 @@ class BattleManager
 
     /**
      * Finds which player's turn it is
+     * @param Game $game
+     * @return int
      */
     public function whoseTurn(Game $game)
     {
@@ -108,47 +106,69 @@ class BattleManager
     }
 
     /**
-     * @todo maybe CoordsInfo instead of shotCoords
      * Checks if the shot sinks the ship (if all other masts have been hit)
      *
-     * @param CoordsInfo $coords Shot coordinates (Example: 'A1', 'B4', 'J10', ...)
-     * @param array $enemyShips Attacked player ships
-     * @param array $attackerShots Attacker shots
-     * @param int $direction Direction which is checked for ship's masts
-     * @return bool Whether the ship is sunk after this shot or not
+     * @param CoordsInfo $mast
+     * @param CoordsInfoCollection $allShips
+     * @param CoordsInfoCollection $allShots
+     * @return bool
      * @throws InvalidCoordinatesException
      */
-    protected function checkSunk(CoordsInfo $coords, array $enemyShips, array $attackerShots, $direction = null)
+    public function isSunk(CoordsInfo $mast, CoordsInfoCollection $allShips, CoordsInfoCollection $allShots)
     {
-        $checkSunk = true;
-
-        $sidePositions = $coords->getSidePositions();
+        $sidePositions = $mast->getSidePositions();
         // try to find a mast which hasn't been hit
-        foreach ($sidePositions as $key => $sidePosition) {
-            // if no coordinate on this side (end of the board) or direction is specified,
-            // but it's not the specified one
-            if ($sidePosition === null || ($direction !== null && $direction !== $key)) {
-                continue;
-            }
-
-            $sideCoords = $sidePosition->getCoords();
-            $ship = array_search($sideCoords, $enemyShips);
-            $shot = array_search($sideCoords, $attackerShots);
-
-            // if there's a mast there and it's been hit, check this direction for more masts
-            if ($ship !== false && $shot !== false) {
-                $checkSunk = $this->checkSunk($sidePosition, $enemyShips, $attackerShots, $key);
-            } elseif ($ship !== false) {
-                // if mast hasn't been hit, the the ship can't be sunk
-                $checkSunk = false;
-            }
-
-
-            if ($checkSunk === false) {
-                break;
+        foreach ($sidePositions as $offset => $sidePosition) {
+            if ($sidePosition
+                && $this->remainingMastInDirectionExists($sidePosition, $allShips, $allShots, $offset)
+            ) {
+                return false;
             }
         }
 
-        return $checkSunk;
+        return true;
+    }
+
+    /**
+     * @param CoordsInfo $mast
+     * @param CoordsInfoCollection $allShips
+     * @param CoordsInfoCollection $allShots
+     * @param string $offset
+     * @return bool
+     */
+    private function remainingMastInDirectionExists(
+        CoordsInfo $mast,
+        CoordsInfoCollection $allShips,
+        CoordsInfoCollection $allShots,
+        $offset
+    ) {
+        while ($allShips->contains($mast)) {
+            if (!$allShots->contains($mast)) {
+                return true;
+            }
+            $mast = $mast->getOffsetCoords($offset);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Event $event
+     * @return CoordsInfoCollection
+     */
+    private function getAttackerShots(Event $event)
+    {
+        $shotEvents = $this->eventRepository->findForGameByTypeAndPlayer(
+            $event->getGame(),
+            Event::TYPE_SHOT,
+            $event->getPlayer()
+        );
+
+        $attackerShots = [];
+        foreach ($shotEvents as $shotEvent) {
+            $attackerShots[] = $shotEvent->getValue();
+        }
+
+        return new CoordsInfoCollection($attackerShots);
     }
 }

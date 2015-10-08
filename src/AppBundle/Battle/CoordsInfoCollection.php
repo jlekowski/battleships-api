@@ -35,6 +35,7 @@ class CoordsInfoCollection implements \Countable, \IteratorAggregate
 
     /**
      * @todo maybe always return object with isEmpty() === true instead of null?
+     * @todo cache all coords? But what if appended?
      * @param CoordsInfo $searchedCoords
      * @return bool
      */

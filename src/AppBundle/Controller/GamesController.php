@@ -103,14 +103,14 @@ class GamesController extends FOSRestController
      * @param Request $request
      * @param Game $game
      *
-     * @Security("game.belongsToCurrentUser()")
+     * @Security("game.belongsToCurrentUser() && is_granted('patch', game)")
      */
     public function patchGameAction(Request $request, Game $game)
     {
         $this->updateGameFromArray($game, $request->request->all());
 
-        $this->entityManager->persist($game);
-        $this->entityManager->flush();
+//        $this->entityManager->persist($game);
+//        $this->entityManager->flush();
     }
 
     /**

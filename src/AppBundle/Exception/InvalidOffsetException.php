@@ -4,7 +4,7 @@ namespace AppBundle\Exception;
 
 class InvalidOffsetException extends InvalidCoordinatesException
 {
-    protected $code = 163;
+    protected $code = 162;
 
     /**
      * @param string $offset
