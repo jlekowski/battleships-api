@@ -4,7 +4,9 @@ namespace AppBundle\EventListener;
 
 use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
+use AppBundle\Exception\DuplicatedEventTypeException;
 use AppBundle\Exception\InvalidEventTypeException;
 use AppBundle\Exception\InvalidShipsException;
 use AppBundle\Exception\UnexpectedEventTypeException;
@@ -24,16 +26,23 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     protected $tokenStorage;
 
     /**
+     * @var EventRepository
+     */
+    protected $eventRepository;
+
+    /**
      * @var ContainerInterface
      */
     protected $container;
 
     /**
      * @param TokenStorage $tokenStorage
+     * @param EventRepository $eventRepository
      */
-    public function __construct(TokenStorage $tokenStorage)
+    public function __construct(TokenStorage $tokenStorage, EventRepository $eventRepository)
     {
         $this->tokenStorage = $tokenStorage;
+        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -124,23 +133,46 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     }
 
     /**
+     * @todo here validate only allowed types to be inserted - type available from request check in GameVoter
      * @param Event $event
      * @throws InvalidEventTypeException
      */
     private function handleEventCreate(Event $event)
     {
-        switch ($event->getType()) {
+        $eventType = $event->getType();
+        switch ($eventType) {
             case Event::TYPE_CHAT:
             case Event::TYPE_SHOT:
-            case Event::TYPE_START_GAME:
                 break;
 
             case Event::TYPE_JOIN_GAME:
+            case Event::TYPE_START_GAME:
+                if ($this->hasPlayerAlreadyCreatedEvent($event->getGame(), $eventType)) {
+                    throw new DuplicatedEventTypeException($eventType);
+                }
+                break;
+
             case Event::TYPE_NAME_UPDATE:
-                throw new UnexpectedEventTypeException($event->getType());
+                throw new UnexpectedEventTypeException($eventType);
 
             default:
-                throw new InvalidEventTypeException($event->getType());
+                throw new InvalidEventTypeException($eventType);
         }
+    }
+
+    /**
+     * @param Game $game
+     * @param string $eventType
+     * @return bool
+     */
+    private function hasPlayerAlreadyCreatedEvent(Game $game, $eventType)
+    {
+        $events = $this->eventRepository->findForGameByTypeAndPlayer(
+            $game,
+            $eventType,
+            $game->getPlayerNumber()
+        );
+
+        return !$events->isEmpty();
     }
 }

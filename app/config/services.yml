@@ -23,20 +23,20 @@ services:
         arguments: ['AppBundle:Event']
 
     app.controller.game:
-        class: AppBundle\Controller\GamesController
+        class: AppBundle\Controller\GameController
         arguments: [@doctrine.orm.default_entity_manager, @app.entity.game_repository]
         calls:
             - [setContainer, [@service_container]]
 
     app.controller.event:
-        class: AppBundle\Controller\EventsController
+        class: AppBundle\Controller\EventController
         arguments: [@doctrine.orm.default_entity_manager, @app.entity.event_repository, @app.battle.battle_manager]
         calls:
             - [setContainer, [@service_container]]
 
     app.event_listener.entity_subscriber:
         class: AppBundle\EventListener\EntitySubscriber
-        arguments: [@security.token_storage]
+        arguments: [@security.token_storage, @app.entity.event_repository]
         calls:
             - [setContainer, [@service_container]]
         tags:
@@ -48,7 +48,7 @@ services:
 
     app.security.game_voter:
         class: AppBundle\Security\GameVoter
-        arguments: [@request_stack, @app.battle.battle_manager]
+        arguments: [@request_stack, @app.battle.battle_manager, @app.entity.event_repository]
         public: false
         tags:
            - { name: security.voter }

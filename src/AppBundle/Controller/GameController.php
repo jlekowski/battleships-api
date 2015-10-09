@@ -6,7 +6,9 @@ use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use AppBundle\Http\Headers;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Request\ParamFetcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +35,7 @@ use Symfony\Component\HttpFoundation\Response;
 // * /games/{id/hash}/shots GET
 // * /games/{id/hash}/shots POST
  */
-class GamesController extends FOSRestController
+class GameController extends FOSRestController
 {
     /**
      * @var EntityManagerInterface
@@ -69,9 +71,14 @@ class GamesController extends FOSRestController
     /**
      * @param Request $request
      * @return Response
+     *
+     * @QueryParam(name="playerName", description="Player's name", allowBlank=false, strict=true, nullable=false)
      */
-    public function postGameAction(Request $request)
+    public function postGameAction(ParamFetcher $paramFetcher)
     {
+        echo "<pre>";
+        var_dump($paramFetcher->get('playerName'));
+        exit;
         $requestBag = $request->request;
 
         $player1Hash = hash('md5', uniqid(mt_rand(), true));
@@ -87,8 +94,8 @@ class GamesController extends FOSRestController
             ->setPlayer2Ships($requestBag->get('otherShips', []))
         ;
 
-        $this->entityManager->persist($game);
-        $this->entityManager->flush();
+//        $this->entityManager->persist($game);
+//        $this->entityManager->flush();
 
         $view = $this
             ->routeRedirectView('api_v1_get_game', ['id' => $game->getId()])
@@ -109,8 +116,8 @@ class GamesController extends FOSRestController
     {
         $this->updateGameFromArray($game, $request->request->all());
 
-//        $this->entityManager->persist($game);
-//        $this->entityManager->flush();
+        $this->entityManager->persist($game);
+        $this->entityManager->flush();
     }
 
     /**

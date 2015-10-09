@@ -89,6 +89,7 @@ fos_rest:
 #        array_normalizer: fos_rest.normalizer.camel_keys
 #        decoders:
 #            json: fos_rest.decoder.json
+    param_fetcher_listener: true
     format_listener:
         rules:
             # html requires creating a template

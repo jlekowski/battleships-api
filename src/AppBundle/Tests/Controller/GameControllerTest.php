@@ -4,7 +4,7 @@ namespace AppBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class GamesControllerTest extends WebTestCase
+class GameControllerTest extends WebTestCase
 {
     public function testGetGameAction()
     {

@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @todo maybe validate params http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
  */
-class EventsController extends FOSRestController
+class EventController extends FOSRestController
 {
     /**
      * @var EntityManagerInterface
@@ -88,7 +88,7 @@ class EventsController extends FOSRestController
      * @return Response
      * @throws \Exception
      *
-     * @Security("game.belongsToCurrentUser()")
+     * @Security("game.belongsToCurrentUser() && is_granted('postEvent', game)")
      */
     public function postEventAction(Request $request, Game $game)
     {
