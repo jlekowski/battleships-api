@@ -110,7 +110,7 @@ class GameController extends FOSRestController
      * @param Request $request
      * @param Game $game
      *
-     * @Security("game.belongsToCurrentUser() && is_granted('patch', game)")
+     * @Security("game.belongsToCurrentUser()")
      */
     public function patchGameAction(Request $request, Game $game)
     {
@@ -132,9 +132,9 @@ class GameController extends FOSRestController
                     $game->setPlayerName($value);
                     break;
 
-                case 'playerShips':
-                    $game->setPlayerShips($value);
-                    break;
+//                case 'playerShips':
+//                    $game->setPlayerShips($value);
+//                    break;
             }
         }
     }

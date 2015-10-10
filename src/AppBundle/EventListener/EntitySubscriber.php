@@ -3,6 +3,7 @@
 namespace AppBundle\EventListener;
 
 use AppBundle\Battle\BattleManager;
+use AppBundle\Battle\CoordsInfo;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
@@ -26,23 +27,16 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     protected $tokenStorage;
 
     /**
-     * @var EventRepository
-     */
-    protected $eventRepository;
-
-    /**
      * @var ContainerInterface
      */
     protected $container;
 
     /**
      * @param TokenStorage $tokenStorage
-     * @param EventRepository $eventRepository
      */
-    public function __construct(TokenStorage $tokenStorage, EventRepository $eventRepository)
+    public function __construct(TokenStorage $tokenStorage)
     {
         $this->tokenStorage = $tokenStorage;
-        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -106,16 +100,6 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     }
 
     /**
-     * BattleManager object can't be injected during class instantiation because of circular reference
-     *
-     * @return BattleManager
-     */
-    public function getBattleManager()
-    {
-        return $this->container->get('app.battle.battle_manager');
-    }
-
-    /**
      * @param array $changes
      * @throws InvalidShipsException
      */
@@ -142,7 +126,11 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
         $eventType = $event->getType();
         switch ($eventType) {
             case Event::TYPE_CHAT:
+                break;
+
             case Event::TYPE_SHOT:
+                // @todo maybe a better validation?
+                new CoordsInfo($event->getValue());
                 break;
 
             case Event::TYPE_JOIN_GAME:
@@ -167,12 +155,32 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
      */
     private function hasPlayerAlreadyCreatedEvent(Game $game, $eventType)
     {
-        $events = $this->eventRepository->findForGameByTypeAndPlayer(
+        $events = $this->getEventRepository()->findForGameByTypeAndPlayer(
             $game,
             $eventType,
             $game->getPlayerNumber()
         );
 
         return !$events->isEmpty();
+    }
+
+    /**
+     * BattleManager object can't be injected during class instantiation because of circular reference
+     *
+     * @return BattleManager
+     */
+    private function getBattleManager()
+    {
+        return $this->container->get('app.battle.battle_manager');
+    }
+
+    /**
+     * EventRepository object can't be injected during class instantiation because of circular reference
+     *
+     * @return EventRepository
+     */
+    private function getEventRepository()
+    {
+        return $this->container->get('app.entity.event_repository');
     }
 }

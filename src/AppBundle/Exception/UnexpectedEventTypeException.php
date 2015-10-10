@@ -4,7 +4,7 @@ namespace AppBundle\Exception;
 
 class UnexpectedEventTypeException extends InvalidEventTypeException
 {
-    protected $code = 171;
+    protected $code = 181;
 
     /**
      * @param string $eventTypeReceived

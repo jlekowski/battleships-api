@@ -4,7 +4,7 @@ namespace AppBundle\Exception;
 
 class DuplicatedEventTypeException extends InvalidEventTypeException
 {
-    protected $code = 172;
+    protected $code = 182;
 
     /**
      * @param string $eventType

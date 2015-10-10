@@ -4,7 +4,7 @@ namespace AppBundle\Exception;
 
 class InvalidEventTypeException extends \InvalidArgumentException
 {
-    protected $code = 170;
+    protected $code = 180;
 
     /**
      * @param string $eventType
