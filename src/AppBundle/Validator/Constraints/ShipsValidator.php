@@ -1,11 +1,40 @@
 <?php
 
-namespace AppBundle\Battle;
+namespace AppBundle\Validator\Constraints;
 
+use AppBundle\Battle\CoordsInfo;
+use AppBundle\Battle\CoordsInfoCollection;
 use AppBundle\Exception\InvalidShipsException;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class ShipValidator
+/**
+ * @todo take a look at refactoring maybe
+ * @Annotation
+ */
+class ShipsValidator extends ConstraintValidator
 {
+    /**
+     * @inheritdoc
+     */
+    public function validate($value, Constraint $constraint)
+    {
+        if (!$constraint instanceof Ships) {
+            throw new UnexpectedTypeException($constraint, sprintf('%s\Ships', __NAMESPACE__));
+        }
+
+        if (count($value) === 0) {
+            return;
+        }
+
+        try {
+            $this->validateShips($value);
+        } catch (InvalidShipsException $e) {
+            $this->context->addViolation($e->getMessage());
+        }
+    }
+
     /**
      * Checks if ships are set correctly
      *
@@ -15,7 +44,7 @@ class ShipValidator
      * @param array $ships Ships set by the player (Example: ['A1','B4','J10',...])
      * @throws InvalidShipsException
      */
-    public function validateAll(array $ships)
+    protected function validateShips(array $ships)
     {
         $shipsCollection = new CoordsInfoCollection($ships);
         $shipsCollection->sort();

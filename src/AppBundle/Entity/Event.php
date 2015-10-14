@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
@@ -42,6 +43,7 @@ class Event
      * @var integer
      *
      * @ORM\Column(name="player", type="smallint")
+     * @Assert\Choice({1,2})
      */
     private $player;
 
@@ -49,6 +51,9 @@ class Event
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
+     * @Assert\Choice(
+     *     {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE}
+     * )
      */
     private $type;
 

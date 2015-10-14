@@ -6,11 +6,10 @@ use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use AppBundle\Http\Headers;
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 // @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
@@ -69,36 +68,34 @@ class GameController extends FOSRestController
     }
 
     /**
-     * @param Request $request
+     * @param ParamFetcher $paramFetcher
      * @return Response
      *
-     * @QueryParam(name="playerName", description="Player's name", allowBlank=false, strict=true, nullable=false)
+     * @RequestParam(name="playerName", requirements="\S.*", allowBlank=false)
+     * @RequestParam(name="otherName", requirements="\S.*", allowBlank=false, default="Player 2")
+     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
+     * @RequestParam(name="otherShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
      */
     public function postGameAction(ParamFetcher $paramFetcher)
     {
-        echo "<pre>";
-        var_dump($paramFetcher->get('playerName'));
-        exit;
-        $requestBag = $request->request;
-
         $player1Hash = hash('md5', uniqid(mt_rand(), true));
         $player2Hash = hash('md5', uniqid(mt_rand(), true));
 
         $game = new Game();
         $game
             ->setPlayer1Hash($player1Hash)
-            ->setPlayer1Name($requestBag->get('playerName'))
-            ->setPlayer1Ships($requestBag->get('playerShips', []))
+            ->setPlayer1Name($paramFetcher->get('playerName'))
+            ->setPlayer1Ships($paramFetcher->get('playerShips'))
             ->setPlayer2Hash($player2Hash)
-            ->setPlayer2Name($requestBag->get('otherName', 'Player 2'))
-            ->setPlayer2Ships($requestBag->get('otherShips', []))
+            ->setPlayer2Name($paramFetcher->get('otherName'))
+            ->setPlayer2Ships($paramFetcher->get('otherShips'))
         ;
 
-//        $this->entityManager->persist($game);
-//        $this->entityManager->flush();
+        $this->entityManager->persist($game);
+        $this->entityManager->flush();
 
         $view = $this
-            ->routeRedirectView('api_v1_get_game', ['id' => $game->getId()])
+            ->routeRedirectView('api_v1_get_game', ['game' => $game->getId()])
             ->setHeader(Headers::GAME_TOKEN, $game->getPlayer1Hash()); // @todo To be removed once there's real authentication with Api-Token
 
         return $this->handleView($view);
@@ -107,14 +104,16 @@ class GameController extends FOSRestController
     /**
      * @todo Think about multiple patching (207 response status) http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
      *
-     * @param Request $request
+     * @param ParamFetcher $paramFetcher
      * @param Game $game
      *
      * @Security("game.belongsToCurrentUser()")
+     * @RequestParam(name="playerName", requirements="\S.*", allowBlank=false, nullable=true)
+     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
      */
-    public function patchGameAction(Request $request, Game $game)
+    public function patchGameAction(ParamFetcher $paramFetcher, Game $game)
     {
-        $this->updateGameFromArray($game, $request->request->all());
+        $this->updateGameFromArray($game, $paramFetcher->all());
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
@@ -126,15 +125,15 @@ class GameController extends FOSRestController
      */
     protected function updateGameFromArray(Game $game, array $params)
     {
-        foreach ($params as $param => $value) {
-            switch ($param) {
+        foreach ($params as $paramName => $param) {
+            switch ($paramName) {
                 case 'playerName':
-                    $game->setPlayerName($value);
+                    $game->setPlayerName($param);
                     break;
 
-//                case 'playerShips':
-//                    $game->setPlayerShips($value);
-//                    break;
+                case 'playerShips':
+                    $game->setPlayerShips($param);
+                    break;
             }
         }
     }

@@ -3,11 +3,10 @@
 namespace AppBundle\EventListener;
 
 use AppBundle\Battle\BattleManager;
-use AppBundle\Battle\CoordsInfo;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
-use AppBundle\Exception\DuplicatedEventTypeException;
+use AppBundle\Exception\GameFlowException;
+use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidEventTypeException;
 use AppBundle\Exception\InvalidShipsException;
 use AppBundle\Exception\UnexpectedEventTypeException;
@@ -18,6 +17,7 @@ use Doctrine\ORM\Events;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
 {
@@ -27,16 +27,23 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     protected $tokenStorage;
 
     /**
+     * @var ValidatorInterface
+     */
+    protected $validator;
+
+    /**
      * @var ContainerInterface
      */
     protected $container;
 
     /**
      * @param TokenStorage $tokenStorage
+     * @param ValidatorInterface $validator
      */
-    public function __construct(TokenStorage $tokenStorage)
+    public function __construct(TokenStorage $tokenStorage, ValidatorInterface $validator)
     {
         $this->tokenStorage = $tokenStorage;
+        $this->validator = $validator;
     }
 
     /**
@@ -62,7 +69,12 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
         $changes = $unitOfWork->getEntityChangeSet($entity);
 
         if ($entity instanceof Game) {
-            $this->handleGameChanges($changes);
+            $errors = $this->validator->validate($entity, null, ['playerShips']);
+            echo "<pre>";
+            var_dump($errors->count(), $errors);
+            exit;
+            //@todo maybe validate only selected groups (e.g. ships)
+//            $this->handleGameUpdate($changes);
         }
     }
 
@@ -74,6 +86,13 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     {
         $entity = $eventArgs->getEntity();
         if ($entity instanceof Event) {
+            $errors = $this->validator->validate($entity);
+            echo "<pre>";
+            var_dump($errors->count());
+            foreach ($errors as $error) {
+                var_dump($error->getMessage(), $error->getCode(), $error->getInvalidValue());
+            }
+            exit;
             $this->handleEventCreate($entity);
         }
     }
@@ -103,7 +122,7 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
      * @param array $changes
      * @throws InvalidShipsException
      */
-    private function handleGameChanges(array $changes)
+    private function handleGameUpdate(array $changes)
     {
         foreach ($changes as $property => $diff) {
             switch ($property) {
@@ -120,6 +139,8 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
      * @todo here validate only allowed types to be inserted - type available from request check in GameVoter
      * @param Event $event
      * @throws InvalidEventTypeException
+     * @throws GameFlowException
+     * @throws InvalidCoordinatesException
      */
     private function handleEventCreate(Event $event)
     {
@@ -129,15 +150,13 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
                 break;
 
             case Event::TYPE_SHOT:
-                // @todo maybe a better validation?
-                new CoordsInfo($event->getValue());
+                // @todo maybe a different place + http code for the exception
+                $this->getBattleManager()->validateShootingNow($event);
                 break;
 
             case Event::TYPE_JOIN_GAME:
             case Event::TYPE_START_GAME:
-                if ($this->hasPlayerAlreadyCreatedEvent($event->getGame(), $eventType)) {
-                    throw new DuplicatedEventTypeException($eventType);
-                }
+                $this->getBattleManager()->validateAddingUniqueEvent($event);
                 break;
 
             case Event::TYPE_NAME_UPDATE:
@@ -149,22 +168,6 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     }
 
     /**
-     * @param Game $game
-     * @param string $eventType
-     * @return bool
-     */
-    private function hasPlayerAlreadyCreatedEvent(Game $game, $eventType)
-    {
-        $events = $this->getEventRepository()->findForGameByTypeAndPlayer(
-            $game,
-            $eventType,
-            $game->getPlayerNumber()
-        );
-
-        return !$events->isEmpty();
-    }
-
-    /**
      * BattleManager object can't be injected during class instantiation because of circular reference
      *
      * @return BattleManager
@@ -172,15 +175,5 @@ class EntitySubscriber implements EventSubscriber, ContainerAwareInterface
     private function getBattleManager()
     {
         return $this->container->get('app.battle.battle_manager');
-    }
-
-    /**
-     * EventRepository object can't be injected during class instantiation because of circular reference
-     *
-     * @return EventRepository
-     */
-    private function getEventRepository()
-    {
-        return $this->container->get('app.entity.event_repository');
     }
 }

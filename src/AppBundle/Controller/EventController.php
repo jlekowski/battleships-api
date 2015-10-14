@@ -7,7 +7,6 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
-use AppBundle\Exception\GameFlowException;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -87,7 +86,6 @@ class EventController extends FOSRestController
      * @param Request $request
      * @param Game $game
      * @return Response
-     * @throws \Exception
      *
      * @Security("game.belongsToCurrentUser()")
      */
@@ -95,23 +93,6 @@ class EventController extends FOSRestController
     {
         $requestBag = $request->request;
         $eventType = $requestBag->get('type');
-
-        // @todo maybe a different place + http code for the exception
-        if ($eventType === Event::TYPE_SHOT) {
-            $hasOtherStarted = !$this->eventRepository->findForGameByTypeAndPlayer(
-                $game,
-                Event::TYPE_START_GAME,
-                $game->getOtherNumber()
-            )->isEmpty();
-            if (!$hasOtherStarted) {
-                throw new GameFlowException('Other player has not started yet');
-            }
-
-            $isPlayerTurn = $this->battleManager->whoseTurn($game) === $game->getPlayerNumber();
-            if (!$isPlayerTurn) {
-                throw new GameFlowException('It\'s other player\'s turn');
-            }
-        }
 
         $event = new Event();
         $event
