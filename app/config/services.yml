@@ -37,14 +37,30 @@ services:
     app.event_listener.entity_subscriber:
         class: AppBundle\EventListener\EntitySubscriber
         arguments: [@security.token_storage, @validator]
-        calls:
-            - [setContainer, [@service_container]]
         tags:
             - { name: doctrine.event_subscriber }
 
     app.battle.battle_manager:
         class: AppBundle\Battle\BattleManager
         arguments: [@app.entity.event_repository]
+
+    app.validator.only_before_start_validator:
+        class: AppBundle\Validator\Constraints\OnlyBeforeStartValidator
+        arguments: [@app.entity.event_repository]
+        tags:
+            - { name: validator.constraint_validator, alias: only_before_start_validator }
+
+    app.validator.unique_event:
+        class: AppBundle\Validator\Constraints\UniqueEventValidator
+        arguments: [@app.entity.event_repository]
+        tags:
+            - { name: validator.constraint_validator, alias: unique_event }
+
+    app.validator.is_allowed_to_shoot:
+        class: AppBundle\Validator\Constraints\IsAllowedToShootValidator
+        arguments: [@app.entity.event_repository]
+        tags:
+            - { name: validator.constraint_validator, alias: is_allowed_to_shoot }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

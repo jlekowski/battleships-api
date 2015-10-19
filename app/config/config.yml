@@ -108,14 +108,11 @@ fos_rest:
     exception:
         enabled: true
         codes:
-#            'AppBundle\Exception\Exception': HTTP_NOT_FOUND
-#            'AppBundle\Exception\Exception': 500
 #            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': 405
 #            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
 #            'Doctrine\DBAL\DBALException': 501
             'AppBundle\Exception\InvalidShipsException': HTTP_UNPROCESSABLE_ENTITY
         messages:
-#            'AppBundle\Exception\Exception': true
 #            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': false
 #            'Doctrine\DBAL\DBALException': true
             'AppBundle\Exception\InvalidShipsException': true

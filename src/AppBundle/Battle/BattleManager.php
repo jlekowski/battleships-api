@@ -4,11 +4,7 @@ namespace AppBundle\Battle;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
-use AppBundle\Entity\Game;
-use AppBundle\Exception\DuplicatedEventTypeException;
-use AppBundle\Exception\GameFlowException;
 use AppBundle\Exception\InvalidCoordinatesException;
-use AppBundle\Exception\InvalidShipsException;
 use AppBundle\Exception\UnexpectedEventTypeException;
 
 class BattleManager
@@ -56,77 +52,6 @@ class BattleManager
         }
 
         return $result;
-    }
-
-    /**
-     * Finds which player's turn it is
-     * @param Game $game
-     * @return int
-     */
-    public function whoseTurn(Game $game)
-    {
-        $event = $this->eventRepository->findLastForGameByType($game, Event::TYPE_SHOT);
-
-        if (empty($event)) {
-            $whoseTurn = 1;
-        } elseif ($event->getPlayer() === $game->getPlayerNumber()) {
-            $whoseTurn = in_array($event->getValue(), $game->getOtherShips())
-                ? $game->getPlayerNumber()
-                : $game->getOtherNumber();
-        } else {
-            $whoseTurn = in_array($event->getValue(), $game->getPlayerShips())
-                ? $game->getOtherNumber()
-                : $game->getPlayerNumber();
-        }
-
-        return $whoseTurn;
-    }
-
-    /**
-     * @todo remove this method and just use ShipsValidator
-     * @param array $ships
-     * @throws InvalidShipsException
-     */
-    public function validateShips(array $ships)
-    {
-        $shipValidator = new ShipValidator();
-        $shipValidator->validateAll($ships);
-    }
-
-    /**
-     * @param Event $event
-     * @throws GameFlowException
-     * @throws InvalidCoordinatesException
-     */
-    public function validateShootingNow(Event $event)
-    {
-        $game = $game = $event->getGame();
-        $hasOtherStarted = $this->doesEventExistForPlayer($game, Event::TYPE_START_GAME, $game->getOtherNumber());
-        if (!$hasOtherStarted) {
-            throw new GameFlowException('Other player has not started yet');
-        }
-
-        $isPlayerTurn = $this->whoseTurn($game) === $game->getPlayerNumber();
-        if (!$isPlayerTurn) {
-            throw new GameFlowException('It\'s other player\'s turn');
-        }
-
-        // @todo some better way to validate
-        new CoordsInfo($event->getValue());
-    }
-
-    /**
-     * @param Event $event
-     * @throws DuplicatedEventTypeException
-     */
-    public function validateAddingUniqueEvent(Event $event)
-    {
-        $game = $event->getGame();
-        $eventExists = $this->doesEventExistForPlayer($game, $event->getType(), $game->getPlayerNumber());
-
-        if ($eventExists) {
-            throw new DuplicatedEventTypeException($event->getType());
-        }
     }
 
     /**
@@ -194,18 +119,5 @@ class BattleManager
         }
 
         return new CoordsInfoCollection($attackerShots);
-    }
-
-    /**
-     * @param Game $game
-     * @param string $eventType
-     * @param int $playerNumber
-     * @return bool
-     */
-    private function doesEventExistForPlayer(Game $game, $eventType, $playerNumber)
-    {
-        $events = $this->eventRepository->findForGameByTypeAndPlayer($game, $eventType, $playerNumber);
-
-        return !$events->isEmpty();
     }
 }

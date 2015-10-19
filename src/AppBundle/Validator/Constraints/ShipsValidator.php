@@ -28,11 +28,7 @@ class ShipsValidator extends ConstraintValidator
             return;
         }
 
-        try {
-            $this->validateShips($value);
-        } catch (InvalidShipsException $e) {
-            $this->context->addViolation($e->getMessage());
-        }
+        $this->validateShips($value);
     }
 
     /**

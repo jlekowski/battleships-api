@@ -42,3 +42,10 @@ php bin/console doctrine:schema:validate
 - add unit tests (and e2e from command?)
 - caching (YML file at least, but maybe also redis?)
 - improve REST and DB structure, authorisation
+
+# DB
+- game (id, user1_id, user2_id, user1_ships, user2_ships, timestamp)
+- user table (id, name, email)
+- shot table (id, game_id, user_id, coords, result, timestamp)
+- chat table (id, game_id, user_id, text, timestamp)
+- event/log table (id, game_id, user_id, type, value, timestamp)

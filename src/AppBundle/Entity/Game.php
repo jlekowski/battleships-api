@@ -8,8 +8,8 @@ use AppBundle\Validator\Constraints as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
@@ -56,7 +56,6 @@ class Game
      * @var array
      *
      * @ORM\Column(name="player1_ships", type="simple_array", nullable=true)
-     * @AppAssert\Ships()
      */
     private $player1Ships;
 
@@ -79,7 +78,6 @@ class Game
      * @var array
      *
      * @ORM\Column(name="player2_ships", type="simple_array", nullable=true)
-     * @AppAssert\Ships()
      */
     private $player2Ships;
 
@@ -327,6 +325,8 @@ class Game
 
     /**
      * @Serializer\VirtualProperty
+     * @AppAssert\Ships(groups={"Default", "update"})
+     * @AppAssert\OnlyBeforeStart(groups={"update"})
      *
      * @return array
      * @throws \RuntimeException
@@ -369,6 +369,8 @@ class Game
     }
 
     /**
+     * @AppAssert\Ships()
+     *
      * @return array
      * @throws \RuntimeException
      */
