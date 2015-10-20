@@ -132,10 +132,10 @@ class EventController extends FOSRestController
         $this->entityManager->persist($event);
         $this->entityManager->flush();
 
-        $view = $this->routeRedirectView(
-            'api_v1_get_game_event',
-            ['game' => $game->getId(), 'event' => $event->getId()]
-        )->setData($data);
+        $view = $this
+            ->routeRedirectView('api_v1_get_game_event', ['game' => $game->getId(), 'event' => $event->getId()])
+            ->setData($data)
+        ;
 
         return $this->handleView($view);
     }

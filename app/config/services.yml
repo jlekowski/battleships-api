@@ -34,6 +34,11 @@ services:
         calls:
             - [setContainer, [@service_container]]
 
+    app.event_listener.response_listener:
+        class: AppBundle\EventListener\ResponseListener
+        tags:
+           - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+
     app.event_listener.entity_subscriber:
         class: AppBundle\EventListener\EntitySubscriber
         arguments: [@security.token_storage, @validator]
