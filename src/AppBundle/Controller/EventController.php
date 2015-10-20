@@ -9,10 +9,13 @@ use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Request\ParamFetcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @todo maybe validate params http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
@@ -67,40 +70,64 @@ class EventController extends FOSRestController
     }
 
     /**
-     * @todo maybe validate event type (gt too?)?
-     * @param Request $request
+     * @param ParamFetcher $paramFetcher
      * @param Game $game
      * @return Collection
      *
      * @Security("game.belongsToCurrentUser()")
+     * @QueryParam(
+     *     name="type",
+     *     requirements=@Assert\Choice(
+     *         {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE}
+     *     ),
+     *     nullable=true,
+     *     strict=true
+     * )
+     * @QueryParam(name="gt", requirements="\d+", nullable=true, strict=true)
      */
-    public function getEventsAction(Request $request, Game $game)
+    public function getEventsAction(ParamFetcher $paramFetcher, Game $game)
     {
-        $gt = $request->query->get('gt');
-        $eventType = $request->query->get('type');
-
-        return $this->eventRepository->findForGameByType($game, $eventType, $gt);
+        return $this->eventRepository->findForGameByType($game, $paramFetcher->get('type'), $paramFetcher->get('gt'));
     }
 
     /**
-     * @param Request $request
+     * @param ParamFetcher $paramFetcher
      * @param Game $game
      * @return Response
      *
      * @Security("game.belongsToCurrentUser()")
+     * @RequestParam(
+     *     name="type",
+     *     requirements=@Assert\Choice(
+     *         {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME}
+     *     ),
+     *     allowBlank=false
+     * )
+     * @RequestParam(name="value", requirements="\S.*", allowBlank=false, default=true)
      */
-    public function postEventAction(Request $request, Game $game)
+    public function postEventAction(ParamFetcher $paramFetcher, Game $game)
     {
-        $requestBag = $request->request;
-        $eventType = $requestBag->get('type');
-
         $event = new Event();
         $event
             ->setGame($game)
             ->setPlayer($game->getPlayerNumber())
-            ->setType($eventType)
-            ->setValue($requestBag->get('value', true))
+            ->setType($paramFetcher->get('type'))
+            ->setValue($paramFetcher->get('value'))
         ;
+
+        $data = null;
+        switch ($event->getType()) {
+            case Event::TYPE_CHAT:
+                $event->applyCurrentTimestamp();
+                $data = ['timestamp' => $event->getTimestamp()];
+                break;
+
+            case Event::TYPE_SHOT:
+                $shotResult = $this->battleManager->getShotResult($event);
+                $event->setValue(implode('|', [$event->getValue(), $shotResult]));
+                $data = ['result' => $shotResult];
+                break;
+        }
 
         $this->entityManager->persist($event);
         $this->entityManager->flush();
@@ -108,18 +135,7 @@ class EventController extends FOSRestController
         $view = $this->routeRedirectView(
             'api_v1_get_game_event',
             ['game' => $game->getId(), 'event' => $event->getId()]
-        );
-
-        switch ($event->getType()) {
-            case Event::TYPE_CHAT:
-                $view->setData(['timestamp' => $event->getTimestamp()]);
-                break;
-
-            case Event::TYPE_SHOT:
-                $shotResult = $this->battleManager->getShotResult($event);
-                $view->setData(['result' => $shotResult]);
-                break;
-        }
+        )->setData($data);
 
         return $this->handleView($view);
     }

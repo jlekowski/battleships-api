@@ -69,7 +69,6 @@ class EntitySubscriber implements EventSubscriber
 
     /**
      * @param LifecycleEventArgs $eventArgs
-     * @throws \Exception
      */
     public function postLoad(LifecycleEventArgs $eventArgs)
     {

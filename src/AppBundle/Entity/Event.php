@@ -66,7 +66,7 @@ class Event
      *
      * @ORM\Column(name="value", type="text")
      */
-    private $value;
+    private $value = true;
 
     /**
      * @var \DateTime
@@ -207,6 +207,8 @@ class Event
      */
     public function applyCurrentTimestamp()
     {
-        $this->setTimestamp(new \DateTime());
+        if (!$this->getTimestamp()) {
+            $this->setTimestamp(new \DateTime());
+        }
     }
 }

@@ -22,6 +22,11 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class Game
 {
     /**
+     * @var bool
+     */
+    private $isNew;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
@@ -94,13 +99,21 @@ class Game
     private $playerNumber;
 
     /**
+     * @var string
+     */
+    private $userHash;
+
+    /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
 
-
-    public function __construct()
+    /**
+     * @param bool $isNew
+     */
+    public function __construct($isNew = false)
     {
+        $this->isNew = $isNew;
         $this->events = new ArrayCollection();
     }
 
@@ -288,7 +301,9 @@ class Game
      */
     public function applyCurrentTimestamp()
     {
-        $this->setTimestamp(new \DateTime());
+        if (!$this->getTimestamp()) {
+            $this->setTimestamp(new \DateTime());
+        }
     }
 
     /**
@@ -392,7 +407,7 @@ class Game
             if (!$this->belongsToCurrentUser()) {
                 throw new IncorrectResourceException('The game does not belong to the current user');
             }
-            $this->playerNumber = $this->getUser()->getPlayerHash() === $this->getPlayer2Hash() ? 2 : 1;
+            $this->playerNumber = $this->getUserHash() === $this->getPlayer2Hash() ? 2 : 1;
         }
 
         return $this->playerNumber;
@@ -425,20 +440,38 @@ class Game
      */
     public function belongsToCurrentUser()
     {
-        return in_array($this->getUser()->getPlayerHash(), [$this->getPlayer1Hash(), $this->getPlayer2Hash()], true);
+        return in_array($this->getUserHash(), [$this->getPlayer1Hash(), $this->getPlayer2Hash()], true);
+    }
+
+    /**
+     * @return string
+     * @throws UserNotFoundException
+     */
+    private function getUserHash()
+    {
+        if (!$this->userHash) {
+            $this->userHash = $this->isNew ? $this->getPlayer1Hash() : $this->getUser()->getPlayerHash();
+        }
+
+        return $this->userHash;
     }
 
     /**
      * @return User
      * @throws UserNotFoundException
+     * @throws \RuntimeException
      */
     private function getUser()
     {
+        if (!$this->tokenStorage) {
+            throw new \RuntimeException('Missing token storage');
+        }
+
         $token = $this->tokenStorage->getToken();
         if (!$token) {
             throw new UserNotFoundException('User has not been authenticated yet');
         }
 
-        return $this->tokenStorage->getToken()->getUser();
+        return $token->getUser();
     }
 }

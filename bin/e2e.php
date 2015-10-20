@@ -40,15 +40,17 @@ try {
     $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
     $response = $apiRequest->call($requestDetails);
     echo "Game Patched (player name)\n";
-    print_r($response->getJson());
+    var_dump($response->getJson());
 
+    echo "Game to be Patched (player ships)\n";
     $shipsData = new \stdClass();
     $shipsData->playerShips = ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
     $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $shipsData, 204);
     $response = $apiRequest->call($requestDetails);
     echo "Game Patched (player ships)\n";
-    print_r($response->getJson());
+    var_dump($response->getJson());
 
+    echo "Game to be Patched (chat)\n";
     $data = new \stdClass();
     $data->type = 'chat';
     $data->value = 'Test chat';
@@ -58,10 +60,33 @@ try {
     print_r($response->getJson());
 
 
+    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
+    $apiRequest->setAuthToken($otherToken);
+    $response = $apiRequest->call($requestDetails);
+    echo "Game for other\n";
+    print_r($response->getJson());
+
+    echo "Game to be Patched (other ships)\n";
+    $shipsData = new \stdClass();
+    $shipsData->playerShips = ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
+    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $shipsData, 204);
+    $response = $apiRequest->call($requestDetails);
+    echo "Game Patched (other ships)\n";
+    var_dump($response->getJson());
+
+    $data = new \stdClass();
+    $data->type = 'start_game';
+    $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);
+    $response = $apiRequest->call($requestDetails);
+    echo "Game started\n";
+    var_dump($response->getJson());
+
+
     $data = new \stdClass();
     $data->type = 'shot';
-    $data->value = 'A1';
+    $data->value = 'A10';
     $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);
+    $apiRequest->setAuthToken($gameToken);
     $response = $apiRequest->call($requestDetails);
     echo "Shot added\n";
     print_r($response->getJson());
@@ -77,12 +102,6 @@ try {
     $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
     $response = $apiRequest->call($requestDetails);
     echo "Game for player\n";
-    print_r($response->getJson());
-
-    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
-    $apiRequest->setAuthToken($otherToken);
-    $response = $apiRequest->call($requestDetails);
-    echo "Game for other\n";
     print_r($response->getJson());
 
     exit;

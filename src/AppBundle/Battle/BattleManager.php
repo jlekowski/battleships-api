@@ -30,6 +30,8 @@ class BattleManager
      * @todo maybe pass $shot and $otherShips, but then how to get shots?
      * @param Event $shotEvent
      * @return string miss|hit|sunk
+     * @throws UnexpectedEventTypeException
+     * @throws InvalidCoordinatesException
      */
     public function getShotResult(Event $shotEvent)
     {

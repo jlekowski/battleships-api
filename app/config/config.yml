@@ -1,3 +1,4 @@
+# @todo clean this and other config/yml files
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }

@@ -1,20 +1,3 @@
-app:
-    resource: '@AppBundle/Controller/'
-    type:     annotation
-    prefix:   /
-
-# @todo routing_v1.yml etc. (maybe import the correct one)
-#routing_v1:
-#    type: rest
-#    resource: "routing_v1.yml"
-games_v1:
-    resource: app.controller.game
+routing_v1:
+    resource: routing_v1.yml
     type: rest
-    prefix: /v1
-    name_prefix: api_v1_
-
-events_v1:
-    resource: app.controller.event
-    type: rest
-    parent: games_v1
-    name_prefix: api_v1_

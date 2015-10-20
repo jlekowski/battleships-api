@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
-use AppBundle\Entity\GameRepository;
 use AppBundle\Http\Headers;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 // @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
 // @todo headers for specific version?
-// @todo validation + exclusions on object properties (also depends on version)
-//      http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
-//      http://symfony.com/doc/current/bundles/FOSRestBundle/annotations-reference.html
+// @todo exclusions on object properties depends on version
 // @todo ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/
 /**
  * @todo what URI for shot? It's an update of game/{id/hash}|game/{id/hash}/shots resource and I need a result
@@ -42,18 +40,11 @@ class GameController extends FOSRestController
     protected $entityManager;
 
     /**
-     * @var GameRepository
-     */
-    protected $gameRepository;
-
-    /**
      * @param EntityManagerInterface $entityManager
-     * @param GameRepository $gameRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, GameRepository $gameRepository)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->gameRepository = $gameRepository;
     }
 
     /**
@@ -81,7 +72,7 @@ class GameController extends FOSRestController
         $player1Hash = hash('md5', uniqid(mt_rand(), true));
         $player2Hash = hash('md5', uniqid(mt_rand(), true));
 
-        $game = new Game();
+        $game = new Game(true);
         $game
             ->setPlayer1Hash($player1Hash)
             ->setPlayer1Name($paramFetcher->get('playerName'))
@@ -125,10 +116,13 @@ class GameController extends FOSRestController
      */
     protected function updateGameFromArray(Game $game, array $params)
     {
+        // non-null values only
+        $params = array_filter($params);
         foreach ($params as $paramName => $param) {
             switch ($paramName) {
                 case 'playerName':
                     $game->setPlayerName($param);
+                    $this->createNameUpdateEvent($game, $param);
                     break;
 
                 case 'playerShips':
@@ -136,5 +130,21 @@ class GameController extends FOSRestController
                     break;
             }
         }
+    }
+
+    /**
+     * @param Game $game
+     * @param string $name
+     */
+    private function createNameUpdateEvent(Game $game, $name)
+    {
+        $event = new Event();
+        $event
+            ->setGame($game)
+            ->setPlayer($game->getPlayerNumber())
+            ->setType(Event::TYPE_NAME_UPDATE)
+            ->setValue($name)
+        ;
+        $this->entityManager->persist($event);
     }
 }
