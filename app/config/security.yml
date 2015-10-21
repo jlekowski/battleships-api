@@ -18,9 +18,14 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        cors:
+            pattern: ^/(v\d+)/
+            methods: [OPTIONS]
+            security: false
+
         new_game:
             pattern: ^/(v\d+)/games$
-            methods: [POST, OPTIONS]
+            methods: [POST]
             security: false
 
         api:
