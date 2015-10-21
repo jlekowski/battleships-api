@@ -1,3 +1,7 @@
+cors:
+    resource: app.controller.cors
+    type: rest
+
 routing_v1:
     resource: routing_v1.yml
     type: rest

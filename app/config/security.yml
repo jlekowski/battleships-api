@@ -20,7 +20,7 @@ security:
 
         new_game:
             pattern: ^/(v\d+)/games$
-            methods: [POST]
+            methods: [POST, OPTIONS]
             security: false
 
         api:

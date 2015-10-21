@@ -22,6 +22,9 @@ services:
         factory: [@doctrine, getRepository]
         arguments: ['AppBundle:Event']
 
+    app.controller.cors:
+        class: AppBundle\Controller\CorsController
+
     app.controller.game:
         class: AppBundle\Controller\GameController
         arguments: [@doctrine.orm.default_entity_manager]
@@ -35,7 +38,7 @@ services:
             - [setContainer, [@service_container]]
 
     app.event_listener.response_listener:
-        class: AppBundle\EventListener\ResponseListener
+        class: AppBundle\EventListener\CorsListener
         tags:
            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
