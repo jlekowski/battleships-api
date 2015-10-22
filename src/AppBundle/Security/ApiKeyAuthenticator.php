@@ -6,10 +6,12 @@ use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterfa
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 
-class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
+class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
 {
     /**
      * @inheritdoc
@@ -52,5 +54,14 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     public function supportsToken(TokenInterface $token, $providerKey)
     {
         return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        // not to throw AuthenticationCredentialsNotFoundException and use ExceptionWrapperHandler
+        throw $exception;
     }
 }

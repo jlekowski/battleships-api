@@ -41,7 +41,7 @@ class ApiKeyUserProvider implements UserProviderInterface
         $criteria->orWhere($expr->eq('player2Hash', $apiKey));
 
         if ($this->gameRepository->matching($criteria)->isEmpty()) {
-            throw new AuthenticationException(sprintf('API Key `%s` does not exist.', $apiKey));
+            throw new AuthenticationException(sprintf('API key `%s` does not exist', $apiKey));
         }
 
         return new User($apiKey);

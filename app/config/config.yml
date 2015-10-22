@@ -112,9 +112,12 @@ fos_rest:
 #            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': 405
 #            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
 #            'Doctrine\DBAL\DBALException': 501
-            'AppBundle\Exception\InvalidShipsException': HTTP_UNPROCESSABLE_ENTITY
+            'AppBundle\Exception\GameFlowException': HTTP_UNPROCESSABLE_ENTITY
+            'AppBundle\Exception\InvalidShipsException': HTTP_BAD_REQUEST
+            'Symfony\Component\Security\Core\Exception\AuthenticationException': HTTP_UNAUTHORIZED
         messages:
 #            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': false
 #            'Doctrine\DBAL\DBALException': true
+            'AppBundle\Exception\GameFlowException': true
             'AppBundle\Exception\InvalidShipsException': true
-#        exception_controller: 'AppBundle\Controller\UsersController::exceptionAction'
+            'Symfony\Component\Security\Core\Exception\AuthenticationException': true

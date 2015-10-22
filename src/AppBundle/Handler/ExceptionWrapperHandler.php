@@ -16,9 +16,8 @@ class ExceptionWrapperHandler
         $exception = $data['exception'];
 
         return [
-            'code' => $exception->getStatusCode(),
-            'realCode' => $exception->getCode(),
-            'message' => $exception->getMessage(),
+            'code' => $exception->getCode() ?: $data['status_code'],
+            'message' => $data['message'],
             'class' => $exception->getClass()
         ];
     }
