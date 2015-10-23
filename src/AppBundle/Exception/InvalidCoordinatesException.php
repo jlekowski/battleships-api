@@ -2,9 +2,9 @@
 
 namespace AppBundle\Exception;
 
-class InvalidCoordinatesException extends InvalidShipsException
+class InvalidCoordinatesException extends \InvalidArgumentException
 {
-    protected $code = 161;
+    protected $code = 160;
 
     /**
      * @param string $coords

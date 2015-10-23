@@ -2,9 +2,16 @@
 
 namespace AppBundle\Exception;
 
-class DuplicatedEventTypeException extends InvalidEventTypeException
+use FOS\RestBundle\Util\Codes;
+
+class DuplicatedEventTypeException extends InvalidArgument400Exception
 {
-    protected $code = 182;
+    protected $code = 190;
+
+    /**
+     * @var int
+     */
+    protected $statusCode = Codes::HTTP_FORBIDDEN;
 
     /**
      * @param string $eventType

@@ -105,15 +105,12 @@ fos_rest:
         exception_wrapper_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
 #    service:
 #        exception_handler:    fos_rest.view.exception_wrapper_handler
-#        exception_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
     exception:
         enabled: true
         codes:
 #            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': 405
 #            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
 #            'Doctrine\DBAL\DBALException': 501
-            'AppBundle\Exception\GameFlowException': HTTP_UNPROCESSABLE_ENTITY
-            'AppBundle\Exception\InvalidShipsException': HTTP_BAD_REQUEST
             'Symfony\Component\Security\Core\Exception\AuthenticationException': HTTP_UNAUTHORIZED
         messages:
 #            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': false

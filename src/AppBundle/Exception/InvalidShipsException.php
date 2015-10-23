@@ -2,7 +2,7 @@
 
 namespace AppBundle\Exception;
 
-class InvalidShipsException extends \InvalidArgumentException
+class InvalidShipsException extends InvalidArgument400Exception
 {
-    protected $code = 160;
+    protected $code = 150;
 }
