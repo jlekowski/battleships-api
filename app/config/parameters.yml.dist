@@ -18,5 +18,6 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    # loggly token (token can't be null - remove loggly handler from config if not needed)
-    loggly_token:       'null'
+    # loggly token
+    loggly_token:       ~
+    loggly_tag:         battleships-api
