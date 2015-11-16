@@ -81,6 +81,14 @@ try {
     echo "Game started\n";
     var_dump($response->getJson());
 
+    // @todo for now it doesn't work - this should be for user update
+//    echo "Game to be Patched after start (player name)\n";
+//    $data = new \stdClass();
+//    $data->playerName = 'Player 234';
+//    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
+//    $response = $apiRequest->call($requestDetails);
+//    echo "Game Patched after start (player name)\n";
+//    var_dump($response->getJson());
 
     $data = new \stdClass();
     $data->type = 'shot';

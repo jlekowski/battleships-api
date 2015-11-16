@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 // @todo exclusions on object properties depends on version
 // @todo ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/
 /**
+ * @todo exception when accessing not existing game currently is "AppBundle\\Entity\\Game object not found"
  * @todo what URI for shot? It's an update of game/{id/hash}|game/{id/hash}/shots resource and I need a result
  * @todo what URI for ships? It's an update of game/{id/hash} resource, or adding multiple game/{id/hash}/ships resources?
  * @todo maybe go with batch requests (to get game for example) https://parse.com/docs/rest/guide
