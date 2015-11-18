@@ -4,6 +4,8 @@
  * Simple End-to-End API test
  */
 
+$start = microtime(true);
+
 try {
     $apiRequest = new \ApiRequest('http://battleships-api.private/app_dev.php/v1');
 
@@ -112,6 +114,7 @@ try {
     echo "Game for player\n";
     print_r($response->getJson());
 
+    printf("\nFinished in %s\n", microtime(true) - $start);
     exit;
 
 
@@ -147,6 +150,7 @@ try {
     exit;
 }
 
+printf("\nFinished in %s\n", microtime(true) - $start);
 exit("OK\n");
 
 class ApiRequest

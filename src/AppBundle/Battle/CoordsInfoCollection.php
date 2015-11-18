@@ -17,7 +17,6 @@ class CoordsInfoCollection implements \Countable, \IteratorAggregate
      */
     public function __construct(array $coordsArray = [])
     {
-        // array_map doesn't like exceptions in callback, so @array_map() otherwise
         foreach ($coordsArray as $coords) {
             $this->coordsInfoArray[] = new CoordsInfo($coords);
         }

@@ -37,13 +37,13 @@ services:
         calls:
             - [setContainer, [@service_container]]
 
-    app.event_listener.response_listener:
+    app.event_listener.cors:
         class: AppBundle\EventListener\CorsListener
         tags:
            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
-    app.event_listener.entity_subscriber:
-        class: AppBundle\EventListener\EntitySubscriber
+    app.event_subscriber.entity:
+        class: AppBundle\EventSubscriber\EntitySubscriber
         arguments: [@security.token_storage, @validator]
         tags:
             - { name: doctrine.event_subscriber }

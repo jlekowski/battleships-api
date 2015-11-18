@@ -117,7 +117,8 @@ class BattleManager
 
         $attackerShots = [];
         foreach ($shotEvents as $shotEvent) {
-            $attackerShots[] = $shotEvent->getValue();
+            // @todo DRY - shot event value (see IsAllowedToShootValidator)
+            $attackerShots[] = explode('|', $shotEvent->getValue())[0];
         }
 
         return new CoordsInfoCollection($attackerShots);
