@@ -7,7 +7,7 @@
 $start = microtime(true);
 
 try {
-    $apiRequest = new \ApiRequest('http://battleships-api.private/app_dev.php/v1');
+    $apiRequest = new \ApiRequest('http://battleships-api.dev.lekowski.pl/v1');
 
     /*
         /games POST
