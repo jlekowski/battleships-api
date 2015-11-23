@@ -33,12 +33,24 @@ php bin/console doctrine:schema:validate
             RewriteCond %{HTTP:Authorization} ^(.*)
             RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
+# deploy to production
+composer install --optimize-autoloader --no-dev
+php bin/console cache:clear --env=prod --no-debug
+
+# Setup OPCache - edit php.ini (e.g. /etc/php5/apache2/php.ini)
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=4000
+opcache.revalidate_freq=60
+opcache.save_comments=1
+opcache.fast_shutdown=1
+
 # PLAN
 - create all end points (hash probably, not id yet)
 - go with the DB as it used to be before (think while doing it how to improve it, like user table)
 - combine end points with the DB resources
-- data format as in "old" API (battle etc.) ?
-- port validation, user check etc. to provide functionality as "old" API
 - add unit tests (and e2e from command?)
 - caching (YML file at least, but maybe also redis?)
 - improve REST and DB structure, authorisation
