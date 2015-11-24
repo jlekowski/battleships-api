@@ -6,6 +6,9 @@ sudo mv composer.phar /usr/local/bin/composer
 sudo curl -LsS http://symfony.com/installer -o /usr/local/bin/symfony
 sudo chmod a+x /usr/local/bin/symfony
 
+# while it requires at least PHP 5.5, it uses APC so for compatibility go with
+sudo apt-get install php5-apcu
+
 export SENSIOLABS_ENABLE_NEW_DIRECTORY_STRUCTURE=true
 # symfony new rest-api-php7
 composer create-project symfony/framework-standard-edition battleships-api
@@ -34,6 +37,7 @@ php bin/console doctrine:schema:validate
             RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
 # deploy to production
+export SYMFONY_ENV=prod
 composer install --optimize-autoloader --no-dev
 php bin/console cache:clear --env=prod --no-debug
 
