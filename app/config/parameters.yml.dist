@@ -21,3 +21,8 @@ parameters:
     # loggly token
     loggly_token:       ~
     loggly_tag:         battleships-api
+
+    # varnish config
+    varnish_enabled:    true
+    varnish_servers:    localhost # comma separated
+    varnish_base_url:   battleships-api.dev.lekowski.pl

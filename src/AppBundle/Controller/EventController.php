@@ -9,6 +9,9 @@ use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\HttpCacheBundle\CacheManager;
+use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
+use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -74,6 +77,7 @@ class EventController extends FOSRestController
      * @param Game $game
      * @return Collection
      *
+     * @Tag("events")
      * @Security("game.belongsToCurrentUser()")
      * @QueryParam(
      *     name="type",
@@ -95,6 +99,7 @@ class EventController extends FOSRestController
      * @param Game $game
      * @return Response
      *
+     * @Tag("events")
      * @Security("game.belongsToCurrentUser()")
      * @RequestParam(
      *     name="type",

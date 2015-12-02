@@ -25,3 +25,27 @@ monolog:
             level: debug
         console:
             type:  console
+
+fos_http_cache:
+    debug:
+        enabled: false
+    tags:
+        enabled: "%varnish_enabled%"
+    cache_manager:
+        enabled: "%varnish_enabled%"
+    proxy_client:
+        varnish:
+            servers: "%varnish_servers%"
+            base_url: "%varnish_base_url%"
+
+    cache_control:
+        rules:
+            # match everything to set defaults
+            -
+                match:
+                    path: ^/
+                headers:
+                    overwrite: false
+                    cache_control: { public: true, max_age: 600 }
+                    etag: true
+                    vary: [Authorization, Accept] # @todo maybe add Accept-Encoding too?
