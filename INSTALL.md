@@ -62,9 +62,7 @@ opcache.blacklist_filename=/etc/php5/opcache-blacklist.txt
 # PLAN
 - create all end points (hash probably, not id yet)
 - go with the DB as it used to be before (think while doing it how to improve it, like user table)
-- combine end points with the DB resources
 - add unit tests (and e2e from command?)
-- caching (YML file at least, but maybe also redis?)
 - improve REST and DB structure, authorisation
 
 # DB

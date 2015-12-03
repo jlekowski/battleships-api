@@ -1,21 +1,12 @@
-# To get started with security, check out the documentation:
-# http://symfony.com/doc/current/book/security.html
 security:
-#    acl:
-#        connection: default
-
-    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-#        in_memory:
-#            memory: ~
-
         api_key:
             id: app.security.api_key_user_provider
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            pattern: ^/(_(profiler|wdt))/
             security: false
 
         cors:

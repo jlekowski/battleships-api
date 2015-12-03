@@ -17,18 +17,27 @@ monolog:
     handlers:
         main:
             type:         fingers_crossed
-            action_level: error
-            handler:      nested
-        nested:
-            type:  stream
+            action_level: warning
+            handler:      file
+        file:
+            type:  rotating_file
             path:  "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
+            max_files: 14
+        loggly:
+            type:   loggly
+            token:  "%loggly_token%"
+            level:  info
+            tag:    "%loggly_tag%"
+        login:
+            type:     stream
+            path:     "%kernel.logs_dir%/auth.log"
+            level:    warning
+            channels: security
         console:
             type:  console
 
 fos_http_cache:
-    debug:
-        enabled: false
     tags:
         enabled: "%varnish_enabled%"
     cache_manager:
