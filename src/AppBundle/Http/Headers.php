@@ -4,5 +4,5 @@ namespace AppBundle\Http;
 
 final class Headers
 {
-    const GAME_TOKEN = 'Game-Token';
+    const API_KEY = 'Api-Key';
 }

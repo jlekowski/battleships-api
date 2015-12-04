@@ -179,7 +179,7 @@ sub vcl_synth {
         set resp.http.Access-Control-Allow-Origin = "*";
         set resp.http.Access-Control-Allow-Methods = "GET, POST, PUT, PATCH, DELETE, OPTIONS";
         set resp.http.Access-Control-Allow-Headers = "Content-Type, Authorization, Accept, X-Requested-With";
-        set resp.http.Access-Control-Expose-Headers = "Location, Game-Token";
+        set resp.http.Access-Control-Expose-Headers = "Location, Api-Key";
     }
 
     return (deliver);

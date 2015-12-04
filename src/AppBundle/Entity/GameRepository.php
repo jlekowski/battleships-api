@@ -12,4 +12,24 @@ use Doctrine\ORM\EntityRepository;
  */
 class GameRepository extends EntityRepository
 {
+    /**
+     * @param User $user
+     * @return array
+     */
+    public function findAvailableForUser(User $user)
+    {
+        return $this
+            ->createQueryBuilder('g')
+            ->select('g.id, u.name')
+            ->join('g.user1', 'u')
+            ->where('g.user_id1 != :user_id1')
+            ->andWhere('g.user_id2 IS NULL')
+            ->andWhere('g.timestamp <= :timestamp')
+            ->setParameter('user_id1', $user->getId())
+            ->setParameter('timestamp', new \DateTime('-5 minutes'))
+            ->setMaxResults(10)
+            ->orderBy('g.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

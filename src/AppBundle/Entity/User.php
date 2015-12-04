@@ -2,31 +2,74 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+
+/**
+ * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
+ */
 class User
 {
     /**
-     * @var string
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Exclude
      */
-    protected $playerHash;
+    private $id;
 
     /**
-     * @param int $playerHash
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255)
      */
-    public function __construct($playerHash)
+    private $name;
+
+    /**
+     * @param int $id
+     */
+    public function __construct($id = null)
     {
-        $this->playerHash = $playerHash;
+        $this->id = (int)$id;
     }
 
     /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return User
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
      * @return string
      */
-    public function getPlayerHash()
+    public function getName()
     {
-        return $this->playerHash;
+        return $this->name;
     }
 
     /**
-     * @todo do I really need this?
      * @return array
      */
     public function getRoles()
@@ -35,11 +78,10 @@ class User
     }
 
     /**
-     * @todo something better than this
      * @return string
      */
     public function __toString()
     {
-        return 'game user';
+        return sprintf('%d: %s', $this->id, $this->name);
     }
 }

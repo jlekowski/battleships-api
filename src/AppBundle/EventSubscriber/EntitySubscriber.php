@@ -6,6 +6,7 @@ use AppBundle\Entity\Game;
 use AppBundle\Exception\DuplicatedEventTypeException;
 use AppBundle\Exception\GameFlowException;
 use AppBundle\Exception\InvalidShipsException;
+use AppBundle\Exception\UserNotFoundException;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -77,6 +78,7 @@ class EntitySubscriber implements EventSubscriber
 
     /**
      * @param LifecycleEventArgs $eventArgs
+     * @throws UserNotFoundException
      */
     public function postLoad(LifecycleEventArgs $eventArgs)
     {
@@ -87,8 +89,12 @@ class EntitySubscriber implements EventSubscriber
         }
 
         if ($entity instanceof Game) {
-            // there may be no user yet (loading entity during authorisation)
-            $entity->setTokenStorage($this->tokenStorage);
+            $token = $this->tokenStorage->getToken();
+            if (!$token) {
+                throw new UserNotFoundException('User has not been authenticated yet');
+            }
+
+            $entity->setLoggedUser($token->getUser());
         }
     }
 }

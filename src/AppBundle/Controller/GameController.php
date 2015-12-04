@@ -4,14 +4,20 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
+use AppBundle\Entity\GameRepository;
 use AppBundle\Http\Headers;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 
+// @todo check strictly for URI, e.g. /v1/games/1b
 // @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
 // @todo headers for specific version?
 // @todo exclusions on object properties depends on version
@@ -41,22 +47,45 @@ class GameController extends FOSRestController
     protected $entityManager;
 
     /**
+     * @var GameRepository
+     */
+    protected $gameRepository;
+
+    /**
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, GameRepository $gameRepository)
     {
         $this->entityManager = $entityManager;
+        $this->gameRepository = $gameRepository;
     }
 
     /**
      * @param Game $game
      * @return Game
      *
-     * @Security("game.belongsToCurrentUser()")
+     * @Security("game.belongsToUser(user)")
      */
     public function getGameAction(Game $game)
     {
         return $game;
+    }
+
+
+    /**
+     * @param ParamFetcher $paramFetcher
+     * @return Collection
+     *
+     * @QueryParam(name="available", requirements=@Assert\EqualTo("true"), nullable=true, strict=true)
+     */
+    public function getGamesAction(ParamFetcher $paramFetcher)
+    {
+        $games = new ArrayCollection();
+        if ($paramFetcher->get('available')) {
+            $games = $this->gameRepository->findAvailableForUser($this->getUser());
+        }
+
+        return $games;
     }
 
     /**
@@ -73,7 +102,7 @@ class GameController extends FOSRestController
         $player1Hash = hash('md5', uniqid(mt_rand(), true));
         $player2Hash = hash('md5', uniqid(mt_rand(), true));
 
-        $game = new Game(true);
+        $game = new Game();
         $game
             ->setPlayer1Hash($player1Hash)
             ->setPlayer1Name($paramFetcher->get('playerName'))
@@ -88,7 +117,7 @@ class GameController extends FOSRestController
 
         $view = $this
             ->routeRedirectView('api_v1_get_game', ['game' => $game->getId()])
-            ->setHeader(Headers::GAME_TOKEN, $game->getPlayer1Hash()) // @todo To be removed once there's real authentication with Api-Token
+            ->setHeader(Headers::API_KEY, $game->getPlayer1Hash()) // @todo To be removed once there's real authentication with Api-Token
         ;
 
         return $this->handleView($view);
@@ -100,7 +129,7 @@ class GameController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      *
-     * @Security("game.belongsToCurrentUser()")
+     * @Security("game.belongsToUser(user)")
      * @RequestParam(name="playerName", requirements="\S.*", allowBlank=false, nullable=true)
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
      */

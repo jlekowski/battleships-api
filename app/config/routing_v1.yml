@@ -1,3 +1,9 @@
+users_v1:
+    resource: app.controller.user
+    type: rest
+    prefix: /v1
+    name_prefix: api_v1_
+
 games_v1:
     resource: app.controller.game
     type: rest

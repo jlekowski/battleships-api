@@ -20,9 +20,16 @@ services:
     app.controller.cors:
         class: AppBundle\Controller\CorsController
 
+    # @todo abstract controller?
+    app.controller.user:
+        class: AppBundle\Controller\UserController
+        arguments: [@doctrine.orm.default_entity_manager]
+        calls:
+            - [setContainer, [@service_container]]
+
     app.controller.game:
         class: AppBundle\Controller\GameController
-        arguments: [@doctrine.orm.default_entity_manager]
+        arguments: [@doctrine.orm.default_entity_manager, @app.entity.game_repository]
         calls:
             - [setContainer, [@service_container]]
 

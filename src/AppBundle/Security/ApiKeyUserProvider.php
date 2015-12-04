@@ -33,18 +33,13 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function getUserForApiKey($apiKey)
     {
-        $criteria = new Criteria();
-        $expr = Criteria::expr();
-
-        // @todo those fields must have indexes
-        $criteria->where($expr->eq('player1Hash', $apiKey));
-        $criteria->orWhere($expr->eq('player2Hash', $apiKey));
-
-        if ($this->gameRepository->matching($criteria)->isEmpty()) {
-            throw new AuthenticationException(sprintf('API key `%s` does not exist', $apiKey));
+        if (!preg_match('/^user:(\d+)$/', $apiKey, $matches)) {
+            throw new AuthenticationException(sprintf('API key `%s` is invalid', $apiKey));
         }
 
-        return new User($apiKey);
+        $userId = (int)$matches[1];
+
+        return new User($userId);
     }
 
     /**

@@ -9,8 +9,6 @@ use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\HttpCacheBundle\CacheManager;
-use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -65,7 +63,7 @@ class EventController extends FOSRestController
      * @param Event $event
      * @return Event
      *
-     * @Security("game.belongsToCurrentUser() && (game === event.getGame())")
+     * @Security("game.belongsToUser(user) && (game === event.getGame())")
      */
     public function getEventAction(Game $game, Event $event)
     {
@@ -78,7 +76,7 @@ class EventController extends FOSRestController
      * @return Collection
      *
      * @Tag("events")
-     * @Security("game.belongsToCurrentUser()")
+     * @Security("game.belongsToUser(user)")
      * @QueryParam(
      *     name="type",
      *     requirements=@Assert\Choice(
@@ -100,7 +98,7 @@ class EventController extends FOSRestController
      * @return Response
      *
      * @Tag("events")
-     * @Security("game.belongsToCurrentUser()")
+     * @Security("game.belongsToUser(user)")
      * @RequestParam(
      *     name="type",
      *     requirements=@Assert\Choice(
