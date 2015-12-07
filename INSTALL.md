@@ -9,21 +9,29 @@ sudo chmod a+x /usr/local/bin/symfony
 # while it requires at least PHP 5.5, it uses APC so for compatibility go with
 sudo apt-get install php5-apcu
 
+# as in http://symfony.com/doc/current/book/installation.html
+# symfony 2 only
 export SENSIOLABS_ENABLE_NEW_DIRECTORY_STRUCTURE=true
-# symfony new rest-api-php7
+# for PHP >= 5.4
+symfony new battleships-api
+# for PHP = 5.3
 composer create-project symfony/framework-standard-edition battleships-api
 cd battleships-api
 composer update
 
+# in Symfony 2
 php bin/security-checker security:check
+# in Symfony 3
+php bin/console security:check
 
 HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
-sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
-sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
+sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs var/sessions
+sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs var/sessions
 
 
 composer require "jms/serializer-bundle" "@stable"
 composer require "friendsofsymfony/rest-bundle" "@stable"
+composer require "friendsofsymfony/http-cache-bundle" "~1.0"
 
 CREATE DATABASE battleships CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci;
 # GRANT ALL PRIVILEGES ON battleships.* TO 'test'@'%' WITH GRANT OPTION;
