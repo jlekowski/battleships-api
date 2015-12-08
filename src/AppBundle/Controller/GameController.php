@@ -15,6 +15,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 // @todo check strictly for URI, e.g. /v1/games/1b
@@ -53,6 +54,7 @@ class GameController extends FOSRestController
 
     /**
      * @param EntityManagerInterface $entityManager
+     * @param GameRepository $gameRepository
      */
     public function __construct(EntityManagerInterface $entityManager, GameRepository $gameRepository)
     {
@@ -74,18 +76,42 @@ class GameController extends FOSRestController
 
     /**
      * @param ParamFetcher $paramFetcher
-     * @return Collection
+     * @return Response
+     * @throws BadRequestHttpException
      *
      * @QueryParam(name="available", requirements=@Assert\EqualTo("true"), nullable=true, strict=true)
      */
     public function getGamesAction(ParamFetcher $paramFetcher)
     {
-        $games = new ArrayCollection();
         if ($paramFetcher->get('available')) {
-            $games = $this->gameRepository->findAvailableForUser($this->getUser());
+            return $this->getAvailableGamesAction();
         }
 
-        return $games;
+        throw new BadRequestHttpException('Invalid request - must use \'?available=true\'');
+    }
+
+    /**
+     * @return Response
+     */
+    protected function getAvailableGamesAction()
+    {
+        $createdNotLongerThan = new \DateTime('-5 minutes');
+        $newGamesFilter = function(Game $game) use ($createdNotLongerThan) {
+            return $game->getTimestamp() >= $createdNotLongerThan;
+        };
+
+        $games = $this->gameRepository->findAvailableForUser($this->getUser(), 5)->filter($newGamesFilter);
+        $view = $this->view($games);
+
+        /** @var Game $oldestGame */
+        $oldestGame = $games->last();
+        if ($oldestGame) {
+            // if games found, cache expires oldest game + 5 minutes (if searched for games withing last 5 minutes)
+            $maxAge = $oldestGame->getTimestamp()->getTimestamp() - $createdNotLongerThan->getTimestamp();
+            $view->getResponse()->setMaxAge($maxAge);
+        }
+
+        return $this->handleView($view);
     }
 
     /**

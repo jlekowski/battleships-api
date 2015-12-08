@@ -26,6 +26,7 @@ class Game implements LoggerAwareInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Expose
      */
     private $id;
 
@@ -84,6 +85,7 @@ class Game implements LoggerAwareInterface
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
+     * @Serializer\Expose
      */
     private $timestamp;
 
@@ -301,14 +303,30 @@ class Game implements LoggerAwareInterface
      * @Serializer\VirtualProperty
      *
      * @return int
+     * @throws \RuntimeException
      */
     public function getPlayerNumber()
     {
         if ($this->playerNumber === null) {
-            $this->playerNumber = $this->loggedUser->getId() === $this->getUserId2() ? 2 : 1;
+            $this->playerNumber = $this->findPlayerNumber();
         }
 
         return $this->playerNumber;
+    }
+
+    /**
+     * @return int
+     * @throws \RuntimeException
+     */
+    protected function findPlayerNumber()
+    {
+        $loggedUserId = $this->loggedUser->getId();
+        $isUser1 = $loggedUserId === $this->getUserId1();
+        if (!$isUser1 && $this->getUserId2() && $loggedUserId !== $this->getUserId2()) {
+            throw new \RuntimeException('Game belongs to other users');
+        }
+
+        return $isUser1 ? 1 : 2;
     }
 
     /**
