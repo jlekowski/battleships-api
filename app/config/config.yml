@@ -59,7 +59,7 @@ fos_rest:
     view:
         # to return data instead of Response/JsonResponse object
         view_response_listener: force
-        exception_wrapper_handler: 'AppBundle\Handler\ExceptionWrapperHandler'
+        exception_wrapper_handler: app.handler.exception_wrapper_handler
     exception:
         enabled: true
         codes:

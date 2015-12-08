@@ -19,12 +19,12 @@ services:
 
     app.entity.game_repository:
         class: AppBundle\Entity\GameRepository
-        factory: [@doctrine, getRepository]
+        factory: ['@doctrine', getRepository]
         arguments: ['AppBundle:Game']
 
     app.entity.event_repository:
         class: AppBundle\Entity\EventRepository
-        factory: [@doctrine, getRepository]
+        factory: ['@doctrine', getRepository]
         arguments: ['AppBundle:Event']
 
     app.controller.cors:
@@ -39,15 +39,18 @@ services:
 
     app.controller.game:
         class: AppBundle\Controller\GameController
-        arguments: [@doctrine.orm.default_entity_manager, @app.entity.game_repository]
+        arguments: ['@doctrine.orm.default_entity_manager', '@app.entity.game_repository']
         calls:
-            - [setContainer, [@service_container]]
+            - [setContainer, ['@service_container']]
 
     app.controller.event:
         class: AppBundle\Controller\EventController
-        arguments: [@doctrine.orm.default_entity_manager, @app.entity.event_repository, @app.battle.battle_manager]
+        arguments: ['@doctrine.orm.default_entity_manager', '@app.entity.event_repository', '@app.battle.battle_manager']
         calls:
-            - [setContainer, [@service_container]]
+            - [setContainer, ['@service_container']]
+
+    app.handler.exception_wrapper_handler:
+        class: AppBundle\Handler\ExceptionWrapperHandler
 
     app.command.user_token_generate_command:
         class: AppBundle\Command\UserTokenGenerateCommand
@@ -63,13 +66,13 @@ services:
 
     app.event_subscriber.entity:
         class: AppBundle\EventSubscriber\EntitySubscriber
-        arguments: [@security.token_storage, @validator, @logger]
+        arguments: ['@security.token_storage', '@validator', '@logger']
         tags:
             - { name: doctrine.event_subscriber }
 
     app.battle.battle_manager:
         class: AppBundle\Battle\BattleManager
-        arguments: [@app.entity.event_repository]
+        arguments: ['@app.entity.event_repository']
 
     app.validator.cache.apc:
         class: Doctrine\Common\Cache\ApcuCache
@@ -84,19 +87,19 @@ services:
 
     app.validator.only_before_start_validator:
         class: AppBundle\Validator\Constraints\OnlyBeforeStartValidator
-        arguments: [@app.entity.event_repository]
+        arguments: ['@app.entity.event_repository']
         tags:
             - { name: validator.constraint_validator, alias: only_before_start_validator }
 
     app.validator.unique_event:
         class: AppBundle\Validator\Constraints\UniqueEventValidator
-        arguments: [@app.entity.event_repository]
+        arguments: ['@app.entity.event_repository']
         tags:
             - { name: validator.constraint_validator, alias: unique_event }
 
     app.validator.is_allowed_to_shoot:
         class: AppBundle\Validator\Constraints\IsAllowedToShootValidator
-        arguments: [@app.entity.event_repository]
+        arguments: ['@app.entity.event_repository']
         tags:
             - { name: validator.constraint_validator, alias: is_allowed_to_shoot }
 
