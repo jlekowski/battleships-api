@@ -8,6 +8,8 @@ use AppBundle\Validator\Constraints as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -19,7 +21,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * @Serializer\ExclusionPolicy("all")
  * @todo Unique field for hash and other keys(?) + table relations/foreign keys
  */
-class Game
+class Game implements LoggerAwareInterface
 {
     /**
      * @var bool
@@ -107,6 +109,11 @@ class Game
      * @var TokenStorageInterface
      */
     private $tokenStorage;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @param bool $isNew
@@ -441,6 +448,14 @@ class Game
     public function belongsToCurrentUser()
     {
         return in_array($this->getUserHash(), [$this->getPlayer1Hash(), $this->getPlayer2Hash()], true);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 
     /**

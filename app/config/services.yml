@@ -39,7 +39,7 @@ services:
 
     app.event_subscriber.entity:
         class: AppBundle\EventSubscriber\EntitySubscriber
-        arguments: [@security.token_storage, @validator]
+        arguments: [@security.token_storage, @validator, @logger]
         tags:
             - { name: doctrine.event_subscriber }
 

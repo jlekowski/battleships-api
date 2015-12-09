@@ -10,6 +10,8 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -26,13 +28,19 @@ class EntitySubscriber implements EventSubscriber
     protected $validator;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @param TokenStorage $tokenStorage
      * @param ValidatorInterface $validator
      */
-    public function __construct(TokenStorage $tokenStorage, ValidatorInterface $validator)
+    public function __construct(TokenStorage $tokenStorage, ValidatorInterface $validator, LoggerInterface $logger)
     {
         $this->tokenStorage = $tokenStorage;
         $this->validator = $validator;
+        $this->logger = $logger;
     }
 
     /**
@@ -73,6 +81,11 @@ class EntitySubscriber implements EventSubscriber
     public function postLoad(LifecycleEventArgs $eventArgs)
     {
         $entity = $eventArgs->getEntity();
+
+        if ($entity instanceof LoggerAwareInterface) {
+            $entity->setLogger($this->logger);
+        }
+
         if ($entity instanceof Game) {
             // there may be no user yet (loading entity during authorisation)
             $entity->setTokenStorage($this->tokenStorage);
