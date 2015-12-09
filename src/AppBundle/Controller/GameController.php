@@ -124,6 +124,7 @@ class GameController extends FOSRestController
             switch ($paramName) {
                 case 'playerName':
                     $game->setPlayerName($param);
+                    // @todo need to clear events cache in this case
                     $this->createNameUpdateEvent($game, $param);
                     break;
 
