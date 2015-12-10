@@ -35,7 +35,7 @@ class Game implements LoggerAwareInterface
      *
      * @ORM\Column(name="user_id1", type="integer")
      */
-    private $user_id1;
+    private $userId1;
 
     /**
      * @var User
@@ -50,7 +50,7 @@ class Game implements LoggerAwareInterface
      *
      * @ORM\Column(name="user_id2", type="integer", nullable=true)
      */
-    private $user_id2;
+    private $userId2;
 
     /**
      * @var User|null
@@ -124,7 +124,7 @@ class Game implements LoggerAwareInterface
      */
     public function getUserId1()
     {
-        return $this->user_id1;
+        return $this->userId1;
     }
 
     /**
@@ -151,7 +151,7 @@ class Game implements LoggerAwareInterface
      */
     public function getUserId2()
     {
-        return $this->user_id2;
+        return $this->userId2;
     }
 
     /**
@@ -220,6 +220,8 @@ class Game implements LoggerAwareInterface
     }
 
     /**
+     * @todo trait or abstract for entity timestamp
+     *
      * @return \DateTime
      */
     public function getTimestamp()
@@ -355,6 +357,15 @@ class Game implements LoggerAwareInterface
     public function belongsToUser(User $user)
     {
         return in_array($user->getId(), [$this->getUserId1(), $this->getUserId2()], true);
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function canJoin(User $user)
+    {
+        return ($this->getUserId2() === null) && ($this->getUserId1() !== $user->getId());
     }
 
     /**

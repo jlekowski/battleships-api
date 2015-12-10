@@ -2,8 +2,8 @@
 
 namespace AppBundle\Security;
 
-use AppBundle\Entity\GameRepository;
 use AppBundle\Entity\User;
+use AppBundle\Entity\UserRepository;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -13,32 +13,31 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 class ApiKeyUserProvider implements UserProviderInterface
 {
     /**
-     * @var GameRepository
+     * @var UserRepository
      */
-    protected $gameRepository;
+    protected $userRepository;
 
     /**
-     * @param GameRepository $gameRepository
+     * @param UserRepository $userRepository
      */
-    public function __construct(GameRepository $gameRepository)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->gameRepository = $gameRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
-     * @param string $apiKey
+     * @param int $userId
      * @return User
      * @throws AuthenticationException
      */
-    public function getUserForApiKey($apiKey)
+    public function loadUserById($userId)
     {
-        if (!preg_match('/^user:(\d+)$/', $apiKey, $matches)) {
-            throw new AuthenticationException(sprintf('API key `%s` is invalid', $apiKey));
+        $user = $this->userRepository->find($userId);
+        if (null === $user) {
+            throw new AuthenticationException(sprintf('User with id `%s` not found', $userId));
         }
 
-        $userId = (int)$matches[1];
-
-        return new User($userId);
+        return $user;
     }
 
     /**
@@ -54,11 +53,15 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function refreshUser(UserInterface $user)
     {
-        // this is used for storing authentication in the session
-        // but in this example, the token is sent in each request,
-        // so authentication can be stateless. Throwing this exception
-        // is proper to make things stateless
-        throw new UnsupportedUserException();
+        if (!$user instanceof User) {
+            // this is used for storing authentication in the session
+            // but in this example, the token is sent in each request,
+            // so authentication can be stateless. Throwing this exception
+            // is proper to make things stateless
+            throw new UnsupportedUserException();
+        }
+
+        return $this->loadUserById($user->getId());
     }
 
     /**

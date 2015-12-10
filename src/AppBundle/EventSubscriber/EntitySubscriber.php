@@ -36,6 +36,7 @@ class EntitySubscriber implements EventSubscriber
     /**
      * @param TokenStorage $tokenStorage
      * @param ValidatorInterface $validator
+     * @param LoggerInterface $logger
      */
     public function __construct(TokenStorage $tokenStorage, ValidatorInterface $validator, LoggerInterface $logger)
     {

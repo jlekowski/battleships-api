@@ -2,6 +2,9 @@
 
 namespace AppBundle\Security;
 
+use AppBundle\Exception\InvalidApiKeyException;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\ServerBag;
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
@@ -14,6 +17,31 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
 class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
 {
     /**
+     * @var ApiKeyManager
+     */
+    protected $apiKeyManager;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var ServerBag
+     */
+    protected $serverBag;
+
+    /**
+     * @param ApiKeyManager $apiKeyManager
+     * @param LoggerInterface $logger
+     */
+    public function __construct(ApiKeyManager $apiKeyManager, LoggerInterface $logger)
+    {
+        $this->apiKeyManager = $apiKeyManager;
+        $this->logger = $logger;
+    }
+
+    /**
      * @inheritdoc
      */
     public function createToken(Request $request, $providerKey)
@@ -24,6 +52,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
         if (!$apiKey) {
             throw new BadCredentialsException('No API key found');
         }
+        $this->serverBag = $request->server;
 
         return new PreAuthenticatedToken('anon.', $apiKey, $providerKey);
     }
@@ -43,7 +72,18 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
         }
 
         $apiKey = $token->getCredentials();
-        $user = $userProvider->getUserForApiKey($apiKey);
+        try {
+            $apiKeyInfo = $this->apiKeyManager->getInfoFromApiKey($apiKey);
+        } catch (\Exception $e) {
+            $this->logger->error('Someone is trying to fake the token', [$this->serverBag]);
+            throw new InvalidApiKeyException($apiKey, 0, $e);
+        }
+
+        $user = $userProvider->loadUserById($apiKeyInfo->id);
+        if ($apiKeyInfo->token !== $user->getToken()) {
+            $this->logger->alert('Someone found the JWT secret and is trying to fake the token', [$this->serverBag]);
+            throw new InvalidApiKeyException($apiKey);
+        }
 
         return new PreAuthenticatedToken($user, $apiKey, $providerKey, $user->getRoles());
     }

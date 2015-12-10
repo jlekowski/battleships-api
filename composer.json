@@ -18,7 +18,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": "@stable",
         "friendsofsymfony/rest-bundle": "@stable",
-        "friendsofsymfony/http-cache-bundle": "~1.0"
+        "friendsofsymfony/http-cache-bundle": "~1.0",
+        "firebase/php-jwt": "^3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

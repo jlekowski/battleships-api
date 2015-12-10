@@ -14,8 +14,8 @@ security:
             methods: [OPTIONS]
             security: false
 
-        new_game:
-            pattern: ^/(v\d+)/games$
+        new_user:
+            pattern: ^/(v\d+)/users$
             methods: [POST]
             security: false
 

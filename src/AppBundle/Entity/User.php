@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation as Serializer;
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class User
 {
@@ -29,12 +30,20 @@ class User
     private $name;
 
     /**
-     * @param int $id
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=255)
+     * @Serializer\Exclude
      */
-    public function __construct($id = null)
-    {
-        $this->id = (int)$id;
-    }
+    private $token;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="timestamp", type="datetime")
+     * @Serializer\Exclude
+     */
+    private $timestamp;
 
     /**
      * Get id
@@ -44,6 +53,16 @@ class User
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -60,13 +79,62 @@ class User
     }
 
     /**
-     * Get name
-     *
      * @return string
      */
-    public function getName()
+    public function getToken()
     {
-        return $this->name;
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function applyRandomToken()
+    {
+        if (!$this->getToken()) {
+            $randomToken = hash('md5', uniqid(mt_rand(), true));
+            $this->setToken($randomToken);
+        }
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTimestamp()
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * @param \DateTime $timestamp
+     * @return Game
+     */
+    public function setTimestamp(\DateTime $timestamp)
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function applyCurrentTimestamp()
+    {
+        if (!$this->getTimestamp()) {
+            $this->setTimestamp(new \DateTime());
+        }
     }
 
     /**

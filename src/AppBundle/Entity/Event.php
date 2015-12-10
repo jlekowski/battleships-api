@@ -18,6 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Event
 {
+    // @todo types are log related (name_update, start/joing as game state), and flow related (chat/shot)
+    //       maybe games/{id} with /chats /shots and game (bit) status and initial get would be to get lastIdEvents? :/
     const TYPE_CHAT = 'chat';
     const TYPE_SHOT = 'shot';
     const TYPE_JOIN_GAME = 'join_game';
@@ -203,7 +205,6 @@ class Event
 
     /**
      * @ORM\PrePersist
-     * @todo here and in Game apply only if not already set
      */
     public function applyCurrentTimestamp()
     {

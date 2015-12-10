@@ -1,11 +1,21 @@
 services:
     app.security.api_key_authenticator:
         class:  AppBundle\Security\ApiKeyAuthenticator
+        arguments: ['@app.security.api_key_manager', '@monolog.logger.security']
         public: false
 
     app.security.api_key_user_provider:
         class: AppBundle\Security\ApiKeyUserProvider
-        arguments: [@app.entity.game_repository]
+        arguments: ['@app.entity.user_repository']
+
+    app.security.api_key_manager:
+        class: AppBundle\Security\ApiKeyManager
+        arguments: ['%secret%']
+
+    app.entity.user_repository:
+        class: AppBundle\Entity\UserRepository
+        factory: ['@doctrine', getRepository]
+        arguments: ['AppBundle:User']
 
     app.entity.game_repository:
         class: AppBundle\Entity\GameRepository
@@ -23,9 +33,9 @@ services:
     # @todo abstract controller?
     app.controller.user:
         class: AppBundle\Controller\UserController
-        arguments: [@doctrine.orm.default_entity_manager]
+        arguments: ['@doctrine.orm.default_entity_manager', '@app.security.api_key_manager']
         calls:
-            - [setContainer, [@service_container]]
+            - [setContainer, ['@service_container']]
 
     app.controller.game:
         class: AppBundle\Controller\GameController
@@ -38,6 +48,13 @@ services:
         arguments: [@doctrine.orm.default_entity_manager, @app.entity.event_repository, @app.battle.battle_manager]
         calls:
             - [setContainer, [@service_container]]
+
+    app.command.user_token_generate_command:
+        class: AppBundle\Command\UserTokenGenerateCommand
+        calls:
+            - [setContainer, ['@service_container']]
+        tags:
+            - { name: console.command }
 
     app.event_listener.cors:
         class: AppBundle\EventListener\CorsListener

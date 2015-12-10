@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Http\Headers;
+use AppBundle\Security\ApiKeyManager;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -19,11 +20,18 @@ class UserController extends FOSRestController
     protected $entityManager;
 
     /**
-     * @param EntityManagerInterface $entityManager
+     * @var ApiKeyManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    protected $apiKeyManager;
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @param ApiKeyManager $apiKeyManager
+     */
+    public function __construct(EntityManagerInterface $entityManager, ApiKeyManager $apiKeyManager)
     {
         $this->entityManager = $entityManager;
+        $this->apiKeyManager = $apiKeyManager;
     }
 
     /**
@@ -50,9 +58,10 @@ class UserController extends FOSRestController
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
+        $apiKey = $this->apiKeyManager->generateApiKeyForUser($user);
         $view = $this
             ->routeRedirectView('api_v1_get_user', ['game' => $user->getId()])
-            ->setHeader(Headers::API_KEY, sprintf('user:%d', $user->getId())) // @todo To be removed once there's real authentication with Api-Token
+            ->setHeader(Headers::API_KEY, $apiKey)
         ;
 
         return $this->handleView($view);

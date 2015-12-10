@@ -5,9 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
-use AppBundle\Http\Headers;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -96,7 +93,7 @@ class GameController extends FOSRestController
     protected function getAvailableGamesAction()
     {
         $createdNotLongerThan = new \DateTime('-5 minutes');
-        $newGamesFilter = function(Game $game) use ($createdNotLongerThan) {
+        $newGamesFilter = function (Game $game) use ($createdNotLongerThan) {
             return $game->getTimestamp() >= $createdNotLongerThan;
         };
 
@@ -118,33 +115,17 @@ class GameController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return Response
      *
-     * @RequestParam(name="playerName", requirements="\S.*", allowBlank=false)
-     * @RequestParam(name="otherName", requirements="\S.*", allowBlank=false, default="Player 2")
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
-     * @RequestParam(name="otherShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
      */
     public function postGameAction(ParamFetcher $paramFetcher)
     {
-        $player1Hash = hash('md5', uniqid(mt_rand(), true));
-        $player2Hash = hash('md5', uniqid(mt_rand(), true));
-
         $game = new Game();
-        $game
-            ->setPlayer1Hash($player1Hash)
-            ->setPlayer1Name($paramFetcher->get('playerName'))
-            ->setPlayer1Ships($paramFetcher->get('playerShips'))
-            ->setPlayer2Hash($player2Hash)
-            ->setPlayer2Name($paramFetcher->get('otherName'))
-            ->setPlayer2Ships($paramFetcher->get('otherShips'))
-        ;
+        $game->setPlayerShips($paramFetcher->get('playerShips'));
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
 
-        $view = $this
-            ->routeRedirectView('api_v1_get_game', ['game' => $game->getId()])
-            ->setHeader(Headers::API_KEY, $game->getPlayer1Hash()) // @todo To be removed once there's real authentication with Api-Token
-        ;
+        $view = $this->routeRedirectView('api_v1_get_game', ['game' => $game->getId()]);
 
         return $this->handleView($view);
     }
@@ -155,8 +136,8 @@ class GameController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      *
-     * @Security("game.belongsToUser(user)")
-     * @RequestParam(name="playerName", requirements="\S.*", allowBlank=false, nullable=true)
+     * @Security("request.request.get('joinGame') ? game.canJoin(user) : game.belongsToUser(user)")
+     * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=false, nullable=true)
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
      */
     public function patchGameAction(ParamFetcher $paramFetcher, Game $game)
@@ -177,10 +158,10 @@ class GameController extends FOSRestController
         $params = array_filter($params);
         foreach ($params as $paramName => $param) {
             switch ($paramName) {
-                case 'playerName':
-                    $game->setPlayerName($param);
+                case 'joinGame':
+                    $game->setUser2($this->getUser());
                     // @todo need to clear events cache in this case
-                    $this->createNameUpdateEvent($game, $param);
+                    $this->createJoinGameEvent($game);
                     break;
 
                 case 'playerShips':
@@ -192,16 +173,14 @@ class GameController extends FOSRestController
 
     /**
      * @param Game $game
-     * @param string $name
      */
-    private function createNameUpdateEvent(Game $game, $name)
+    private function createJoinGameEvent(Game $game)
     {
         $event = new Event();
         $event
             ->setGame($game)
             ->setPlayer($game->getPlayerNumber())
-            ->setType(Event::TYPE_NAME_UPDATE)
-            ->setValue($name)
+            ->setType(Event::TYPE_JOIN_GAME)
         ;
         $this->entityManager->persist($event);
     }
