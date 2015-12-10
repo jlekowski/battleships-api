@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Exception\UserNotFoundException;
 use AppBundle\Validator\Constraints as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -322,6 +323,10 @@ class Game implements LoggerAwareInterface
      */
     protected function findPlayerNumber()
     {
+        if (!$this->loggedUser) {
+            throw new UserNotFoundException(sprintf('Logged user has not been set for the game `%s`', $this->getId()));
+        }
+
         $loggedUserId = $this->loggedUser->getId();
         $isUser1 = $loggedUserId === $this->getUserId1();
         if (!$isUser1 && $this->getUserId2() && $loggedUserId !== $this->getUserId2()) {

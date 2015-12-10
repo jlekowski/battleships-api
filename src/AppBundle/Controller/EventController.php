@@ -93,6 +93,8 @@ class EventController extends FOSRestController
     }
 
     /**
+     * @todo all requirements="\S.*" should either trim, or check first last character to be non-whitespace
+     *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      * @return Response

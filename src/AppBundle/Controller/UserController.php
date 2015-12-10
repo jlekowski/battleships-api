@@ -35,8 +35,11 @@ class UserController extends FOSRestController
     }
 
     /**
+     * @todo maybe rename user to player? (then player/other vs. user)
+     *
      * @param User $requestedUser
      * @return User
+     *
      * @Security("user.getId() === requestedUser.getId()")
      */
     public function getUserAction(User $requestedUser)
@@ -60,10 +63,25 @@ class UserController extends FOSRestController
 
         $apiKey = $this->apiKeyManager->generateApiKeyForUser($user);
         $view = $this
-            ->routeRedirectView('api_v1_get_user', ['game' => $user->getId()])
+            ->routeRedirectView('api_v1_get_user', ['requestedUser' => $user->getId()])
             ->setHeader(Headers::API_KEY, $apiKey)
         ;
 
         return $this->handleView($view);
+    }
+
+    /**
+     * @param ParamFetcher $paramFetcher
+     * @param User $requestedUser
+     *
+     * @Security("user.getId() === requestedUser.getId()")
+     * @RequestParam(name="name", requirements="\S.*", allowBlank=false)
+     */
+    public function patchUserAction(ParamFetcher $paramFetcher, User $requestedUser)
+    {
+        $requestedUser->setName($paramFetcher->get('name'));
+
+        $this->entityManager->persist($requestedUser);
+        $this->entityManager->flush();
     }
 }

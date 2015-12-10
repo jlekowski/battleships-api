@@ -2,6 +2,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\User;
 use AppBundle\Entity\UserRepository;
 use AppBundle\Exception\UserNotFoundException;
 use AppBundle\Security\ApiKeyManager;
@@ -37,6 +38,7 @@ class UserTokenGenerateCommand extends ContainerAwareCommand
     {
         $userId = $input->getArgument('user_id');
 
+        /** @var User $user */
         $user = $this->getUserRepository()->find($userId);
         if (!$userId) {
             throw new UserNotFoundException('User `%s` does not exist', $userId);

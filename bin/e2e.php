@@ -20,28 +20,35 @@ try {
      */
 
     $data = new \stdClass();
-    $data->playerName = 'Player 13';
+    $data->name = 'New Player';
+    $requestDetails = new \RequestDetails('/users', 'POST', $data, 201);
+    $response = $apiRequest->call($requestDetails);
+    $location = $response->getHeader('Location');
+    preg_match('/\/(\d+)$/', $location, $match);
+    $userId = $match[1];
+    $userApiKey = $response->getHeader('Api-Key');
+    $apiRequest->setAuthToken($userApiKey);
+    echo "User Id: $userId\n";
+    echo "User API Key: $userApiKey\n";
+
+    $data = new \stdClass();
     $requestDetails = new \RequestDetails('/games', 'POST', $data, 201);
     $response = $apiRequest->call($requestDetails);
     $location = $response->getHeader('Location');
     preg_match('/\/(\d+)$/', $location, $match);
     $gameId = $match[1];
-    $gameToken = $response->getHeader('Game-Token');
-    $apiRequest->setAuthToken($gameToken);
     echo "Game Id: $gameId\n";
-    echo "Game Token: $gameToken\n";
 
     $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
     $response = $apiRequest->call($requestDetails);
     echo "Game for player\n";
-    $otherToken = $response->getJson()->otherHash;
     print_r($response->getJson());
 
     $data = new \stdClass();
-    $data->playerName = 'Player 132';
-    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
+    $data->name = 'New Player 132';
+    $requestDetails = new \RequestDetails(sprintf('/users/%s', $userId), 'PATCH', $data, 204);
     $response = $apiRequest->call($requestDetails);
-    echo "Game Patched (player name)\n";
+    echo "User Patched (name)\n";
     var_dump($response->getJson());
 
     echo "Game to be Patched (player ships)\n";
@@ -62,16 +69,40 @@ try {
     print_r($response->getJson());
 
 
+    $data = new \stdClass();
+    $data->name = 'New Other';
+    $requestDetails = new \RequestDetails('/users', 'POST', $data, 201);
+    $response = $apiRequest->call($requestDetails);
+    $location = $response->getHeader('Location');
+    preg_match('/\/(\d+)$/', $location, $match);
+    $otherId = $match[1];
+    $otherApiKey = $response->getHeader('Api-Key');
+    $apiRequest->setAuthToken($otherApiKey);
+    echo "Other Id: $otherId\n";
+    echo "Other API Key: $otherApiKey\n";
+
+    $requestDetails = new \RequestDetails('/games?available=true', 'GET', null, 200);
+    $response = $apiRequest->call($requestDetails);
+    echo "Available games for other\n";
+    print_r($response->getJson());
+
+    echo "Game to be Patched (other join)\n";
+    $data = new \stdClass();
+    $data->joinGame = true;
+    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
+    $response = $apiRequest->call($requestDetails);
+    echo "Game Patched (other join)\n";
+    var_dump($response->getJson());
+
     $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
-    $apiRequest->setAuthToken($otherToken);
     $response = $apiRequest->call($requestDetails);
     echo "Game for other\n";
     print_r($response->getJson());
 
     echo "Game to be Patched (other ships)\n";
-    $shipsData = new \stdClass();
-    $shipsData->playerShips = ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
-    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $shipsData, 204);
+    $data = new \stdClass();
+    $data->playerShips = ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
+    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
     $response = $apiRequest->call($requestDetails);
     echo "Game Patched (other ships)\n";
     var_dump($response->getJson());
@@ -96,7 +127,7 @@ try {
     $data->type = 'shot';
     $data->value = 'A10';
     $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);
-    $apiRequest->setAuthToken($gameToken);
+    $apiRequest->setAuthToken($userApiKey);
     $response = $apiRequest->call($requestDetails);
     echo "Shot added\n";
     print_r($response->getJson());

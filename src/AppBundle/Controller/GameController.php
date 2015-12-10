@@ -119,8 +119,14 @@ class GameController extends FOSRestController
      */
     public function postGameAction(ParamFetcher $paramFetcher)
     {
+        $user = $this->getUser();
+
         $game = new Game();
-        $game->setPlayerShips($paramFetcher->get('playerShips'));
+        $game
+            ->setLoggedUser($user)
+            ->setUser1($user)
+            ->setPlayerShips($paramFetcher->get('playerShips'))
+        ;
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
@@ -132,6 +138,7 @@ class GameController extends FOSRestController
 
     /**
      * @todo Think about multiple patching (207 response status) http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
+     * @todo specific response (http code?)
      *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
@@ -172,6 +179,8 @@ class GameController extends FOSRestController
     }
 
     /**
+     * @todo maybe go with subrequest to create event?
+     *
      * @param Game $game
      */
     private function createJoinGameEvent(Game $game)
