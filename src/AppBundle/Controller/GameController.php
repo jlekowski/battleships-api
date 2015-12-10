@@ -6,6 +6,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -70,12 +71,12 @@ class GameController extends FOSRestController
         return $game;
     }
 
-
     /**
      * @param ParamFetcher $paramFetcher
      * @return Response
      * @throws BadRequestHttpException
      *
+     * @Tag("games")
      * @QueryParam(name="available", requirements=@Assert\EqualTo("true"), nullable=true, strict=true)
      */
     public function getGamesAction(ParamFetcher $paramFetcher)
@@ -115,6 +116,7 @@ class GameController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return Response
      *
+     * @Tag("games")
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
      */
     public function postGameAction(ParamFetcher $paramFetcher)
@@ -139,10 +141,12 @@ class GameController extends FOSRestController
     /**
      * @todo Think about multiple patching (207 response status) http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
      * @todo specific response (http code?)
+     * @todo be more specific when clearing cache (setting ships does not require that?)
      *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      *
+     * @Tag("events")
      * @Security("request.request.get('joinGame') ? game.canJoin(user) : game.belongsToUser(user)")
      * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=false, nullable=true)
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
@@ -167,7 +171,6 @@ class GameController extends FOSRestController
             switch ($paramName) {
                 case 'joinGame':
                     $game->setUser2($this->getUser());
-                    // @todo need to clear events cache in this case
                     $this->createJoinGameEvent($game);
                     break;
 
