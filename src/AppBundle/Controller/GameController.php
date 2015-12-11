@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// @todo test caching games, events, available games etc.
 // @todo check strictly for URI, e.g. /v1/games/1b
 // @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
 // @todo headers for specific version?
@@ -64,7 +65,7 @@ class GameController extends FOSRestController
      * @param Game $game
      * @return Game
      *
-     * @Security("game.belongsToUser(user)")
+     * @Security("game.belongsToUser(user) || game.canJoin(user)")
      */
     public function getGameAction(Game $game)
     {
@@ -93,9 +94,8 @@ class GameController extends FOSRestController
      */
     protected function getAvailableGamesAction()
     {
-        $createdNotLongerThan = new \DateTime('-5 minutes');
-        $newGamesFilter = function (Game $game) use ($createdNotLongerThan) {
-            return $game->getTimestamp() >= $createdNotLongerThan;
+        $newGamesFilter = function (Game $game) {
+            return $game->isAvailable();
         };
 
         $games = $this->gameRepository->findAvailableForUser($this->getUser(), 5)->filter($newGamesFilter);
@@ -105,7 +105,7 @@ class GameController extends FOSRestController
         $oldestGame = $games->last();
         if ($oldestGame) {
             // if games found, cache expires oldest game + 5 minutes (if searched for games withing last 5 minutes)
-            $maxAge = $oldestGame->getTimestamp()->getTimestamp() - $createdNotLongerThan->getTimestamp();
+            $maxAge = $oldestGame->getTimestamp()->getTimestamp() + (Game::JOIN_LIMIT * 60);
             $view->getResponse()->setMaxAge($maxAge);
         }
 

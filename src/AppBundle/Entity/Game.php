@@ -21,6 +21,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Game implements LoggerAwareInterface
 {
+    // in minutes
+    const JOIN_LIMIT = 5;
+
     /**
      * @var integer
      *
@@ -370,7 +373,15 @@ class Game implements LoggerAwareInterface
      */
     public function canJoin(User $user)
     {
-        return ($this->getUserId2() === null) && ($this->getUserId1() !== $user->getId());
+        return $this->isAvailable() && ($this->getUserId2() === null) && ($this->getUserId1() !== $user->getId());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->getTimestamp() >= new \DateTime(sprintf('-%d minutes', self::JOIN_LIMIT));
     }
 
     /**
