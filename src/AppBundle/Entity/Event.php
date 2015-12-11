@@ -25,6 +25,7 @@ class Event
     const TYPE_JOIN_GAME = 'join_game';
     const TYPE_START_GAME = 'start_game';
     const TYPE_NAME_UPDATE = 'name_update';
+    const TYPE_NEW_GAME = 'new_game';
 
     /**
      * @var integer
@@ -57,9 +58,9 @@ class Event
      *
      * @ORM\Column(name="type", type="string", length=255)
      * @Assert\Choice(
-     *     {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE}
+     *     {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE, Event::TYPE_NEW_GAME}
      * )
-     * @AppAssert\UniqueEvent({Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME})
+     * @AppAssert\UniqueEvent({Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NEW_GAME})
      */
     private $type;
 
