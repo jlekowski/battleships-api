@@ -104,7 +104,7 @@ class EventController extends FOSRestController
      * @RequestParam(
      *     name="type",
      *     requirements=@Assert\Choice(
-     *         {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME}
+     *         {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE}
      *     ),
      *     allowBlank=false
      * )
