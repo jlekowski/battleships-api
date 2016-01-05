@@ -71,6 +71,8 @@ class EventController extends FOSRestController
     }
 
     /**
+     * @todo check if query is optimised enough
+     *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      * @return Collection
@@ -86,10 +88,16 @@ class EventController extends FOSRestController
      *     strict=true
      * )
      * @QueryParam(name="gt", requirements="\d+", nullable=true, strict=true)
+     * @QueryParam(name="player", requirements="[1-2]", nullable=true, strict=true)
      */
     public function getEventsAction(ParamFetcher $paramFetcher, Game $game)
     {
-        return $this->eventRepository->findForGameByType($game, $paramFetcher->get('type'), $paramFetcher->get('gt'));
+        return $this->eventRepository->findForGameByType(
+            $game,
+            $paramFetcher->get('type'),
+            $paramFetcher->get('gt'),
+            $paramFetcher->get('player')
+        );
     }
 
     /**

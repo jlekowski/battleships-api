@@ -19,11 +19,12 @@ class EventRepository extends EntityRepository
      * @param Game $game
      * @param string $eventType
      * @param int $gt With Id greater than
-     * @return Collection|Event[]
+     * @param int $player 1|2
+     * @return Event[]|Collection
      */
-    public function findForGameByType(Game $game, $eventType = null, $gt = null)
+    public function findForGameByType(Game $game, $eventType = null, $gt = null, $player = null)
     {
-        $criteria = $this->createFindForGameByTypeCriteria($game, $eventType);
+        $criteria = $this->createFindForGameByTypeAndPlayerCriteria($game, $eventType, $player);
         if ($gt !== null) {
             $criteria->andWhere(Criteria::expr()->gt('id', $gt));
         }
@@ -39,9 +40,7 @@ class EventRepository extends EntityRepository
      */
     public function findForGameByTypeAndPlayer(Game $game, $eventType, $player)
     {
-        $criteria = $this->createFindForGameByTypeCriteria($game, $eventType)
-            ->andWhere(Criteria::expr()->eq('player', $player))
-        ;
+        $criteria = $this->createFindForGameByTypeAndPlayerCriteria($game, $eventType, $player);
 
         return $this->matching($criteria);
     }
@@ -53,7 +52,7 @@ class EventRepository extends EntityRepository
      */
     public function findLastForGameByType(Game $game, $eventType)
     {
-        $criteria = $this->createFindForGameByTypeCriteria($game, $eventType)
+        $criteria = $this->createFindForGameByTypeAndPlayerCriteria($game, $eventType)
             ->setMaxResults(1)
             ->orderBy(['id' => 'DESC'])
         ;
@@ -64,9 +63,10 @@ class EventRepository extends EntityRepository
     /**
      * @param Game $game
      * @param string $eventType
+     * @param int $player 1|2
      * @return Criteria
      */
-    private function createFindForGameByTypeCriteria(Game $game, $eventType = null)
+    private function createFindForGameByTypeAndPlayerCriteria(Game $game, $eventType = null, $player = null)
     {
         $criteria = new Criteria();
         $expr = Criteria::expr();
@@ -74,6 +74,10 @@ class EventRepository extends EntityRepository
         $criteria->where($expr->eq('game', $game));
         if ($eventType !== null) {
             $criteria->andWhere($expr->eq('type', $eventType));
+        }
+
+        if ($player !== null) {
+            $criteria->andWhere($expr->eq('player', $player));
         }
 
         return $criteria;
