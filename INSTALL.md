@@ -30,6 +30,8 @@ CREATE DATABASE battleships CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 php bin/console doctrine:schema:validate
 php bin/console doctrine:schema:update --force
+OR
+php bin/console doctrine:schema:drop --force
 php bin/console doctrine:schema:validate
 
 # adding in apache VHOST to catch Authorization headers:
@@ -47,12 +49,12 @@ opcache.enable_cli=1
 opcache.memory_consumption=128
 opcache.interned_strings_buffer=8
 opcache.max_accelerated_files=4000
+opcache.validate_timestamps=1
 opcache.revalidate_freq=60
+opcache.revalidate_path=1
 opcache.save_comments=1
 opcache.fast_shutdown=1
 opcache.enable_file_override=1
-opcache.validate_timestamps=1
-opcache.revalidate_path=1
 
 
 ## OPCache exclusions (if needed)

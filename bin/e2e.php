@@ -51,6 +51,11 @@ try {
     echo "User Patched (name)\n";
     var_dump($response->getJson());
 
+    $requestDetails = new \RequestDetails(sprintf('/users/%s', $userId), 'GET', null, 200);
+    $response = $apiRequest->call($requestDetails);
+    echo "User details\n";
+    print_r($response->getJson());
+
     echo "Game to be Patched (player ships)\n";
     $shipsData = new \stdClass();
     $shipsData->playerShips = ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
@@ -113,15 +118,6 @@ try {
     $response = $apiRequest->call($requestDetails);
     echo "Game started\n";
     var_dump($response->getJson());
-
-    // @todo for now it doesn't work - this should be for user update
-//    echo "Game to be Patched after start (player name)\n";
-//    $data = new \stdClass();
-//    $data->playerName = 'Player 234';
-//    $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
-//    $response = $apiRequest->call($requestDetails);
-//    echo "Game Patched after start (player name)\n";
-//    var_dump($response->getJson());
 
     $data = new \stdClass();
     $data->type = 'shot';
