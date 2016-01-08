@@ -18,9 +18,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @todo maybe validate params http://symfony.com/doc/current/bundles/FOSRestBundle/param_fetcher_listener.html
- */
 class EventController extends FOSRestController
 {
     /**

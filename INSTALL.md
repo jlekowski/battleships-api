@@ -43,6 +43,10 @@ export SYMFONY_ENV=prod
 composer install --optimize-autoloader --no-dev
 php bin/console cache:clear --env=prod --no-debug
 
+# some say it works (no difference for me) - edit php.ini (e.g. /etc/php5/apache2/php.ini)
+set realpath_cache_size = 4096k
+realpath_cache_ttl = 7200
+
 # Setup OPCache - edit php.ini (e.g. /etc/php5/apache2/php.ini)
 opcache.enable=1
 opcache.enable_cli=1
@@ -78,14 +82,14 @@ opcache.blacklist_filename=/etc/php5/opcache-blacklist.txt
 ## for instance websockets support
 https://github.com/mattiasgeniar/varnish-4.0-configuration-templates/blob/master/default.vcl
 
-## handy commanads:
+## handy commands:
 varnishncsa -F '%U%q (%m) %{Varnish:hitmiss}x' -n ubuntu # see varnish hits
 sudo varnishadm "ban req.url ~ /" # ban/clear cache
 
 # install varnish
 sudo apt-get install varnish
 
-# To change web server port to 8080, change listen and all enabled/available sites
+# To change web server port to 8080 (127.0.0.1:8080), change listen and all enabled/available sites
 ## apache:
 sudo vim /etc/apache2/ports.conf
 grep 80 /etc/apache2/sites-enabled/*
@@ -111,7 +115,7 @@ vcl 4.0;
 
 # Default backend definition. Set this to point to your content server.
 backend default {
-    .host = "battleships-api.dev.lekowski.pl";
+    .host = "127.0.0.1";
     .port = "8080";
 }
 
@@ -242,7 +246,7 @@ sub vcl_deliver {
 }
 
 acl invalidators {
-    "localhost";
+    "127.0.0.1";
     # Add any other IP addresses that your application runs on and that you
     # want to allow invalidation requests from. For instance:
     #"192.168.1.0"/24;
