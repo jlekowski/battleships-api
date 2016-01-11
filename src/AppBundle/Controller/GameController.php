@@ -65,6 +65,7 @@ class GameController extends FOSRestController
      * @param Game $game
      * @return Game
      *
+     * @Tag(expression="'game-' ~ game.getId()")
      * @Security("game.belongsToUser(user) || game.canJoin(user)")
      */
     public function getGameAction(Game $game)
@@ -105,8 +106,8 @@ class GameController extends FOSRestController
         $oldestGame = $games->last();
         if ($oldestGame) {
             // if games found, cache expires oldest game + 5 minutes (if searched for games withing last 5 minutes)
-            $maxAge = $oldestGame->getTimestamp()->getTimestamp() + (Game::JOIN_LIMIT * 60);
-            $view->getResponse()->setMaxAge($maxAge);
+            $maxAge = Game::JOIN_LIMIT - (time() - $oldestGame->getTimestamp()->getTimestamp());
+            $view->getResponse()->setSharedMaxAge($maxAge);
         }
 
         return $this->handleView($view);
@@ -146,6 +147,7 @@ class GameController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      *
+     * @Tag(expression="'game-' ~ game.getId()")
      * @Tag("events")
      * @Security("request.request.get('joinGame') ? game.canJoin(user) : game.belongsToUser(user)")
      * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=false, nullable=true)

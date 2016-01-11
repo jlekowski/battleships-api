@@ -162,14 +162,9 @@ sub vcl_recv {
         set req.hash_always_miss = true;
     }
 
-    # by default PATCH requests are not supported
-    if (req.method == "PATCH") {
-        return (pass);
-    }
-
     # by default OPTIONS requests are not supported and I want return header for OPTIONS requests
     if (req.method == "OPTIONS") {
-        #return (synth(204, "No Content"))
+        #return (synth(204, "No Content"));
         return (pass);
     }
 
@@ -263,6 +258,12 @@ DAEMON_OPTS="-a :80 \
              -s malloc,256m"
 ```
 sudo netstat -tulpn
+
+# To update iptables rules
+sudo vim /etc/iptables/rules.v4
+-A INPUT -p tcp -m tcp --dport 8080 -s 127.0.0.1 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 6082 -s 127.0.0.1 -j ACCEPT
+sudo service iptables-persistent restart
 
 # If varnish keeps listening on 6081
 sudo vim /lib/systemd/system/varnish.service

@@ -6,6 +6,7 @@ use AppBundle\Entity\User;
 use AppBundle\Http\Headers;
 use AppBundle\Security\ApiKeyManager;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -40,6 +41,7 @@ class UserController extends FOSRestController
      * @param User $requestedUser
      * @return User
      *
+     * @Tag(expression="'user-' ~ requestedUser.getId()")
      * @Security("user.getId() === requestedUser.getId()")
      */
     public function getUserAction(User $requestedUser)
@@ -74,6 +76,7 @@ class UserController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @param User $requestedUser
      *
+     * @Tag(expression="'user-' ~ requestedUser.getId()")
      * @Security("user.getId() === requestedUser.getId()")
      * @RequestParam(name="name", requirements="\S.*", allowBlank=false)
      */
