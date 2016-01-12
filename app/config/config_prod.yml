@@ -6,6 +6,10 @@ framework:
         cache: app.validator.cache
     serializer:
         cache: serializer.mapping.cache.apc
+    profiler: { enabled: "%kernel.debug%" }
+
+web_profiler:
+    toolbar: "%kernel.debug%"
 
 doctrine:
     orm:
@@ -38,6 +42,8 @@ monolog:
             type:  console
 
 fos_http_cache:
+    debug:
+        enabled: "%kernel.debug%"
     tags:
         enabled: "%varnish_enabled%"
     cache_manager:

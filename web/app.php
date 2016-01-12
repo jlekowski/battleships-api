@@ -1,5 +1,8 @@
 <?php
 
+$start = microtime(true);
+$uri = $_SERVER['REQUEST_URI'];
+
 use Symfony\Component\ClassLoader\ApcClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,7 +22,7 @@ $apcLoader->register(true);
 
 //require_once __DIR__ . '/../app/AppCache.php';
 
-$kernel = new AppKernel('prod', false);
+$kernel = new AppKernel('prod', true);
 $kernel->loadClassCache();
 // HttpCache does not support HttpCacheBundle Tags so POST /events does not invalidate GET /events?gt=0
 //$kernel = new AppCache($kernel);
@@ -30,3 +33,6 @@ $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);
+
+file_put_contents(__DIR__ . '/../temp.log',  sprintf("%s (%s) - %s\n",  $uri, $_SERVER['REQUEST_METHOD'], (microtime(true) - $start)), FILE_APPEND);
+
