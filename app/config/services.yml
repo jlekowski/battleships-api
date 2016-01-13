@@ -71,6 +71,17 @@ services:
         class: AppBundle\Battle\BattleManager
         arguments: [@app.entity.event_repository]
 
+    app.validator.cache.apc:
+        class: Doctrine\Common\Cache\ApcuCache
+        public: false
+        calls:
+            - [setNamespace, ['symfony.validator']]
+
+    app.validator.cache:
+        class: Symfony\Component\Validator\Mapping\Cache\DoctrineCache
+        public: false
+        arguments: ['@app.validator.cache.apc']
+
     app.validator.only_before_start_validator:
         class: AppBundle\Validator\Constraints\OnlyBeforeStartValidator
         arguments: [@app.entity.event_repository]

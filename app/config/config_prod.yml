@@ -3,7 +3,7 @@ imports:
 
 framework:
     validation:
-        cache: validator.mapping.cache.apc
+        cache: app.validator.cache
     serializer:
         cache: serializer.mapping.cache.apc
 
@@ -27,7 +27,7 @@ monolog:
         loggly:
             type:   loggly
             token:  "%loggly_token%"
-            level:  info
+            level:  warning
             tag:    "%loggly_tag%"
         login:
             type:     stream
