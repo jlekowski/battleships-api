@@ -72,7 +72,7 @@ class EventController extends FOSRestController
      *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
-     * @return Collection
+     * @return array
      *
      * @Tag("events")
      * @Security("game.belongsToUser(user)")
@@ -94,7 +94,7 @@ class EventController extends FOSRestController
             $paramFetcher->get('type'),
             $paramFetcher->get('gt'),
             $paramFetcher->get('player')
-        );
+        )->toArray();
     }
 
     /**

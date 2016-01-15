@@ -5,7 +5,6 @@ namespace AppBundle\Security;
 use AppBundle\Exception\InvalidApiKeyException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\ServerBag;
-use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,6 +12,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\SimplePreAuthenticatorInterface;
 
 class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
 {

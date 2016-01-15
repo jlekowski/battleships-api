@@ -49,9 +49,6 @@ services:
         calls:
             - [setContainer, ['@service_container']]
 
-    app.handler.exception_wrapper_handler:
-        class: AppBundle\Handler\ExceptionWrapperHandler
-
     app.command.user_token_generate_command:
         class: AppBundle\Command\UserTokenGenerateCommand
         calls:
