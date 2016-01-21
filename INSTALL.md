@@ -24,9 +24,14 @@ php bin/security-checker security:check
 # in Symfony 3
 php bin/console security:check
 
-HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
-sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs var/sessions
-sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs var/sessions
+# From http://symfony.com/doc/current/book/installation.html
+HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
+sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
+# or
+HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+sudo chmod +a "$HTTPDUSER allow delete,write,append,file_inherit,directory_inherit" var
+sudo chmod +a "`whoami` allow delete,write,append,file_inherit,directory_inherit" var
 
 
 composer require "jms/serializer-bundle" "@stable"
@@ -280,3 +285,24 @@ systemctl reload varnish.service
 systemctl daemon-reload
 
 sudo netstat -tulpn
+
+# PHP7 installation
+#sudo apt-get install python-software-properties
+sudo add-apt-repository ppa:ondrej/php-7.0
+sudo apt-get update
+sudo apt-get purge php5-fpm -y
+sudo apt-get install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php-apcu php-apcu-bc -y
+sudo apt-get --purge autoremove -y
+
+php -v
+php -m | grep apc
+
+# to set OPCache
+sudo vim /etc/php/7.0/fpm/php.ini
+sudo vim /etc/php/7.0/cli/php.ini
+
+# replace with /var/run/php/php7.0-fpm.sock
+grep php5 /etc/nginx/sites-enabled/*
+
+sudo service nginx restart
+sudo service php7.0-fpm restart
