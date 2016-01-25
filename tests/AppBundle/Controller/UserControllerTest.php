@@ -4,9 +4,8 @@ namespace Tests\AppBundle\Controller;
 
 use AppBundle\Http\Headers;
 use Doctrine\Bundle\DoctrineBundle\DataCollector\DoctrineDataCollector;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class UserControllerTest extends WebTestCase
+class UserControllerTest extends AbstractApiTestCase
 {
     public function testAddUser()
     {
@@ -33,22 +32,7 @@ class UserControllerTest extends WebTestCase
         );
 
         // @todo check that after every request
-        $this->assertTrue(
-            $response->headers->contains('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With'),
-            'Missing "Access-Control-Allow-Headers: Content-Type, Authorization, Accept, X-Requested-With" header'
-        );
-        $this->assertTrue(
-            $response->headers->contains('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS'),
-            'Missing "Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS" header'
-        );
-        $this->assertTrue(
-            $response->headers->contains('Access-Control-Allow-Origin', '*'),
-            'Missing "Access-Control-Allow-Origin: *" header'
-        );
-        $this->assertTrue(
-            $response->headers->contains('Access-Control-Expose-Headers', 'Location, Api-Key'),
-            'Missing "Access-Control-Expose-Headers: Location, Api-Key" header'
-        );
+        $this->assertCorsResponse($response);
 
         $locationHeader = $response->headers->get('Location');
         $this->assertStringMatchesFormat('http://localhost/v1/users/%d', $locationHeader);
@@ -153,6 +137,14 @@ class UserControllerTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode(), $response);
         $this->assertEquals(['name' => 'Functional Test'], $jsonResponse, $response);
+        // @todo after every JSON request
+        $this->assertTrue(
+            $response->headers->contains('Content-Type', 'application/json'),
+            'Missing "Content-Type: application/json" header'
+        );
+
+        // @todo check that after every request
+        $this->assertCorsResponse($response);
 
         $profile = $client->getProfile();
         /** @var DoctrineDataCollector $doctrineDataCollector */
@@ -208,5 +200,144 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddUser
+     * @param array $userData
+     */
+    public function testEditUserName(array $userData)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $client->request(
+            'PATCH',
+            '/v1/users/' . $userData['id'],
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            '{"name":"Functional Test Edited"}'
+        );
+        $response = $client->getResponse();
+
+
+        $this->assertEquals(204, $response->getStatusCode(), $response);
+        $this->assertEquals('', $response->getContent(), $response);
+        // @todo after every JSON request
+        $this->assertFalse(
+            $response->headers->contains('Content-Type', 'application/json'),
+            'No need for "Content-Type: application/json" header'
+        );
+
+        // @todo check that after every request
+        $this->assertCorsResponse($response);
+
+        $profile = $client->getProfile();
+        /** @var DoctrineDataCollector $doctrineDataCollector */
+        $doctrineDataCollector = $profile->getCollector('db');
+        // SELECT, START TRANSACTION, UPDATE, COMMIT
+        $this->assertEquals(4, $doctrineDataCollector->getQueryCount());
+    }
+
+    /**
+     * @depends testAddUser
+     * @param array $userData
+     */
+    public function testEditUserNameMissingNameError(array $userData)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $client->request(
+            'PATCH',
+            '/v1/users/' . $userData['id'],
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
+        $this->assertEquals('Request parameter "name" is empty', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddUser
+     * @param array $userData
+     */
+    public function testEditUserNameInvalidNameError(array $userData)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $client->request(
+            'PATCH',
+            '/v1/users/' . $userData['id'],
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            '{"name":"   "}'
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
+        $this->assertStringStartsWith('Request parameter name value \'   \' violated a constraint', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddUser
+     * @param array $userData
+     */
+    public function testEditUserIncorrectUserIdError(array $userData)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $client->request(
+            'PATCH',
+            '/v1/users/' . ($userData['id'] - 1),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            '{"name":"Invalid"}'
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+
+        $this->assertEquals(403, $response->getStatusCode(), $response);
+        $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddUser
+     * @param array $userData
+     */
+    public function testEditUserIncorrectApiKeyError(array $userData)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $client->request(
+            'PATCH',
+            '/v1/users/' . $userData['id'],
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer wrong2']
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+
+        $this->assertEquals(401, $response->getStatusCode(), $response);
+        $this->assertEquals(210, $jsonResponse['code'], $response->getContent());
+        $this->assertEquals('API key `wrong2` is invalid', $jsonResponse['message'], $response->getContent());
     }
 }
