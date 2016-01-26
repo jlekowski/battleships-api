@@ -170,6 +170,31 @@ class GameControllerTest extends AbstractApiTestCase
     }
 
     /**
+     * @depends testAddGame
+     * @param int $gameId
+     */
+    public function testEditGameJoinGameError($gameId)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $client->request(
+            'PATCH',
+            '/v1/games/' . $gameId,
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . self::$userData['apiKey']],
+            '{"joinGame":true}'
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(403, $response->getStatusCode(), $response);
+        $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
      * @param Response $response
      * @param Profile $profile
      */
