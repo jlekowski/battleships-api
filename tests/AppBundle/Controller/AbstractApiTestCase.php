@@ -2,11 +2,40 @@
 
 namespace Tests\AppBundle\Controller;
 
+use AppBundle\Entity\User;
+use AppBundle\Security\ApiKeyManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractApiTestCase extends WebTestCase
 {
+    /**
+     * @var array
+     */
+    protected static $userData = [];
+
+    public static function setUpBeforeClass()
+    {
+        if (empty(self::$userData)) {
+            $container = static::createClient()->getContainer();
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $container->get('doctrine.orm.default_entity_manager');
+            /** @var ApiKeyManager $apiKeyManager */
+            $apiKeyManager = $container->get('app.security.api_key_manager');
+
+            $user = new User();
+            $user->setName('Pre-Test User');
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $apiKey = $apiKeyManager->generateApiKeyForUser($user);
+
+            self::$userData = ['id' => $user->getId(), 'apiKey' => $apiKey, 'name' => $user->getName()];
+        }
+    }
+
     /**
      * @param Response $response
      */

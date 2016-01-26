@@ -82,7 +82,7 @@ class UserControllerTest extends AbstractApiTestCase
             '/v1/users',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json']
+            ['HTTP_ACCEPT' => 'application/json']
         );
 
         $response = $client->getResponse();

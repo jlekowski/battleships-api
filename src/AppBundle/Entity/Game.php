@@ -140,12 +140,15 @@ class Game implements LoggerAwareInterface
     }
 
     /**
-     * @param User $user1
+     * @param User $user
      * @return $this
      */
-    public function setUser1(User $user1)
+    public function setUser1(User $user)
     {
-        $this->user1 = $user1;
+        $this->user1 = $user;
+        if ($this->getUserId1() !== $user->getId()) {
+            $this->userId1 = $user->getId();
+        }
 
         return $this;
     }
@@ -167,12 +170,15 @@ class Game implements LoggerAwareInterface
     }
 
     /**
-     * @param User $user2
+     * @param User $user
      * @return $this
      */
-    public function setUser2(User $user2)
+    public function setUser2(User $user)
     {
-        $this->user2 = $user2;
+        $this->user2 = $user;
+        if ($this->getUserId2() !== $user->getId()) {
+            $this->userId2 = $user->getId();
+        }
 
         return $this;
     }
