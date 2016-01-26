@@ -28,7 +28,7 @@ class GameControllerTest extends AbstractApiTestCase
     }
 
     /**
-     * @return int
+     * @return array
      */
     public function testAddGameWithShips()
     {
@@ -123,11 +123,50 @@ class GameControllerTest extends AbstractApiTestCase
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
-        print_r($jsonResponse);
-        print_r($gameDetails);
 
         $this->validateGetGameCore($response, $client->getProfile());
         $this->validateGetGameResponse($jsonResponse, $gameDetails['id'], self::$userData['name'], $gameDetails['ships']);
+    }
+
+    /**
+     * @depends testAddGame
+     * @param int $gameId
+     */
+    public function testEditGame($gameId)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $body = [
+            'playerShips' => ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
+        ];
+        $client->request(
+            'PATCH',
+            '/v1/games/' . $gameId,
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . self::$userData['apiKey']],
+            json_encode($body)
+        );
+        $response = $client->getResponse();
+
+
+        $this->assertEquals(204, $response->getStatusCode(), $response);
+        $this->assertEquals('', $response->getContent(), $response);
+        // @todo after every JSON request
+        $this->assertFalse(
+            $response->headers->contains('Content-Type', 'application/json'),
+            'No need for "Content-Type: application/json" header'
+        );
+
+        // @todo check that after every request
+        $this->assertCorsResponse($response);
+
+        $profile = $client->getProfile();
+        /** @var DoctrineDataCollector $doctrineDataCollector */
+        $doctrineDataCollector = $profile->getCollector('db');
+        // SELECT user, SELECT game, START TRANSACTION, SELECT event, UPDATE, COMMIT
+        $this->assertEquals(6, $doctrineDataCollector->getQueryCount());
     }
 
     /**
