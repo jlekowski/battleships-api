@@ -2,10 +2,9 @@
 
 namespace AppBundle\Validator\Constraints;
 
-use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Exception\GameFlowException;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -16,16 +15,16 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class OnlyBeforeStartValidator extends ConstraintValidator
 {
     /**
-     * @var EventRepository
+     * @var EntityManagerInterface
      */
-    protected $eventRepository;
+    protected $entityManager;
 
     /**
-     * @param EventRepository $eventRepository
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EventRepository $eventRepository)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->eventRepository = $eventRepository;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -37,12 +36,11 @@ class OnlyBeforeStartValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, sprintf('%s\OnlyBeforeStart', __NAMESPACE__));
         }
 
-        $root = $this->context->getRoot();
-        if (!$root instanceof Game) {
-            return;
+        if (!$value instanceof Game) {
+            throw new UnexpectedTypeException($value, 'AppBundle\Entity\Game');
         }
 
-        if ($this->hasGameAlreadyStarted($root)) {
+        if ($this->hasGameAlreadyStarted($value)) {
             throw new GameFlowException('Ships can\'t be changed - game has already started');
         }
     }
@@ -53,8 +51,16 @@ class OnlyBeforeStartValidator extends ConstraintValidator
      */
     protected function hasGameAlreadyStarted(Game $game)
     {
-        $events = $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_START_GAME, $game->getPlayerNumber());
+        $unitOfWork = $this->entityManager->getUnitOfWork();
+        $changes = $unitOfWork->getEntityChangeSet($game);
+        $changeFieldKey = sprintf('user%dShips', $game->getPlayerNumber());
 
-        return !$events->isEmpty();
+        // old ships if changed, or current ships
+        $playerShipsBeforeChanges = isset($changes[$changeFieldKey])
+            ? $changes[$changeFieldKey][0]
+            : $game->getPlayerShips();
+
+        // game started if ships already set
+        return count($playerShipsBeforeChanges) > 0;
     }
 }

@@ -155,46 +155,35 @@ class GameController extends FOSRestController
      */
     public function patchGameAction(ParamFetcher $paramFetcher, Game $game)
     {
-        $this->updateGameFromArray($game, $paramFetcher->all());
+        // @todo - do we need both events if both parameters set in one request?
+        if ($paramFetcher->get('joinGame')) {
+            $game->setUser2($this->getUser());
+            $this->createEvent($game, Event::TYPE_JOIN_GAME);
+        }
+
+        $playerShips = $paramFetcher->get('playerShips');
+        if ($playerShips) {
+            $game->setPlayerShips($playerShips);
+            $this->createEvent($game, Event::TYPE_START_GAME);
+        }
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
     }
 
     /**
-     * @param Game $game
-     * @param array $params
-     */
-    protected function updateGameFromArray(Game $game, array $params)
-    {
-        // non-null values only
-        $params = array_filter($params);
-        foreach ($params as $paramName => $param) {
-            switch ($paramName) {
-                case 'joinGame':
-                    $game->setUser2($this->getUser());
-                    $this->createJoinGameEvent($game);
-                    break;
-
-                case 'playerShips':
-                    $game->setPlayerShips($param);
-                    break;
-            }
-        }
-    }
-
-    /**
      * @todo maybe go with subrequest to create event?
      *
      * @param Game $game
+     * @param string $eventType
      */
-    private function createJoinGameEvent(Game $game)
+    private function createEvent(Game $game, $eventType)
     {
         $event = new Event();
         $event
             ->setGame($game)
             ->setPlayer($game->getPlayerNumber())
-            ->setType(Event::TYPE_JOIN_GAME)
+            ->setType($eventType)
         ;
         $this->entityManager->persist($event);
     }

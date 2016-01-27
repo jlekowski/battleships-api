@@ -84,7 +84,7 @@ services:
 
     app.validator.only_before_start_validator:
         class: AppBundle\Validator\Constraints\OnlyBeforeStartValidator
-        arguments: ['@app.entity.event_repository']
+        arguments: ['@doctrine.orm.default_entity_manager']
         tags:
             - { name: validator.constraint_validator, alias: only_before_start_validator }
 

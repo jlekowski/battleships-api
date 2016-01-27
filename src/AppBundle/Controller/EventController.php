@@ -7,7 +7,6 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;

@@ -113,13 +113,6 @@ try {
     var_dump($response->getJson());
 
     $data = new \stdClass();
-    $data->type = 'start_game';
-    $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);
-    $response = $apiRequest->call($requestDetails);
-    echo "Game started\n";
-    var_dump($response->getJson());
-
-    $data = new \stdClass();
     $data->type = 'shot';
     $data->value = 'A10';
     $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);

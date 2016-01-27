@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="AppBundle\Entity\GameRepository")
  * @ORM\HasLifecycleCallbacks()
  *
+ * @AppAssert\OnlyBeforeStart(groups={"update"})
+ *
  * @Serializer\ExclusionPolicy("all")
  * @todo Unique field for hash and other keys(?) + table relations/foreign keys
  */
@@ -283,7 +285,6 @@ class Game implements LoggerAwareInterface
     /**
      * @Serializer\VirtualProperty
      * @AppAssert\Ships(groups={"Default", "update"})
-     * @AppAssert\OnlyBeforeStart(groups={"update"})
      *
      * @return array
      */
