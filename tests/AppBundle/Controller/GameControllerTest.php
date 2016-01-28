@@ -54,6 +54,60 @@ class GameControllerTest extends AbstractApiTestCase
         return ['id' => $gameId, 'ships' => $body['playerShips']];
     }
 
+    public function testAddGameWithShipsInvalidCoordError()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $userData = $this->getUserData(1);
+
+        $body = [
+            'playerShips' => ['A11']
+        ];
+        $client->request(
+            'POST',
+            '/v1/games',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            json_encode($body)
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat(
+            'Request parameter playerShips value \'A11\' violated a constraint %s',
+            $jsonResponse['message'],
+            $response->getContent()
+        );
+    }
+
+    public function testAddGameWithShipsInvalidShipsError()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $userData = $this->getUserData(1);
+
+        $body = [
+            'playerShips' => ['B2','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
+        ];
+        $client->request(
+            'POST',
+            '/v1/games',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            json_encode($body)
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(150, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat('Number of ships\' types is incorrect', $jsonResponse['message'], $response->getContent());
+    }
+
     /**
      * @depends testAddGame
      * @param int $gameId
@@ -360,7 +414,7 @@ class GameControllerTest extends AbstractApiTestCase
         $this->assertInternalType('array', $jsonResponse);
         $this->assertNotEmpty($jsonResponse, 'Expected to get at least 1 game available');
         $this->validateGetGamesCore($response, $client->getProfile());
-        $this->validateGetGameResponse(reset($jsonResponse), $gameDetails['id'], '', [], $this->getUserData(1), 2);
+        $this->validateGetGameResponse(reset($jsonResponse), $gameDetails['id'], [], [], $this->getUserData(1), 2);
     }
 
     /**
