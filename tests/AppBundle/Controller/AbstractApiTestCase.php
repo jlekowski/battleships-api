@@ -13,35 +13,19 @@ abstract class AbstractApiTestCase extends WebTestCase
     /**
      * @var array
      */
-    private static $user1Data;
+    private static $userData;
 
     /**
-     * @var array
-     */
-    private static $user2Data;
-
-    /**
+     * @param int $userIndex
      * @return array
      */
-    protected function getUser1Data()
+    protected function getUserData($userIndex)
     {
-        if (empty(self::$user1Data)) {
-            self::$user1Data = $this->createUserData('Test User1');
+        if (!isset(self::$userData[$userIndex])) {
+            self::$userData[$userIndex] = $this->createUserData('Test User' . $userIndex);
         }
 
-        return self::$user1Data;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getUser2Data()
-    {
-        if (empty(self::$user2Data)) {
-            self::$user2Data = $this->createUserData('Test User2');
-        }
-
-        return self::$user2Data;
+        return self::$userData[$userIndex];
     }
 
     /**
