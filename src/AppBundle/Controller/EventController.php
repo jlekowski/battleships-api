@@ -73,7 +73,7 @@ class EventController extends FOSRestController
      * @param Game $game
      * @return array
      *
-     * @Tag("events")
+     * @Tag(expression="'game-' ~ game.getId() ~ 'events'")
      * @Security("game.belongsToUser(user)")
      * @QueryParam(
      *     name="type",
@@ -103,7 +103,7 @@ class EventController extends FOSRestController
      * @param Game $game
      * @return Response
      *
-     * @Tag("events")
+     * @Tag(expression="'game-' ~ game.getId() ~ 'events'")
      * @Security("game.belongsToUser(user)")
      * @RequestParam(
      *     name="type",

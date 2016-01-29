@@ -137,7 +137,7 @@ class GameController extends FOSRestController
      * @param Game $game
      *
      * @Tag(expression="'game-' ~ game.getId()")
-     * @Tag("events")
+     * @Tag(expression="'game-' ~ game.getId() ~ 'events'"))
      * @Security("request.request.get('joinGame') ? game.canJoin(user) : game.belongsToUser(user)")
      * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=false, nullable=true)
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
