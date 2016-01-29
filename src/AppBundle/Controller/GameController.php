@@ -27,17 +27,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @todo what URI for shot? It's an update of game/{id/hash}|game/{id/hash}/shots resource and I need a result
  * @todo what URI for ships? It's an update of game/{id/hash} resource, or adding multiple game/{id/hash}/ships resources?
  * @todo maybe go with batch requests (to get game for example) https://parse.com/docs/rest/guide
- * /games POST
- * /games/{id/hash} GET
- * /games/{id/hash} PATCH
-// * /games/{id/hash}/battle GET
- * /games/{id/hash}/events?type={event_type}&gt={id_last_event} GET
- * /games/{id/hash}/events/{event_id} GET
- * /games/{id/hash}/events POST
-// * /games/{id/hash}/chats GET
-// * /games/{id/hash}/chats POST
-// * /games/{id/hash}/shots GET
-// * /games/{id/hash}/shots POST
  */
 class GameController extends FOSRestController
 {

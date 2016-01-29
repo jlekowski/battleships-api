@@ -160,6 +160,80 @@ class GameControllerTest extends AbstractApiTestCase
      * @depends testAddGame
      * @param int $gameId
      */
+    public function testGetGameNotExistingGameError($gameId)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $userData = $this->getUserData(1);
+
+        $client->request(
+            'GET',
+            '/v1/games/' . ($gameId + 100),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(404, $response->getStatusCode(), $response);
+        $this->assertEquals(404, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat('AppBundle\\Entity\\Game object not found.', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddGame
+     * @param int $gameId
+     */
+    public function testGetGameInvalidGameSuccess($gameId)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $userData = $this->getUserData(1);
+
+        $client->request(
+            'GET',
+            '/v1/games/' . ($gameId . 'b'),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->validateGetGameCore($response, $client->getProfile());
+        $this->validateGetGameResponse($jsonResponse, $gameId, $userData);
+    }
+
+    /**
+     * @depends testAddGame
+     * @param int $gameId
+     */
+    public function testGetGameInvalidGameError($gameId)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $userData = $this->getUserData(1);
+
+        $client->request(
+            'GET',
+            '/v1/games/' . ('b' . $gameId),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(404, $response->getStatusCode(), $response);
+        $this->assertEquals(404, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat('AppBundle\\Entity\\Game object not found.', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddGame
+     * @param int $gameId
+     */
     public function testGetGameUser2($gameId)
     {
         $client = static::createClient();
@@ -203,23 +277,7 @@ class GameControllerTest extends AbstractApiTestCase
         );
         $response = $client->getResponse();
 
-
-        $this->assertEquals(204, $response->getStatusCode(), $response);
-        $this->assertEquals('', $response->getContent(), $response);
-        // @todo after every JSON request
-        $this->assertFalse(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'No need for "Content-Type: application/json" header'
-        );
-
-        // @todo check that after every request
-        $this->assertCorsResponse($response);
-
-        $profile = $client->getProfile();
-        /** @var DoctrineDataCollector $doctrineDataCollector */
-        $doctrineDataCollector = $profile->getCollector('db');
-        // SELECT user, SELECT game, SELECT event, START TRANSACTION, INSERT event, UPDATE game, COMMIT
-        $this->assertEquals(7, $doctrineDataCollector->getQueryCount());
+        $this->validateEditGameCore($response, $client->getProfile());
     }
 
     /**
@@ -269,23 +327,7 @@ class GameControllerTest extends AbstractApiTestCase
         );
         $response = $client->getResponse();
 
-
-        $this->assertEquals(204, $response->getStatusCode(), $response);
-        $this->assertEquals('', $response->getContent(), $response);
-        // @todo after every JSON request
-        $this->assertFalse(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'No need for "Content-Type: application/json" header'
-        );
-
-        // @todo check that after every request
-        $this->assertCorsResponse($response);
-
-        $profile = $client->getProfile();
-        /** @var DoctrineDataCollector $doctrineDataCollector */
-        $doctrineDataCollector = $profile->getCollector('db');
-        // SELECT user, SELECT game, SELECT event (join_game), START TRANSACTION, INSERT INTO, UPDATE, COMMIT
-        $this->assertEquals(7, $doctrineDataCollector->getQueryCount());
+        $this->validateEditGameCore($response, $client->getProfile());
 
         return $gameId;
     }
@@ -445,6 +487,33 @@ class GameControllerTest extends AbstractApiTestCase
     }
 
     /**
+     * @depends testAddGameWithShips
+     * @param array $gameDetails
+     */
+    public function testEditGameJoinGameAndShips(array $gameDetails)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $userData = $this->getUserData(2);
+
+        $body = [
+            'joinGame' => true,
+            'playerShips' => ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
+        ];
+        $client->request(
+            'PATCH',
+            '/v1/games/' . $gameDetails['id'],
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            json_encode($body)
+        );
+        $response = $client->getResponse();
+
+        $this->validateEditGameCore($response, $client->getProfile(), 2);
+    }
+
+    /**
      * @param Response $response
      * @param Profile $profile
      * @return mixed
@@ -502,6 +571,30 @@ class GameControllerTest extends AbstractApiTestCase
         /** @var DoctrineDataCollector $doctrineDataCollector */
         $doctrineDataCollector = $profile->getCollector('db');
         $this->assertEquals($otherUser ? 3 : 2, $doctrineDataCollector->getQueryCount());
+    }
+
+    /**
+     * @param Response $response
+     * @param Profile $profile
+     * @param int $paramCount
+     */
+    protected function validateEditGameCore(Response $response, Profile $profile, $paramCount = 1)
+    {
+        $this->assertEquals(204, $response->getStatusCode(), $response);
+        $this->assertEquals('', $response->getContent(), $response);
+        // @todo after every JSON request
+        $this->assertFalse(
+            $response->headers->contains('Content-Type', 'application/json'),
+            'No need for "Content-Type: application/json" header'
+        );
+
+        // @todo check that after every request
+        $this->assertCorsResponse($response);
+
+        /** @var DoctrineDataCollector $doctrineDataCollector */
+        $doctrineDataCollector = $profile->getCollector('db');
+        // SELECT user, SELECT game, SELECT event * $paramCount (unique), START TRANSACTION, INSERT event * $paramCount, UPDATE game, COMMIT
+        $this->assertEquals(5 + $paramCount * 2, $doctrineDataCollector->getQueryCount());
     }
 
     /**
