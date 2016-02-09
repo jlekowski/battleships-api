@@ -15,7 +15,7 @@ class CacheApcClearCommand extends ContainerAwareCommand
     {
         $this
             ->setName('cache:apc:clear')
-            ->setDescription('Clear APC cache')
+            ->setDescription('Clears APC cache')
         ;
     }
 

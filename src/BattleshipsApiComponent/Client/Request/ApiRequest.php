@@ -1,103 +1,12 @@
 <?php
+// @todo move to a separate repo as a component
+// @todo make it pretty
 
-/**
- * Simple End-to-End API test
- */
+namespace BattleshipsApiComponent\Client\Request;
 
-require_once __DIR__ . '/../src/AppBundle/Entity/Event.php';
-require_once __DIR__ . '/../src/AppBundle/Http/Headers.php';
-
-use AppBundle\Entity\Event;
 use AppBundle\Http\Headers;
-
-$start = microtime(true);
-
-try {
-    $apiRequest = new \ApiRequest('http://battleships-api.dev.lekowski.pl/v1');
-
-    $user = $apiRequest->createUser('New Player');
-    $apiRequest->setAuthToken($user->apiKey);
-    echo "User Id: {$user->id}\n";
-    echo "User API Key: {$user->apiKey}\n";
-
-    $gameId = $apiRequest->createGame();
-    echo "Game Id: $gameId\n";
-
-    $response = $apiRequest->getGame($gameId);
-    echo "Game for player\n";
-    print_r($response->getJson());
-
-    $apiRequest->updateName($user->id, 'New Player 132');
-    echo "User Patched (name)\n";
-
-    $response = $apiRequest->getUser($user->id);
-    echo "User details\n";
-    print_r($response->getJson());
-
-    echo "Game to be Patched (player ships)\n";
-    $response = $apiRequest->updateGame(
-        $gameId,
-        ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
-    );
-    echo "Game Patched (player ships)\n";
-    print_r($response->getJson());
-
-    echo "Event to be Posted (chat)\n";
-    $response = $apiRequest->createEvent($gameId, Event::TYPE_CHAT, 'Test chat');
-    echo "Chat added\n";
-    print_r($response->getJson());
-
-    $other = $apiRequest->createUser('New Other');
-    $apiRequest->setAuthToken($other->apiKey);
-    echo "Other Id: {$other->id}\n";
-    echo "Other API Key: {$other->apiKey}\n";
-
-    $response = $apiRequest->getGamesAvailable();
-    echo "Available games for other\n";
-    print_r($response->getJson());
-
-    echo "Game to be Patched (other join)\n";
-    $response = $apiRequest->updateGame($gameId, [], true);
-    echo "Game Patched (other join)\n";
-    print_r($response->getJson());
-
-    $response = $apiRequest->getGame($gameId);
-    echo "Game for other\n";
-    print_r($response->getJson());
-
-    echo "Game to be Patched (other ships)\n";
-    $response = $apiRequest->updateGame(
-        $gameId,
-        ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
-    );
-    echo "Game Patched (other ships)\n";
-    print_r($response->getJson());
-
-    $apiRequest->setAuthToken($user->apiKey);
-    $response = $apiRequest->createEvent($gameId, Event::TYPE_SHOT, 'A10');
-    echo "Shot added\n";
-    print_r($response->getJson());
-
-    $response = $apiRequest->getEvents($gameId, 0);
-    print_r($response->getJson());
-
-    $response = $apiRequest->getEvents($gameId, 0, Event::TYPE_SHOT);
-    print_r($response->getJson());
-
-    $response = $apiRequest->getGame($gameId);
-    echo "Game for player\n";
-    print_r($response->getJson());
-
-} catch (\Exception $e) {
-    if (isset($user)) {
-        print_r($user);
-    }
-    printf("ERROR: %s (type: %s)\n", $e->getMessage(), get_class($e));
-    exit;
-}
-
-printf("\nFinished in %s\n", microtime(true) - $start);
-exit("OK\n");
+use BattleshipsApiComponent\Client\Exception\E2eException;
+use BattleshipsApiComponent\Client\Response\ApiResponse;
 
 class ApiRequest
 {
@@ -120,7 +29,7 @@ class ApiRequest
 
     /**
      * @param string $name
-     * @return stdClass
+     * @return \stdClass
      * @throws E2eException
      */
     public function createUser($name)
@@ -128,7 +37,7 @@ class ApiRequest
         $data = new \stdClass();
         $data->name = $name;
 
-        $requestDetails = new \RequestDetails('/users', 'POST', $data, 201);
+        $requestDetails = new RequestDetails('/users', 'POST', $data, 201);
         $response = $this->call($requestDetails);
 
         $user = new \stdClass();
@@ -140,14 +49,14 @@ class ApiRequest
     }
 
     /**
-     * @return stdClass
+     * @return int
      * @throws E2eException
      */
     public function createGame()
     {
         $data = new \stdClass();
 
-        $requestDetails = new \RequestDetails('/games', 'POST', $data, 201);
+        $requestDetails = new RequestDetails('/games', 'POST', $data, 201);
         $response = $this->call($requestDetails);
 
         return $this->getNewId($response);
@@ -160,7 +69,7 @@ class ApiRequest
      */
     public function getGame($gameId)
     {
-        $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
+        $requestDetails = new RequestDetails(sprintf('/games/%s', $gameId), 'GET', null, 200);
 //        $this->validateGameDetails($gameData, $game);
 
         return $this->call($requestDetails);
@@ -177,7 +86,7 @@ class ApiRequest
         $data = new \stdClass();
         $data->name = $name;
 
-        $requestDetails = new \RequestDetails(sprintf('/users/%s', $userId), 'PATCH', $data, 204);
+        $requestDetails = new RequestDetails(sprintf('/users/%s', $userId), 'PATCH', $data, 204);
 
         return $this->call($requestDetails);
 //        $this->validateNullResult($response, __FUNCTION__);
@@ -190,7 +99,7 @@ class ApiRequest
      */
     public function getUser($userId)
     {
-        $requestDetails = new \RequestDetails(sprintf('/users/%s', $userId), 'GET', null, 200);
+        $requestDetails = new RequestDetails(sprintf('/users/%s', $userId), 'GET', null, 200);
 
         return $this->call($requestDetails);
     }
@@ -212,7 +121,7 @@ class ApiRequest
             $data->joinGame = true;
         }
 
-        $requestDetails = new \RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
+        $requestDetails = new RequestDetails(sprintf('/games/%s', $gameId), 'PATCH', $data, 204);
 
         return $this->call($requestDetails);
     }
@@ -230,7 +139,7 @@ class ApiRequest
         $data->type = $eventType;
         $data->value = $eventValue;
 
-        $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);
+        $requestDetails = new RequestDetails(sprintf('/games/%s/events', $gameId), 'POST', $data, 201);
 
         return $this->call($requestDetails);
     }
@@ -241,7 +150,7 @@ class ApiRequest
      */
     public function getGamesAvailable()
     {
-        $requestDetails = new \RequestDetails('/games?available=true', 'GET', null, 200);
+        $requestDetails = new RequestDetails('/games?available=true', 'GET', null, 200);
 
         return $this->call($requestDetails);
     }
@@ -264,7 +173,7 @@ class ApiRequest
         }
         $paramString = $params ? ('?' . implode('&', $params)) : '';
 
-        $requestDetails = new \RequestDetails(sprintf('/games/%s/events', $gameId, $paramString), 'GET', null, 200);
+        $requestDetails = new RequestDetails(sprintf('/games/%s/events', $gameId, $paramString), 'GET', null, 200);
 
         return $this->call($requestDetails);
     }
@@ -281,18 +190,18 @@ class ApiRequest
         return $match[1];
     }
 
-    public function initGame()
-    {
-        $nameData = new stdClass();
-        $nameData->name = "New Test Player";
-        $oRequestDetails = new RequestDetails("/games", "POST", $nameData, 201);
-        $game = $this->call($oRequestDetails);
-        $this->validateGame($game);
+//    public function initGame()
+//    {
+//        $nameData = new \stdClass();
+//        $nameData->name = "New Test Player";
+//        $oRequestDetails = new RequestDetails("/games", "POST", $nameData, 201);
+//        $game = $this->call($oRequestDetails);
+//        $this->validateGame($game);
+//
+//        return $game;
+//    }
 
-        return $game;
-    }
-
-    private function validateGame(stdClass $game)
+    private function validateGame(\stdClass $game)
     {
         if (empty($game->playerHash)) {
             throw new E2eException("No player hash");
@@ -341,7 +250,7 @@ class ApiRequest
 //        }
 //    }
 
-    private function validateGameDetails(stdClass $gameData, stdClass $game)
+    private function validateGameDetails(\stdClass $gameData, \stdClass $game)
     {
         foreach ($game as $key => $value) {
             if (!isset($gameData->$key) || $gameData->$key !== $value) {
@@ -369,9 +278,9 @@ class ApiRequest
             throw new E2eException("Incorrect other started: " . $gameData->otherStarted);
         }
 
-        $emptyBattle = new stdClass();
-        $emptyBattle->playerGround = new stdClass();
-        $emptyBattle->otherGround = new stdClass();
+        $emptyBattle = new \stdClass();
+        $emptyBattle->playerGround = new \stdClass();
+        $emptyBattle->otherGround = new \stdClass();
         if ($gameData->battle != $emptyBattle) {
             throw new E2eException("Incorrect battle: " . print_r($gameData->battle, true));
         }
@@ -383,7 +292,7 @@ class ApiRequest
 
 //    public function updateName(stdClass $game)
 //    {
-//        $nameData = new stdClass();
+//        $nameData = new \stdClass();
 //        $nameData->name = "Updated Name";
 //        $oRequestDetails = new RequestDetails("/games/" . $game->playerHash, "PUT", $nameData);
 //        $result = $this->call($oRequestDetails);
@@ -393,18 +302,18 @@ class ApiRequest
 //        return $result;
 //    }
 
-    public function addShots(stdClass $game)
-    {
-        $shotData = new stdClass();
-        $shots = array('A1' => "sunk", 'C2' => "hit", 'D2' => "sunk", 'J10' => "miss");
-
-        foreach ($shots as $shot => $expectedResult) {
-            $shotData->shot = $shot;
-            $oRequestDetails = new RequestDetails("/games/" . $game->playerHash . "/shots", "POST", $shotData, 201);
-            $result = $this->call($oRequestDetails);
-            $this->validateAddShots($result->shotResult, $expectedResult);
-        }
-    }
+//    public function addShots(\stdClass $game)
+//    {
+//        $shotData = new \stdClass();
+//        $shots = array('A1' => "sunk", 'C2' => "hit", 'D2' => "sunk", 'J10' => "miss");
+//
+//        foreach ($shots as $shot => $expectedResult) {
+//            $shotData->shot = $shot;
+//            $oRequestDetails = new RequestDetails("/games/" . $game->playerHash . "/shots", "POST", $shotData, 201);
+//            $result = $this->call($oRequestDetails)->getJson();
+//            $this->validateAddShots($result->shotResult, $expectedResult);
+//        }
+//    }
 
     private function validateAddShots($shotResult, $expected)
     {
@@ -420,7 +329,7 @@ class ApiRequest
         }
     }
 
-    private function validateOtherGetUpdates(stdClass $result, stdClass $game)
+    private function validateOtherGetUpdates(\stdClass $result, \stdClass $game)
     {
         if ($result->shot !== array("A1", "C2", "D2", "J10")) {
             throw new E2eException("Incorrect shot updates: " . print_r($result->shots, true));
@@ -513,97 +422,3 @@ class ApiRequest
         $this->authToken = $authToken;
     }
 }
-
-class RequestDetails
-{
-    private $request;
-    private $method;
-    private $data;
-    private $expectedHttpCode;
-
-    public function __construct($request, $method, $data = null, $expectedHttpCode = 200)
-    {
-        $this->request = $request;
-        $this->method = strtoupper($method);
-        $this->data = $data;
-        $this->expectedHttpCode = $expectedHttpCode;
-    }
-
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-    public function getData()
-    {
-        return json_encode($this->data);
-    }
-
-    public function getRequest()
-    {
-        return $this->request;
-    }
-
-    public function getExpectedHttpCode()
-    {
-        return $this->expectedHttpCode;
-    }
-}
-
-class ApiResponse
-{
-    /**
-     * @var string
-     */
-    private $body;
-
-    /**
-     * @var array
-     */
-    private $headers;
-
-    /**
-     * @param string $body
-     * @param array $headers
-     */
-    public function __construct($body, array $headers)
-    {
-        $this->body = $body;
-        $this->headers = $headers;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * @param string $header
-     * @return string|null
-     */
-    public function getHeader($header)
-    {
-        return isset($this->headers[$header]) ? $this->headers[$header] : null;
-    }
-
-    /**
-     * @return stdClass|mixed
-     */
-    public function getJson()
-    {
-        return json_decode($this->body);
-    }
-}
-
-class E2eException extends Exception {}

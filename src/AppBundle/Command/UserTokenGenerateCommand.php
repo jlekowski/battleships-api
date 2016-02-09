@@ -21,7 +21,7 @@ class UserTokenGenerateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('user:token:generate')
-            ->setDescription('Generate JWT for user')
+            ->setDescription('Generates JWT for user')
             ->addArgument('user_id', InputArgument::REQUIRED)
             ->addOption(
                 'new',

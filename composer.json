@@ -2,6 +2,7 @@
     "name": "jlekowski/battleships-api",
     "description" : "Battleships (sea battle) game - API",
     "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "": "src/"
