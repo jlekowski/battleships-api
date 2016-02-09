@@ -107,7 +107,7 @@ class E2eCommand extends ContainerAwareCommand
         $output->writeln('Game for player');
         $this->outputResponse($output, $response);
 
-        $output->writeln(sprintf('<info>Finished in %s</info>',  microtime(true) - $start));
+        $output->writeln(sprintf('<info>Finished in %s</info>', microtime(true) - $start));
     }
 
     /**
