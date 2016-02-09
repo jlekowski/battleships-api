@@ -7,9 +7,6 @@ use AppBundle\Validator\Constraints as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
@@ -21,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Serializer\ExclusionPolicy("all")
  * @todo Unique field for hash and other keys(?) + table relations/foreign keys
  */
-class Game implements LoggerAwareInterface
+class Game
 {
     // in seconds
     const JOIN_LIMIT = 300;
@@ -104,11 +101,6 @@ class Game implements LoggerAwareInterface
      * @var User
      */
     private $loggedUser;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     public function __construct()
     {
@@ -389,13 +381,5 @@ class Game implements LoggerAwareInterface
     public function isAvailable()
     {
         return $this->getTimestamp() >= new \DateTime(sprintf('-%d seconds', self::JOIN_LIMIT));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 }
