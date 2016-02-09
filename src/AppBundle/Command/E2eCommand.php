@@ -1,4 +1,5 @@
 <?php
+// @todo move to client component too (and check how to register as a command in API)
 
 namespace AppBundle\Command;
 
