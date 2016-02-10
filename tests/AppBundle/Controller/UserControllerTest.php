@@ -25,11 +25,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(201, $response->getStatusCode(), $response);
         $this->assertEquals('', $response->getContent(), $response);
-        // @todo after every JSON request
-        $this->assertTrue(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'Missing "Content-Type: application/json" header'
-        );
+        $this->assertJsonResponse($response);
 
         // @todo check that after every request
         $this->assertCorsResponse($response);
@@ -67,9 +63,8 @@ class UserControllerTest extends AbstractApiTestCase
             [13] => db
             [14] => dump
         */
-        preg_match('#/(\d+)$#', $locationHeader, $match);
 
-        return ['id' => $match[1], 'apiKey' => $apiKey];
+        return ['id' => $this->getNewId($response), 'apiKey' => $apiKey];
     }
 
     public function testAddUserMissingNameError()
@@ -135,13 +130,9 @@ class UserControllerTest extends AbstractApiTestCase
         $jsonResponse = json_decode($response->getContent(), true);
 
 
-        $this->assertEquals(200, $response->getStatusCode(), $response);
+        $this->assertGetSuccess($response);
         $this->assertEquals(['name' => 'Functional Test'], $jsonResponse, $response);
-        // @todo after every JSON request
-        $this->assertTrue(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'Missing "Content-Type: application/json" header'
-        );
+        $this->assertJsonResponse($response);
 
         // @todo check that after every request
         $this->assertCorsResponse($response);

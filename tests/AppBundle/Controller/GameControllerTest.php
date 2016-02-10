@@ -2,6 +2,7 @@
 
 namespace Tests\AppBundle\Controller;
 
+use AppBundle\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\DataCollector\DoctrineDataCollector;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Profiler\Profile;
@@ -15,14 +16,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'POST',
             '/v1/games',
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
 
         return $this->validateAddGame($client->getResponse(), $client->getProfile());
@@ -35,7 +36,7 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $body = [
             'playerShips' => ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
@@ -45,7 +46,7 @@ class GameControllerTest extends AbstractApiTestCase
             '/v1/games',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             json_encode($body)
         );
 
@@ -58,7 +59,7 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $body = [
             'playerShips' => ['A11']
@@ -68,7 +69,7 @@ class GameControllerTest extends AbstractApiTestCase
             '/v1/games',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             json_encode($body)
         );
         $response = $client->getResponse();
@@ -87,7 +88,7 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $body = [
             'playerShips' => ['B2','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
@@ -97,7 +98,7 @@ class GameControllerTest extends AbstractApiTestCase
             '/v1/games',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             json_encode($body)
         );
         $response = $client->getResponse();
@@ -116,20 +117,20 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'GET',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->validateGetGameCore($response, $client->getProfile());
-        $this->validateGetGameResponse($jsonResponse, $gameId, $userData);
+        $this->validateGetGameResponse($jsonResponse, $gameId, $this->getUser(1));
     }
 
     /**
@@ -140,20 +141,20 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'GET',
             '/v1/games/' . $gameDetails['id'],
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->validateGetGameCore($response, $client->getProfile());
-        $this->validateGetGameResponse($jsonResponse, $gameDetails['id'], $userData, $gameDetails['ships']);
+        $this->validateGetGameResponse($jsonResponse, $gameDetails['id'], $this->getUser(1), $gameDetails['ships']);
     }
 
     /**
@@ -164,14 +165,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'GET',
             '/v1/games/' . ($gameId + 100),
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
@@ -189,20 +190,20 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'GET',
             '/v1/games/' . ($gameId . 'b'),
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->validateGetGameCore($response, $client->getProfile());
-        $this->validateGetGameResponse($jsonResponse, $gameId, $userData);
+        $this->validateGetGameResponse($jsonResponse, $gameId, $this->getUser(1));
     }
 
     /**
@@ -213,14 +214,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'GET',
             '/v1/games/' . ('b' . $gameId),
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
@@ -238,20 +239,20 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(2);
+        $apiKey = $this->getUserApiKey(2);
 
         $client->request(
             'GET',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->validateGetGameCore($response, $client->getProfile(), true);
-        $this->validateGetGameResponse($jsonResponse, $gameId, [], [], $this->getUserData(1), 2);
+        $this->validateGetGameResponse($jsonResponse, $gameId, null, [], $this->getUser(1), 2);
     }
 
     /**
@@ -262,7 +263,7 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $body = [
             'playerShips' => ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
@@ -272,7 +273,7 @@ class GameControllerTest extends AbstractApiTestCase
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             json_encode($body)
         );
         $response = $client->getResponse();
@@ -288,14 +289,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'PATCH',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             '{"joinGame":true}'
         );
         $response = $client->getResponse();
@@ -315,14 +316,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(2);
+        $apiKey = $this->getUserApiKey(2);
 
         $client->request(
             'PATCH',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             '{"joinGame":true}'
         );
         $response = $client->getResponse();
@@ -340,14 +341,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(3);
+        $apiKey = $this->getUserApiKey(3);
 
         $client->request(
             'GET',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
@@ -365,14 +366,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(3);
+        $apiKey = $this->getUserApiKey(3);
 
         $client->request(
             'PATCH',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             '{"playerShips":[]}'
         );
         $response = $client->getResponse();
@@ -391,14 +392,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(3);
+        $apiKey = $this->getUserApiKey(3);
 
         $client->request(
             'PATCH',
             '/v1/games/' . $gameId,
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             '{"playerShips":[]}'
         );
         $response = $client->getResponse();
@@ -416,14 +417,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(2);
+        $apiKey = $this->getUserApiKey(2);
 
         $client->request(
             'GET',
             '/v1/games',
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
@@ -441,14 +442,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(2);
+        $apiKey = $this->getUserApiKey(2);
 
         $client->request(
             'GET',
             '/v1/games?available=true',
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
@@ -456,7 +457,7 @@ class GameControllerTest extends AbstractApiTestCase
         $this->assertInternalType('array', $jsonResponse);
         $this->assertNotEmpty($jsonResponse, 'Expected to get at least 1 game available');
         $this->validateGetGamesCore($response, $client->getProfile());
-        $this->validateGetGameResponse(reset($jsonResponse), $gameDetails['id'], [], [], $this->getUserData(1), 2);
+        $this->validateGetGameResponse(reset($jsonResponse), $gameDetails['id'], null, [], $this->getUser(1), 2);
     }
 
     /**
@@ -467,14 +468,14 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(1);
+        $apiKey = $this->getUserApiKey(1);
 
         $client->request(
             'GET',
             '/v1/games?available=true',
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
         );
         $response = $client->getResponse();
         $jsonResponse = json_decode($response->getContent(), true);
@@ -494,7 +495,7 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $client = static::createClient();
         $client->enableProfiler();
-        $userData = $this->getUserData(2);
+        $apiKey = $this->getUserApiKey(2);
 
         $body = [
             'joinGame' => true,
@@ -505,7 +506,7 @@ class GameControllerTest extends AbstractApiTestCase
             '/v1/games/' . $gameDetails['id'],
             [],
             [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
             json_encode($body)
         );
         $response = $client->getResponse();
@@ -516,17 +517,13 @@ class GameControllerTest extends AbstractApiTestCase
     /**
      * @param Response $response
      * @param Profile $profile
-     * @return mixed
+     * @return int
      */
     protected function validateAddGame(Response $response, Profile $profile)
     {
         $this->assertEquals(201, $response->getStatusCode(), $response);
         $this->assertEquals('', $response->getContent(), $response);
-        // @todo after every JSON request
-        $this->assertTrue(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'Missing "Content-Type: application/json" header'
-        );
+        $this->assertJsonResponse($response);
 
         // @todo check that after every request
         $this->assertCorsResponse($response);
@@ -538,25 +535,7 @@ class GameControllerTest extends AbstractApiTestCase
         $doctrineDataCollector = $profile->getCollector('db');
         $this->assertEquals(4, $doctrineDataCollector->getQueryCount());
 
-        preg_match('#/(\d+)$#', $locationHeader, $match);
-
-        return $match[1];
-    }
-
-    /**
-     * @param Response $response
-     */
-    protected function validateGetJsonCore(Response $response)
-    {
-        $this->assertEquals(200, $response->getStatusCode(), $response);
-        // @todo after every JSON request
-        $this->assertTrue(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'Missing "Content-Type: application/json" header'
-        );
-
-        // @todo check that after every request
-        $this->assertCorsResponse($response);
+        return $this->getNewId($response);
     }
 
     /**
@@ -566,7 +545,7 @@ class GameControllerTest extends AbstractApiTestCase
      */
     protected function validateGetGameCore(Response $response, Profile $profile, $otherUser = false)
     {
-        $this->validateGetJsonCore($response);
+        $this->assertGetJsonCors($response);
 
         /** @var DoctrineDataCollector $doctrineDataCollector */
         $doctrineDataCollector = $profile->getCollector('db');
@@ -603,7 +582,7 @@ class GameControllerTest extends AbstractApiTestCase
      */
     protected function validateGetGamesCore(Response $response, Profile $profile)
     {
-        $this->validateGetJsonCore($response);
+        $this->assertGetJsonCors($response);
 
         /** @var DoctrineDataCollector $doctrineDataCollector */
         $doctrineDataCollector = $profile->getCollector('db');
@@ -614,26 +593,26 @@ class GameControllerTest extends AbstractApiTestCase
     /**
      * @param array $game
      * @param int $gameId
-     * @param array $userData
+     * @param User $user
      * @param array $playerShips
-     * @param array $otherUserData
+     * @param User $otherUser
      * @param int $playerNumber
      * @param int $lessThanAgo (in seconds)
      */
     protected function validateGetGameResponse(
         array $game,
         $gameId,
-        array $userData,
+        User $user = null,
         array $playerShips = [],
-        array $otherUserData = [],
+        User $otherUser = null,
         $playerNumber = 1,
         $lessThanAgo = 60
     ) {
         $expectedKeys = ['id', 'playerShips', 'playerNumber', 'timestamp'];
-        if ($userData) {
+        if ($user) {
             $expectedKeys[] = 'player';
         }
-        if ($otherUserData) {
+        if ($otherUser) {
             $expectedKeys[] = 'other';
         }
         $gameKeys = array_keys($game);
@@ -642,13 +621,13 @@ class GameControllerTest extends AbstractApiTestCase
         $this->assertEquals($expectedKeys, $gameKeys);
 
         $this->assertEquals($gameId, $game['id'], 'Incorrect game id');
-        if ($userData) {
-            $this->assertEquals(['name' => $userData['name']], $game['player'], 'Incorrect player details');
+        if ($user) {
+            $this->assertEquals(['name' => $user->getName()], $game['player'], 'Incorrect player details');
         }
         $this->assertEquals($playerShips, $game['playerShips'], 'Incorrect player ships');
         $this->assertEquals($playerNumber, $game['playerNumber'], 'Incorrect player number');
-        if ($otherUserData) {
-            $this->assertEquals(['name' => $otherUserData['name']], $game['other'], 'Incorrect other details');
+        if ($otherUser) {
+            $this->assertEquals(['name' => $otherUser->getName()], $game['other'], 'Incorrect other details');
         }
         // not more than X seconds ago
         $timestamp = new \DateTime($game['timestamp']);

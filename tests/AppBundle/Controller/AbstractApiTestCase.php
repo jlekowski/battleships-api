@@ -2,30 +2,64 @@
 
 namespace Tests\AppBundle\Controller;
 
+use AppBundle\Entity\Game;
 use AppBundle\Entity\User;
 use AppBundle\Security\ApiKeyManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractApiTestCase extends WebTestCase
 {
     /**
+     * @var ContainerInterface
+     */
+    private static $container;
+
+    /**
      * @var array
      */
-    private static $userData;
+    private static $usersData;
+
+    /**
+     * @var Game[]
+     */
+    private static $games;
+
+    /**
+     * @param int $userIndex
+     * @return User
+     */
+    protected function getUser($userIndex)
+    {
+        $userData = $this->getUserData($userIndex);
+
+        return $userData['user'];
+    }
+
+    /**
+     * @param int $userIndex
+     * @return string
+     */
+    protected function getUserApiKey($userIndex)
+    {
+        $userData = $this->getUserData($userIndex);
+
+        return $userData['apiKey'];
+    }
 
     /**
      * @param int $userIndex
      * @return array
      */
-    protected function getUserData($userIndex)
+    private function getUserData($userIndex)
     {
-        if (!isset(self::$userData[$userIndex])) {
-            self::$userData[$userIndex] = $this->createUserData('Test User' . $userIndex);
+        if (!isset(self::$usersData[$userIndex])) {
+            self::$usersData[$userIndex] = $this->createUserData('Test User' . $userIndex);
         }
 
-        return self::$userData[$userIndex];
+        return self::$usersData[$userIndex];
     }
 
     /**
@@ -34,11 +68,8 @@ abstract class AbstractApiTestCase extends WebTestCase
      */
     private function createUserData($name)
     {
-        $container = static::createClient()->getContainer();
-        /** @var EntityManagerInterface $entityManager */
-        $entityManager = $container->get('doctrine.orm.default_entity_manager');
-        /** @var ApiKeyManager $apiKeyManager */
-        $apiKeyManager = $container->get('app.security.api_key_manager');
+        $entityManager = $this->getEntityManager();
+        $apiKeyManager = $this->getApiKeyManager();
 
         $user = new User();
         $user->setName($name);
@@ -48,13 +79,80 @@ abstract class AbstractApiTestCase extends WebTestCase
 
         $apiKey = $apiKeyManager->generateApiKeyForUser($user);
 
-        return ['id' => $user->getId(), 'apiKey' => $apiKey, 'name' => $user->getName()];
+        return ['user' => $user, 'apiKey' => $apiKey];
+    }
+
+    /**
+     * @param int $userIndex
+     * @param int $gameIndex
+     * @return Game
+     */
+    protected function getGame($userIndex, $gameIndex)
+    {
+        if (!isset(self::$games[$gameIndex])) {
+            $user = $this->getUser($userIndex);
+            $this->getEntityManager()->persist($user);
+            self::$games[$gameIndex] = $this->createGame($user);
+        }
+
+        return self::$games[$gameIndex];
+    }
+
+    /**
+     * @param User $user
+     * @param array $ships
+     * @return Game
+     */
+    private function createGame(User $user, array $ships = [])
+    {
+        $entityManager = $this->getEntityManager();
+
+        $game = new Game();
+        $game
+            ->setLoggedUser($user)
+            ->setUser1($user)
+            ->setPlayerShips($ships)
+        ;
+
+        $entityManager->persist($game);
+        $entityManager->flush();
+
+        return $game;
     }
 
     /**
      * @param Response $response
      */
-    public function assertCorsResponse(Response $response)
+    protected function assertGetJsonCors(Response $response)
+    {
+        $this->assertGetSuccess($response);
+        $this->assertJsonResponse($response);
+        $this->assertCorsResponse($response);
+    }
+
+    /**
+     * @param Response $response
+     */
+    protected function assertGetSuccess(Response $response)
+    {
+        $this->assertEquals(200, $response->getStatusCode(), $response);
+    }
+
+    /**
+     * @param Response $response
+     */
+    protected function assertJsonResponse(Response $response)
+    {
+        $this->assertTrue(
+            $response->headers->contains('Content-Type', 'application/json'),
+            'Missing "Content-Type: application/json" header'
+        );
+    }
+
+    /**
+     * @param Response $response
+     */
+    protected function assertCorsResponse(Response $response)
     {
         // @todo check that after every request
         $this->assertTrue(
@@ -73,5 +171,44 @@ abstract class AbstractApiTestCase extends WebTestCase
             $response->headers->contains('Access-Control-Expose-Headers', 'Location, Api-Key'),
             'Missing "Access-Control-Expose-Headers: Location, Api-Key" header'
         );
+    }
+
+    /**
+     * @param Response $response
+     * @return int
+     */
+    protected function getNewId(Response $response)
+    {
+        preg_match('#/(\d+)$#', $response->headers->get('Location'), $match);
+
+        return $match[1];
+    }
+
+    /**
+     * @return EntityManagerInterface
+     */
+    private function getEntityManager()
+    {
+        return $this->getContainer()->get('doctrine.orm.default_entity_manager');
+    }
+
+    /**
+     * @return ApiKeyManager
+     */
+    private function getApiKeyManager()
+    {
+        return $this->getContainer()->get('app.security.api_key_manager');
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    private function getContainer()
+    {
+        if (!self::$container) {
+            self::$container = static::createClient()->getContainer();
+        }
+
+        return self::$container;
     }
 }
