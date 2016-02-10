@@ -29,7 +29,8 @@
         "jms/serializer-bundle": "@stable",
         "friendsofsymfony/rest-bundle": "@stable",
         "friendsofsymfony/http-cache-bundle": "~1.0",
-        "firebase/php-jwt": "^3.0"
+        "firebase/php-jwt": "^3.0",
+        "cboden/ratchet": "0.3.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

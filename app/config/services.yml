@@ -100,6 +100,9 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: is_allowed_to_shoot }
 
+    app.websocket.server:
+        class: AppBundle\Websocket\Server
+
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:
         class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
