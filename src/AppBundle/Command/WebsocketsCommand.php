@@ -2,9 +2,10 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Websocket\Server;
-use Ratchet\App;
+use AppBundle\Websocket\Handler;
+use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,12 +28,10 @@ class WebsocketsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-//        $server = new App('localhost', 8080, '192.168.1.234');
-        /** @var Server $wsServer */
-        $wsServer = $this->getContainer()->get('app.websocket.server');
-        $server = IoServer::factory($wsServer, 8080);
-        $output->writeln('<info>Running</info>');
-//        $server->route('/', $wsServer);
+        /** @var Handler $wsHandler */
+        $wsHandler = $this->getContainer()->get('app.websocket.handler');
+        $server = IoServer::factory(new HttpServer(new WsServer($wsHandler)), 8080);
+        $output->writeln('<info>Initialised</info>');
         $server->run();
     }
 }
