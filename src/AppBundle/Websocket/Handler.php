@@ -3,13 +3,15 @@
 namespace AppBundle\Websocket;
 
 use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface;
+use Ratchet\Wamp\Topic;
+use Ratchet\Wamp\WampConnection;
+use Ratchet\Wamp\WampServerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class Handler implements MessageComponentInterface, ContainerAwareInterface
+class Handler implements WampServerInterface, ContainerAwareInterface
 {
     /**
      * @var \SplObjectStorage
@@ -61,37 +63,76 @@ class Handler implements MessageComponentInterface, ContainerAwareInterface
     /**
      * @inheritdoc
      */
-    public function onMessage(ConnectionInterface $from, $msg)
+    public function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
-//        $numRecv = count($this->clients) - 1;
-//        echo sprintf('Connection %d sending message "%s" to %d other connection%s' . PHP_EOL
-//            , $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
-//
-//        foreach ($this->clients as $client) {
-//            if ($from !== $client) {
-//                // The sender is not the receiver, send to each client connected
-//                $client->send($msg);
-//            }
+        echo __FUNCTION__ . PHP_EOL;
+        printf('conn: %s, id: %s, topic: %s, params: %s', $conn->resourceId, $id, $topic, print_r($params, true));
+//        if ($topic instanceof Topic) {
+//            $topic->add($conn);
 //        }
 
-        $requestDetails = json_decode($msg, true);
         $request = Request::create(
-            $requestDetails['url'],
-            $requestDetails['method'],
+            $params['url'],
+            $params['method'],
             [],
             [],
             [],
-            $requestDetails['headers'],
-            $requestDetails['data']
+            $params['headers'],
+            json_encode($params['data'])
         );
         $httpKernel = $this->container->get('http_kernel');
         $response = $httpKernel->handle($request, HttpKernelInterface::MASTER_REQUEST);
         if ($response->isSuccessful()) {
-
+            // notify someone from the same room (game)
+            // new event
+            // add to game when created (new game)
         }
 
-        $from->send($response->getContent());
+        $wsResponse = [
+            'headers' => $response->headers->all(),
+            'content' => $response->getContent()
+        ];
+
+        printf('response: %s', print_r($wsResponse, true));
+        if ($conn instanceof WampConnection) {
+            $conn->callResult($id, $wsResponse);
+        }
+        $topic->broadcast($wsResponse);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function onSubscribe(ConnectionInterface $conn, $topic)
+    {
+        echo __FUNCTION__ . PHP_EOL;
+        printf('conn: %s, topic: %s', $conn->resourceId, $topic);
+        if ($topic instanceof Topic) {
+            printf("\ncount: %d\n", $topic->count());
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onUnSubscribe(ConnectionInterface $conn, $topic)
+    {
+        echo __FUNCTION__ . PHP_EOL;
+        printf('conn: %s, topic: %s', $conn->resourceId, $topic);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude, array $eligible)
+    {
+        echo __FUNCTION__ . PHP_EOL;
+        printf('conn: %s, topic: %s, event: %s, exclude: %s, eligible: %s', $conn->resourceId, $topic, print_r($event, true), print_r($exclude, true), print_r($eligible, true));
+        if ($topic instanceof Topic) {
+            $topic->broadcast('published (broadcasted)');
+        }
+    }
+
 
     /**
      * @inheritdoc

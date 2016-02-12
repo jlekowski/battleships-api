@@ -121,6 +121,7 @@ class GameController extends FOSRestController
         ;
 
         $this->entityManager->persist($game);
+        $this->createEvent($game, Event::TYPE_START_GAME);
         $this->entityManager->flush();
 
         $view = $this->routeRedirectView('api_v1_get_game', ['game' => $game->getId()]);

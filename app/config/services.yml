@@ -105,6 +105,12 @@ services:
         calls:
             - [setContainer, ['@service_container']]
 
+    app.event_subscriber.websocket_entity:
+        class: AppBundle\EventSubscriber\EntityWebsocketSubscriber
+        arguments: ['@logger']
+        tags:
+            - { name: doctrine.event_subscriber }
+
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:
         class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
