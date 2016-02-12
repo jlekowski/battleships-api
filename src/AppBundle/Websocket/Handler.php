@@ -70,6 +70,11 @@ class Handler implements WampServerInterface, ContainerAwareInterface
 //        if ($topic instanceof Topic) {
 //            $topic->add($conn);
 //        }
+        $dispatcher = $this->container->get('event_dispatcher');
+
+        $dispatcher->addListener((string)$topic, function(SomeEvent $data) {
+            printf("data: %s\n", (string)$data);
+        });
 
         $params['headers']['HTTP_TOPIC'] = (string)$topic;
         $request = Request::create(
@@ -94,7 +99,7 @@ class Handler implements WampServerInterface, ContainerAwareInterface
             'content' => $response->getContent()
         ];
 
-        printf('response: %s', print_r($wsResponse, true));
+//        printf('response: %s', print_r($wsResponse, true));
         if ($conn instanceof WampConnection) {
             $conn->callResult($id, $wsResponse);
         }

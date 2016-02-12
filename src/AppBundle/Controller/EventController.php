@@ -7,6 +7,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
+use AppBundle\Websocket\SomeEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -148,6 +149,8 @@ class EventController extends FOSRestController
 
         $request = $this->get('request_stack');
         $topic = $request->getCurrentRequest()->headers->get('TOPIC');
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch($topic, new SomeEvent($event->getId()));
 
         return $this->handleView($view);
     }
