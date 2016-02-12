@@ -146,6 +146,9 @@ class EventController extends FOSRestController
             ->setData($data)
         ;
 
+        $request = $this->get('request_stack');
+        $topic = $request->getCurrentRequest()->headers->get('TOPIC');
+
         return $this->handleView($view);
     }
 }

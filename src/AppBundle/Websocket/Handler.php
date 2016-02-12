@@ -71,6 +71,7 @@ class Handler implements WampServerInterface, ContainerAwareInterface
 //            $topic->add($conn);
 //        }
 
+        $params['headers']['HTTP_TOPIC'] = (string)$topic;
         $request = Request::create(
             $params['url'],
             $params['method'],
