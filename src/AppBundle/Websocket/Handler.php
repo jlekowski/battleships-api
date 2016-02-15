@@ -67,16 +67,13 @@ class Handler implements WampServerInterface, ContainerAwareInterface
     {
         echo __FUNCTION__ . PHP_EOL;
         printf('conn: %s, id: %s, topic: %s, params: %s', $conn->resourceId, $id, $topic, print_r($params, true));
-//        if ($topic instanceof Topic) {
-//            $topic->add($conn);
-//        }
-        $dispatcher = $this->container->get('event_dispatcher');
 
-        $dispatcher->addListener((string)$topic, function(SomeEvent $data) {
-            printf("data: %s\n", (string)$data);
-        });
+//        $eventManager = $this->container->get('doctrine.orm.default_entity_manager')->getEventManager();
+//        $eventManager->dispatchEvent('beforeApiRequest', new SomeEvent($topic));
 
-        $params['headers']['HTTP_TOPIC'] = (string)$topic;
+        $entityWebsocketSubscriber = $this->container->get('app.event_subscriber.websocket_entity');
+        $entityWebsocketSubscriber->setBroadcastDetails($topic, [$conn->WAMP->sessionId]);
+
         $request = Request::create(
             $params['url'],
             $params['method'],
@@ -88,22 +85,14 @@ class Handler implements WampServerInterface, ContainerAwareInterface
         );
         $httpKernel = $this->container->get('http_kernel');
         $response = $httpKernel->handle($request, HttpKernelInterface::MASTER_REQUEST);
-        if ($response->isSuccessful()) {
-            // notify someone from the same room (game)
-            // new event
-            // add to game when created (new game)
-        }
 
-        $wsResponse = [
-            'headers' => $response->headers->all(),
-            'content' => $response->getContent()
-        ];
-
-//        printf('response: %s', print_r($wsResponse, true));
         if ($conn instanceof WampConnection) {
+            $wsResponse = [
+                'headers' => $response->headers->all(),
+                'content' => json_decode($response->getContent())
+            ];
             $conn->callResult($id, $wsResponse);
         }
-        $topic->broadcast($wsResponse);
     }
 
     /**

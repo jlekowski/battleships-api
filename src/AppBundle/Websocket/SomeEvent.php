@@ -2,9 +2,9 @@
 
 namespace AppBundle\Websocket;
 
-use Symfony\Component\EventDispatcher\Event;
+use Doctrine\Common\EventArgs;
 
-class SomeEvent extends Event
+class SomeEvent extends EventArgs
 {
     /**
      * @var int
@@ -20,10 +20,10 @@ class SomeEvent extends Event
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function __toString()
     {
-        return sprintf('my id: %d', $this->id);
+        return sprintf('my id: %s', $this->id);
     }
 }

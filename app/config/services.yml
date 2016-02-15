@@ -107,7 +107,7 @@ services:
 
     app.event_subscriber.websocket_entity:
         class: AppBundle\EventSubscriber\EntityWebsocketSubscriber
-        arguments: ['@logger']
+        arguments: ['@request_stack', '@event_dispatcher', '@jms_serializer', '@logger']
         tags:
             - { name: doctrine.event_subscriber }
 

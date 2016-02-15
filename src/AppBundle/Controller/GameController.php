@@ -113,15 +113,18 @@ class GameController extends FOSRestController
     {
         $user = $this->getUser();
 
+        $playerShips = $paramFetcher->get('playerShips');
         $game = new Game();
         $game
             ->setLoggedUser($user)
             ->setUser1($user)
-            ->setPlayerShips($paramFetcher->get('playerShips'))
+            ->setPlayerShips($playerShips)
         ;
 
         $this->entityManager->persist($game);
-        $this->createEvent($game, Event::TYPE_START_GAME);
+        if ($playerShips) {
+            $this->createEvent($game, Event::TYPE_START_GAME);
+        }
         $this->entityManager->flush();
 
         $view = $this->routeRedirectView('api_v1_get_game', ['game' => $game->getId()]);
