@@ -39,7 +39,7 @@ services:
 
     app.controller.game:
         class: AppBundle\Controller\GameController
-        arguments: ['@doctrine.orm.default_entity_manager', '@app.entity.game_repository']
+        arguments: ['@doctrine.orm.default_entity_manager', '@app.entity.game_repository', '@app.battle.player_manager']
         calls:
             - [setContainer, ['@service_container']]
 
