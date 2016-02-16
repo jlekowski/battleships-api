@@ -2,6 +2,7 @@
 
 namespace AppBundle\EventSubscriber;
 
+use AppBundle\Battle\PlayerManager;
 use AppBundle\Entity\Game;
 use AppBundle\Exception\DuplicatedEventTypeException;
 use AppBundle\Exception\GameFlowException;
@@ -13,13 +14,13 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EntitySubscriber implements EventSubscriber
 {
     /**
-     * @var TokenStorage
+     * @var TokenStorageInterface
      */
     protected $tokenStorage;
 
@@ -29,19 +30,26 @@ class EntitySubscriber implements EventSubscriber
     protected $validator;
 
     /**
+     * @var PlayerManager
+     */
+    protected $playerManager;
+
+    /**
      * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * @param TokenStorage $tokenStorage
+     * @param TokenStorageInterface $tokenStorage
      * @param ValidatorInterface $validator
+     * @param PlayerManager $playerManager
      * @param LoggerInterface $logger
      */
-    public function __construct(TokenStorage $tokenStorage, ValidatorInterface $validator, LoggerInterface $logger)
+    public function __construct(TokenStorageInterface $tokenStorage, ValidatorInterface $validator, PlayerManager $playerManager, LoggerInterface $logger)
     {
         $this->tokenStorage = $tokenStorage;
         $this->validator = $validator;
+        $this->playerManager = $playerManager;
         $this->logger = $logger;
     }
 
@@ -90,12 +98,7 @@ class EntitySubscriber implements EventSubscriber
         }
 
         if ($entity instanceof Game) {
-            $token = $this->tokenStorage->getToken();
-            if (!$token) {
-                throw new UserNotFoundException('User has not been authenticated yet');
-            }
-
-            $entity->setLoggedUser($token->getUser());
+            $entity->setPlayerManager($this->playerManager);
         }
     }
 }

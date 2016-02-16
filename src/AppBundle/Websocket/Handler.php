@@ -85,6 +85,7 @@ class Handler implements WampServerInterface, ContainerAwareInterface
         );
         $httpKernel = $this->container->get('http_kernel');
         $response = $httpKernel->handle($request, HttpKernelInterface::MASTER_REQUEST);
+        printf('response: %s', $response->getContent());
 
         if ($conn instanceof WampConnection) {
             $wsResponse = [

@@ -63,7 +63,7 @@ services:
 
     app.event_subscriber.entity:
         class: AppBundle\EventSubscriber\EntitySubscriber
-        arguments: ['@security.token_storage', '@validator', '@logger']
+        arguments: ['@security.token_storage', '@validator', '@app.battle.player_manager', '@logger']
         tags:
             - { name: doctrine.event_subscriber }
 
@@ -110,6 +110,16 @@ services:
         arguments: ['@request_stack', '@event_dispatcher', '@jms_serializer', '@logger']
         tags:
             - { name: doctrine.event_subscriber }
+
+    app.battle.player_manager:
+        class: AppBundle\Battle\PlayerManager
+        arguments: ['@security.token_storage']
+
+    app.event_listener.websocket:
+        class: AppBundle\EventListener\WebsocketListener
+        arguments: ['@app.battle.player_manager', '@security.token_storage']
+        tags:
+           - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

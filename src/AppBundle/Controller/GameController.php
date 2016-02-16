@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Battle\PlayerManager;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
 use AppBundle\Entity\GameRepository;
@@ -41,13 +42,20 @@ class GameController extends FOSRestController
     protected $gameRepository;
 
     /**
+     * @var PlayerManager
+     */
+    protected $playerManager;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param GameRepository $gameRepository
+     * @param PlayerManager $playerManager
      */
-    public function __construct(EntityManagerInterface $entityManager, GameRepository $gameRepository)
+    public function __construct(EntityManagerInterface $entityManager, GameRepository $gameRepository, PlayerManager $playerManager)
     {
         $this->entityManager = $entityManager;
         $this->gameRepository = $gameRepository;
+        $this->playerManager = $playerManager;
     }
 
     /**
@@ -116,7 +124,7 @@ class GameController extends FOSRestController
         $playerShips = $paramFetcher->get('playerShips');
         $game = new Game();
         $game
-            ->setLoggedUser($user)
+            ->setPlayerManager($this->playerManager)
             ->setUser1($user)
             ->setPlayerShips($playerShips)
         ;

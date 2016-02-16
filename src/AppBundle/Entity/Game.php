@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Battle\PlayerManager;
 use AppBundle\Exception\UserNotFoundException;
 use AppBundle\Validator\Constraints as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -98,9 +99,9 @@ class Game
     private $playerNumber;
 
     /**
-     * @var User
+     * @var PlayerManager
      */
-    private $loggedUser;
+    private $playerManager;
 
     public function __construct()
     {
@@ -312,30 +313,7 @@ class Game
      */
     public function getPlayerNumber()
     {
-        if ($this->playerNumber === null) {
-            $this->playerNumber = $this->findPlayerNumber();
-        }
-
-        return $this->playerNumber;
-    }
-
-    /**
-     * @return int
-     * @throws \RuntimeException
-     */
-    protected function findPlayerNumber()
-    {
-        if (!$this->loggedUser) {
-            throw new UserNotFoundException(sprintf('Logged user has not been set for the game `%s`', $this->getId()));
-        }
-
-        $loggedUserId = $this->loggedUser->getId();
-        $isUser1 = $loggedUserId === $this->getUserId1();
-        if (!$isUser1 && $this->getUserId2() && $loggedUserId !== $this->getUserId2()) {
-            throw new \RuntimeException('Game belongs to other users');
-        }
-
-        return $isUser1 ? 1 : 2;
+        return $this->playerManager->findPlayerNumberForGame($this);
     }
 
     /**
@@ -344,17 +322,6 @@ class Game
     public function getOtherNumber()
     {
         return $this->getPlayerNumber() === 2 ? 1 : 2;
-    }
-
-    /**
-     * @param User $user
-     * @return Game
-     */
-    public function setLoggedUser(User $user)
-    {
-        $this->loggedUser = $user;
-
-        return $this;
     }
 
     /**
@@ -381,5 +348,16 @@ class Game
     public function isAvailable()
     {
         return $this->getTimestamp() >= new \DateTime(sprintf('-%d seconds', self::JOIN_LIMIT));
+    }
+
+    /**
+     * @param PlayerManager $playerManager
+     * @return $this
+     */
+    public function setPlayerManager($playerManager)
+    {
+        $this->playerManager = $playerManager;
+
+        return $this;
     }
 }
