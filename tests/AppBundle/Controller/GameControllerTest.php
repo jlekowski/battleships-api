@@ -50,7 +50,7 @@ class GameControllerTest extends AbstractApiTestCase
             json_encode($body)
         );
 
-        $gameId = $this->validateAddGame($client->getResponse(), $client->getProfile());
+        $gameId = $this->validateAddGame($client->getResponse(), $client->getProfile(), true);
 
         return ['id' => $gameId, 'ships' => $body['playerShips']];
     }
@@ -517,9 +517,10 @@ class GameControllerTest extends AbstractApiTestCase
     /**
      * @param Response $response
      * @param Profile $profile
+     * @param bool $withShips
      * @return int
      */
-    protected function validateAddGame(Response $response, Profile $profile)
+    protected function validateAddGame(Response $response, Profile $profile, $withShips = false)
     {
         $this->assertEquals(201, $response->getStatusCode(), $response);
         $this->assertEquals('', $response->getContent(), $response);
@@ -533,7 +534,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         /** @var DoctrineDataCollector $doctrineDataCollector */
         $doctrineDataCollector = $profile->getCollector('db');
-        $this->assertEquals(4, $doctrineDataCollector->getQueryCount());
+        $this->assertEquals($withShips ? 6 : 4, $doctrineDataCollector->getQueryCount());
 
         return $this->getNewId($response);
     }

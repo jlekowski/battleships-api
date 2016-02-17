@@ -234,6 +234,41 @@ class EventControllerTest extends AbstractApiTestCase
         $doctrineDataCollector = $client->getProfile()->getCollector('db');
         // SELECT user, SELECT game, SELECT event, START TRANSACTION, INSERT event, COMMIT
         $this->assertEquals(6, $doctrineDataCollector->getQueryCount());
+
+        $this->assertEquals('', $response->getContent(), $response);
+
+        return array_merge($body, ['id' => $this->getNewId($response), 'value' => true, 'player' => $userIndex]);
+    }
+
+    public function testAddEventNameUpdate()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $userIndex = 1;
+        $game = $this->getGame($userIndex, 1);
+        $apiKey = $this->getUserApiKey($userIndex);
+
+        $body = [
+            'type' => Event::TYPE_NAME_UPDATE,
+            'value' => 'Test User Updated'
+        ];
+        $client->request(
+            'POST',
+            sprintf('/v1/games/%d/events', $game->getId()),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
+            json_encode($body)
+        );
+        $response = $client->getResponse();
+
+        $this->validateAddEvent($response);
+        /** @var DoctrineDataCollector $doctrineDataCollector */
+        $doctrineDataCollector = $client->getProfile()->getCollector('db');
+        // SELECT user, SELECT game, START TRANSACTION, INSERT event, COMMIT
+        $this->assertEquals(5, $doctrineDataCollector->getQueryCount());
+
         $this->assertEquals('', $response->getContent(), $response);
 
         return array_merge($body, ['id' => $this->getNewId($response), 'value' => true, 'player' => $userIndex]);
