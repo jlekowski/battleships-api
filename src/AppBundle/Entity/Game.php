@@ -353,6 +353,7 @@ class Game
     public function setLoggedUser(User $user)
     {
         $this->loggedUser = $user;
+        $this->playerNumber = null;
 
         return $this;
     }

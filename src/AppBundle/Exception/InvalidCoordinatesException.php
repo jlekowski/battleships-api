@@ -2,7 +2,7 @@
 
 namespace AppBundle\Exception;
 
-class InvalidCoordinatesException extends \InvalidArgumentException
+class InvalidCoordinatesException extends InvalidArgument400Exception
 {
     protected $code = 160;
 

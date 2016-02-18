@@ -77,9 +77,7 @@ class EventController extends FOSRestController
      * @Security("game.belongsToUser(user)")
      * @QueryParam(
      *     name="type",
-     *     requirements=@Assert\Choice(
-     *         {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE, Event::TYPE_NEW_GAME}
-     *     ),
+     *     requirements=@Assert\Choice(callback = {"AppBundle\Entity\Event", "getTypes"}),
      *     nullable=true,
      *     strict=true
      * )
@@ -107,10 +105,7 @@ class EventController extends FOSRestController
      * @Security("game.belongsToUser(user)")
      * @RequestParam(
      *     name="type",
-     *     requirements=@Assert\Choice(
-     *         {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE, Event::TYPE_NEW_GAME}
-     *     ),
-     *     allowBlank=false
+     *     requirements=@Assert\Choice(callback = {"AppBundle\Entity\Event", "getTypes"})
      * )
      * @RequestParam(name="value", requirements="\S.*", allowBlank=false, default=true)
      */

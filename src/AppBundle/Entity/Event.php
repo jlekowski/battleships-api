@@ -13,12 +13,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  *
  * @AppAssert\IsAllowedToShoot()
+ * @AppAssert\IsAllowedToStart()
  *
  * @Serializer\ExclusionPolicy("none")
  */
 class Event
 {
-    // @todo types are log related (name_update, start/joing as game state), and flow related (chat/shot)
+    // @todo types are log related (name_update, start/join as game state), and flow related (chat/shot)
     //       maybe games/{id} with /chats /shots and game (bit) status and initial get would be to get lastIdEvents? :/
     const TYPE_CHAT = 'chat';
     const TYPE_SHOT = 'shot';
@@ -57,9 +58,7 @@ class Event
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @Assert\Choice(
-     *     {Event::TYPE_CHAT, Event::TYPE_SHOT, Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NAME_UPDATE, Event::TYPE_NEW_GAME}
-     * )
+     * @Assert\Choice(callback = "getTypes")
      * @AppAssert\UniqueEvent({Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NEW_GAME})
      */
     private $type;
@@ -212,5 +211,13 @@ class Event
         if (!$this->getTimestamp()) {
             $this->setTimestamp(new \DateTime());
         }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTypes()
+    {
+        return [self::TYPE_CHAT, self::TYPE_SHOT, self::TYPE_JOIN_GAME, self::TYPE_START_GAME, self::TYPE_NAME_UPDATE, self::TYPE_NEW_GAME];
     }
 }

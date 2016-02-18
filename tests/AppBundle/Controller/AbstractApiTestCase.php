@@ -187,7 +187,7 @@ abstract class AbstractApiTestCase extends WebTestCase
     /**
      * @return EntityManagerInterface
      */
-    private function getEntityManager()
+    protected function getEntityManager()
     {
         return $this->getContainer()->get('doctrine.orm.default_entity_manager');
     }
@@ -195,7 +195,7 @@ abstract class AbstractApiTestCase extends WebTestCase
     /**
      * @return ApiKeyManager
      */
-    private function getApiKeyManager()
+    protected function getApiKeyManager()
     {
         return $this->getContainer()->get('app.security.api_key_manager');
     }

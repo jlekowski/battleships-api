@@ -67,4 +67,5 @@ fos_rest:
         messages:
             'AppBundle\Exception\GameFlowException': true
             'AppBundle\Exception\InvalidShipsException': true
+            'AppBundle\Exception\InvalidCoordinatesException': true
             'Symfony\Component\Security\Core\Exception\AuthenticationException': true
