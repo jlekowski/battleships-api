@@ -8,9 +8,6 @@ use AppBundle\Entity\Game;
 use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @todo test more get events with filter (including incorrect values)
- */
 class EventControllerTest extends AbstractApiTestCase
 {
     public function testGetEventEmpty()
@@ -1048,6 +1045,150 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertGetJsonCors($response);
         $filteredEVents = $this->filterEventsByField($allEvents, 'type', Event::TYPE_SHOT);
         $this->assertEquals($filteredEVents, $jsonResponse);
+    }
+
+    /**
+     * @depends testAddEventShot
+     * @depends testGetEventsByIdGreaterThan
+     * @param Game $game
+     * @param array $allEvents
+     */
+    public function testGetEventsByPlayer(Game $game, array $allEvents)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
+
+        $playerNumber = 2;
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events?player=%s', $game->getId(), $playerNumber),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertGetJsonCors($response);
+        $filteredEVents = $this->filterEventsByField($allEvents, 'player', $playerNumber);
+        $this->assertEquals($filteredEVents, $jsonResponse);
+    }
+
+    /**
+     * @depends testAddEventShot
+     * @depends testGetEventsByIdGreaterThan
+     * @param Game $game
+     * @param array $allEvents
+     */
+    public function testGetEventsByIdGreaterThanTypeShotAndPlayer(Game $game, array $allEvents)
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
+
+        $firstEvent = array_shift($allEvents);
+        $playerNumber = 1;
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events?gt=%s&type=%s&player=%s', $game->getId(), $firstEvent['id'], Event::TYPE_SHOT, $playerNumber),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertGetJsonCors($response);
+        $filteredEVents = $this->filterEventsByField($allEvents, 'type', Event::TYPE_SHOT);
+        $filteredEVents = $this->filterEventsByField($filteredEVents, 'player', $playerNumber);
+        $this->assertEquals($filteredEVents, $jsonResponse);
+    }
+
+    public function testGetEventsByIdGreaterThanIncorrectError()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $userIndex = 1;
+        $game = $this->getGame($userIndex, 1);
+        $apiKey = $this->getUserApiKey($userIndex);
+
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events?gt=%s', $game->getId(), '1a'),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat(
+            'Query parameter gt value \'1a\' violated a constraint %s',
+            $jsonResponse['message'],
+            $response->getContent()
+        );
+    }
+
+    public function testGetEventsByTypeIncorrectError()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $userIndex = 1;
+        $game = $this->getGame($userIndex, 1);
+        $apiKey = $this->getUserApiKey($userIndex);
+
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events?type=%s', $game->getId(), 'Incorrect'),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat(
+            'Query parameter type value \'Incorrect\' violated a constraint %s',
+            $jsonResponse['message'],
+            $response->getContent()
+        );
+    }
+
+    public function testGetEventsByPlayerIncorrectError()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+
+        $userIndex = 1;
+        $game = $this->getGame($userIndex, 1);
+        $apiKey = $this->getUserApiKey($userIndex);
+
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events?player=%s', $game->getId(), 3),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(400, $response->getStatusCode(), $response);
+        $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
+        $this->assertStringMatchesFormat(
+            'Query parameter player value \'3\' violated a constraint %s',
+            $jsonResponse['message'],
+            $response->getContent()
+        );
     }
 
     public function testGetEventsInvalidUserError()
