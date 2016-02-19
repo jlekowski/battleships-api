@@ -121,7 +121,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testGetEventInvalidUserError(array $eventData)
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -149,7 +148,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testGetEventInvalidGameError(array $eventData)
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 2);
@@ -245,7 +243,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventJoinGameDuplicateError(array $eventDataJoinGame)
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -349,7 +346,6 @@ class EventControllerTest extends AbstractApiTestCase
 //    public function testAddEventNameUpdateMissingNameError()
 //    {
 //        $client = static::createClient();
-//        $client->enableProfiler();
 //
 //        $userIndex = 1;
 //        $game = $this->getGame($userIndex, 1);
@@ -381,7 +377,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventNameUpdateEmptyNameError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -414,7 +409,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventNameUpdateIncorrectNameError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -492,7 +486,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventStartGameDuplicateError(array $eventDetails)
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = $eventDetails['userIndex'];
         $game = $this->getGame($userIndex, $eventDetails['gameIndex']);
@@ -520,7 +513,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventStartGameNoShipsError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -658,7 +650,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventShotNotMyTurnError(Game $game)
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
 
@@ -690,7 +681,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventShotIncorrectCoordError(Game $game)
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
 
@@ -827,7 +817,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventNewGameDuplicateError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -855,7 +844,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventMissingTypeError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -887,7 +875,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventEmptyTypeError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -919,7 +906,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testAddEventIncorrectTypeError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -1110,7 +1096,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testGetEventsByIdGreaterThanIncorrectError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -1138,7 +1123,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testGetEventsByTypeIncorrectError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -1166,7 +1150,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testGetEventsByPlayerIncorrectError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
@@ -1194,7 +1177,6 @@ class EventControllerTest extends AbstractApiTestCase
     public function testGetEventsInvalidUserError()
     {
         $client = static::createClient();
-        $client->enableProfiler();
 
         $userIndex = 1;
         $game = $this->getGame($userIndex, 1);
