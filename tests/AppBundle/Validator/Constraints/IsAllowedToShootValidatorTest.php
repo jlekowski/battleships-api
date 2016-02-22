@@ -1,8 +1,9 @@
 <?php
 
-namespace AppBundle\Validator\Constraints;
+namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Entity\Event;
+use AppBundle\Validator\Constraints\IsAllowedToShootValidator;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class IsAllowedToShootValidatorTest extends \PHPUnit_Framework_TestCase

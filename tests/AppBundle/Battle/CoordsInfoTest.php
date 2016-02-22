@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Battle;
+namespace Tests\AppBundle\Battle;
 
 use AppBundle\Battle\CoordsInfo;
 

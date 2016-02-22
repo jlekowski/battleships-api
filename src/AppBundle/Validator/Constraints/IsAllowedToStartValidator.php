@@ -19,7 +19,7 @@ class IsAllowedToStartValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof IsAllowedToStart) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\IsAllowedToShoot', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, sprintf('%s\IsAllowedToStart', __NAMESPACE__));
         }
 
         if (!$value instanceof Event) {
