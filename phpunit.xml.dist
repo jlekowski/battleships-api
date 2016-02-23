@@ -9,6 +9,7 @@
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <server name="KERNEL_DIR" value="app/" />
     </php>
 
     <testsuites>
@@ -17,7 +18,9 @@
         </testsuite>
     </testsuites>
 
-    <php>
-        <server name="KERNEL_DIR" value="app/" />
-    </php>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>src/AppBundle</directory>
+        </whitelist>
+    </filter>
 </phpunit>

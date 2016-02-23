@@ -607,7 +607,7 @@ class GameControllerTest extends AbstractApiTestCase
         array $playerShips = [],
         User $otherUser = null,
         $playerNumber = 1,
-        $lessThanAgo = 60
+        $lessThanAgo = 120
     ) {
         $expectedKeys = ['id', 'playerShips', 'playerNumber', 'timestamp'];
         if ($user) {
