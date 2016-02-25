@@ -130,4 +130,14 @@ class CoordsInfoTest extends \PHPUnit_Framework_TestCase
             $this->assertTrue(in_array($sidePosition->getCoords(), $coords, true));
         }
     }
+
+    /**
+     * @expectedException \AppBundle\Exception\InvalidOffsetException
+     * @expectedExceptionMessage Invalid offset provided: invalid
+     */
+    public function testGetOffsetCoordsThrowsExceptionForInvalidOffset()
+    {
+        $coordsInfo = new CoordsInfo('I9');
+        $coordsInfo->getOffsetCoords('invalid');
+    }
 }

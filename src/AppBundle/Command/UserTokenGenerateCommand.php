@@ -40,8 +40,8 @@ class UserTokenGenerateCommand extends ContainerAwareCommand
 
         /** @var User $user */
         $user = $this->getUserRepository()->find($userId);
-        if (!$userId) {
-            throw new UserNotFoundException('User `%s` does not exist', $userId);
+        if (!$user) {
+            throw new UserNotFoundException(sprintf('User `%s` does not exist', $userId));
         }
 
         if ($input->getOption('new')) {
