@@ -1,0 +1,18 @@
+parameters:
+    database_host:     127.0.0.1
+    database_port:     ~
+    database_name:     battleships
+    database_user:     travis
+    database_password: ~
+
+    # A secret key that's used to generate certain security-related tokens
+    secret:            travis
+
+    # loggly token
+    loggly_token:       ~
+    loggly_tag:         battleships-api-travis
+
+    # varnish config
+    varnish_enabled:    false
+    varnish_servers:    localhost
+    varnish_base_url:   localhost

@@ -4,13 +4,19 @@ php:
   - 5.6
   - 7
   - nightly
-  - hhvm
 
 before_install:
+  - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - mysql -e 'CREATE DATABASE battleships CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci;'
+  - bash -c "if [[ $TRAVIS_PHP_VERSION =~ 5.[56] ]] ; then yes '' | pecl install apcu-4.0.10; fi;"
+  - bash -c "if [[ $TRAVIS_PHP_VERSION =~ 7.*|nightly ]] ; then pear config-set preferred_state beta; echo 'extension = apc.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; yes '' | pecl install apcu_bc; fi;"
   - composer self-update
 
 install:
   - composer install
+
+before_script:
+  - bin/console doctrine:schema:update --force
 
 script:
   - bin/phpunit

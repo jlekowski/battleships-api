@@ -244,7 +244,7 @@ systemctl daemon-reload
 sudo netstat -tulpn
 ```
 
-#### handy commands:
+#### Handy commands:
 ```
 varnishncsa -F '%U%q (%m) %{Varnish:hitmiss}x' -n ubuntu # see varnish hits
 sudo varnishadm "ban req.url ~ /" # ban/clear cache
@@ -253,7 +253,7 @@ sudo varnishadm "ban req.url ~ /" # ban/clear cache
 ## PHP7 installation (optional)
 ```
 #sudo apt-get install python-software-properties
-sudo add-apt-repository ppa:ondrej/php-7.0
+sudo add-apt-repository ppa:ondrej/php
 sudo apt-get update
 sudo apt-get purge php5-fpm -y
 sudo apt-get install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php-apcu php-apcu-bc -y
