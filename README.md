@@ -10,7 +10,8 @@ API to manage users and interactions between them in games.
 http://dev.lekowski.pl
 
 ### LINKS
-* https://github.com/jlekowski/battleships-webclient - web client for the API 
+* https://github.com/jlekowski/battleships-webclient - web client for the API
+* https://github.com/jlekowski/battleships-offline - offline version
 * https://github.com/jlekowski/battleships - legacy full web version
 
 ## === Installation ===
@@ -48,5 +49,5 @@ bin/console test:e2e -v "battleships-api.localhost/v1"
 
 ## === Changelog ===
 * version **1.0**
- * Working version of the API deployed 
+ * Working version of the API deployed
  * Still many TODOs, but they should not affect the stability and will be fixed on an ongoing basis  
