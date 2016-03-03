@@ -54,7 +54,7 @@ CREATE DATABASE battleships CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci;
 # for Apache
 sudo vim /etc/apache2/ports.conf
 grep 80 /etc/apache2/sites-enabled/*
-## for Nginx:
+# for Nginx:
 grep 80 /etc/nginx/sites-enabled/*
 ```
 

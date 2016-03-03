@@ -10,12 +10,12 @@ API to manage users and interactions between them in games.
 http://dev.lekowski.pl
 
 ### LINKS
-* https://github.com/jlekowski/battleships - legacy full web version
 * https://github.com/jlekowski/battleships-webclient - web client for the API 
+* https://github.com/jlekowski/battleships - legacy full web version
 
 ## === Installation ===
 1. Download and unzip or clone.
-2. Setup the stack (web server, database etc.) - [SETUP.md](SETUP.md).
+2. Setup the stack (web server, database etc.) - [SETUP](SETUP.md).
 3. Change Symfony environment to production, install dependencies, and provide parameters.
 ```
 export SYMFONY_ENV=prod
