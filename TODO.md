@@ -1,0 +1,1 @@
+- maybe add Accept-Encoding too? # don't seem to be an issue

@@ -57,4 +57,4 @@ fos_http_cache:
                     overwrite: false
                     cache_control: { public: true, max_age: 0, s_maxage: 600 }
                     etag: true
-                    vary: [Authorization, Accept] # @todo maybe add Accept-Encoding too?
+                    vary: [Authorization, Accept]

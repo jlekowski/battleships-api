@@ -30,7 +30,6 @@ services:
     app.controller.cors:
         class: AppBundle\Controller\CorsController
 
-    # @todo abstract controller?
     app.controller.user:
         class: AppBundle\Controller\UserController
         arguments: ['@doctrine.orm.default_entity_manager', '@app.security.api_key_manager']
