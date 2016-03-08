@@ -165,7 +165,7 @@ class Event
      */
     public function setValue($value)
     {
-        $this->value = $value;
+        $this->value = is_string($value) ? trim($value) : $value;
 
         return $this;
     }

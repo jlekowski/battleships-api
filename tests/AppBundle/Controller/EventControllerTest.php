@@ -319,7 +319,7 @@ class EventControllerTest extends AbstractApiTestCase
 
         $body = [
             'type' => Event::TYPE_NAME_UPDATE,
-            'value' => 'Test User Updated'
+            'value' => " \nTest User Updated \t"
         ];
         $client->request(
             'POST',
@@ -339,7 +339,33 @@ class EventControllerTest extends AbstractApiTestCase
 
         $this->assertEquals('', $response->getContent(), $response);
 
-        return array_merge($body, ['id' => $this->getNewId($response), 'value' => true, 'player' => $userIndex]);
+        return array_merge($body, ['id' => $this->getNewId($response)]);
+    }
+
+    /**
+     * @depends testAddEventNameUpdate
+     * @param array $eventDataNameUpdate
+     */
+    public function testAddEventNameUpdateTrimmed(array $eventDataNameUpdate)
+    {
+        $client = static::createClient();
+
+        $userIndex = 1;
+        $game = $this->getGame($userIndex, 1);
+        $apiKey = $this->getUserApiKey($userIndex);
+
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events/%d', $game->getId(), $eventDataNameUpdate['id']),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertNotEquals($eventDataNameUpdate['value'], $jsonResponse['value']);
+        $this->assertEquals(trim($eventDataNameUpdate['value']), $jsonResponse['value']);
     }
 
     // at the moment it adds name_update event with value 1

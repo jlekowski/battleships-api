@@ -67,8 +67,6 @@ class EventController extends FOSRestController
     }
 
     /**
-     * @todo check if query is optimised enough
-     *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      * @return array
@@ -95,8 +93,6 @@ class EventController extends FOSRestController
     }
 
     /**
-     * @todo all requirements="\S.*" should either trim, or check first last character to be non-whitespace
-     *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      * @return Response
@@ -107,7 +103,7 @@ class EventController extends FOSRestController
      *     name="type",
      *     requirements=@Assert\Choice(callback = {"AppBundle\Entity\Event", "getTypes"})
      * )
-     * @RequestParam(name="value", requirements="\S.*", allowBlank=false, default=true)
+     * @RequestParam(name="value", requirements=".*\S.*", allowBlank=false, default=true)
      */
     public function postEventAction(ParamFetcher $paramFetcher, Game $game)
     {

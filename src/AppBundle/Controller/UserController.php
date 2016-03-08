@@ -53,7 +53,7 @@ class UserController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return Response
      *
-     * @RequestParam(name="name", requirements="\S.*", allowBlank=false)
+     * @RequestParam(name="name", requirements=".*\S.*", allowBlank=false)
      */
     public function postUserAction(ParamFetcher $paramFetcher)
     {
@@ -78,7 +78,7 @@ class UserController extends FOSRestController
      *
      * @Tag(expression="'user-' ~ requestedUser.getId()")
      * @Security("user.getId() === requestedUser.getId()")
-     * @RequestParam(name="name", requirements="\S.*", allowBlank=false)
+     * @RequestParam(name="name", requirements=".*\S.*", allowBlank=false)
      */
     public function patchUserAction(ParamFetcher $paramFetcher, User $requestedUser)
     {

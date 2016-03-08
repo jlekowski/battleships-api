@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
@@ -26,6 +27,7 @@ class User
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\Length(min = 1, minMessage = "Name must be at least {{ limit }} character(s) long")
      */
     private $name;
 
@@ -73,7 +75,7 @@ class User
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = trim($name);
 
         return $this;
     }

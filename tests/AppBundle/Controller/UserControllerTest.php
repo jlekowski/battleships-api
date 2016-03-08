@@ -12,13 +12,14 @@ class UserControllerTest extends AbstractApiTestCase
         $client = static::createClient();
         $client->enableProfiler();
 
+        $body = ['name' => '  Functional Test Trim  '];
         $client->request(
             'POST',
             '/v1/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'],
-            '{"name":"Functional Test"}'
+            json_encode($body)
         );
         $response = $client->getResponse();
 
@@ -64,7 +65,7 @@ class UserControllerTest extends AbstractApiTestCase
             [14] => dump
         */
 
-        return ['id' => $this->getNewId($response), 'apiKey' => $apiKey];
+        return ['id' => $this->getNewId($response), 'apiKey' => $apiKey, 'name' => $body['name']];
     }
 
     public function testAddUserMissingNameError()
@@ -121,7 +122,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $client->request(
             'GET',
-            '/v1/users/' . $userData['id'],
+            sprintf('/v1/users/%d', $userData['id']),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
@@ -131,7 +132,7 @@ class UserControllerTest extends AbstractApiTestCase
 
 
         $this->assertGetSuccess($response);
-        $this->assertEquals(['name' => 'Functional Test'], $jsonResponse, $response);
+        $this->assertEquals(['name' => trim($userData['name'])], $jsonResponse, $response);
         $this->assertJsonResponse($response);
 
         // @todo check that after every request
@@ -154,7 +155,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $client->request(
             'GET',
-            '/v1/users/' . $userData['id'],
+            sprintf('/v1/users/%d', $userData['id']),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer wrong']
@@ -179,7 +180,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $client->request(
             'GET',
-            '/v1/users/' . ($userData['id'] - 1),
+            sprintf('/v1/users/%d', $userData['id'] - 1),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
@@ -196,19 +197,22 @@ class UserControllerTest extends AbstractApiTestCase
     /**
      * @depends testAddUser
      * @param array $userData
+     * @return array
      */
     public function testEditUserName(array $userData)
     {
         $client = static::createClient();
         $client->enableProfiler();
 
+        $body = ['name' => " \tFunctional Test Edited \n"];
+
         $client->request(
             'PATCH',
-            '/v1/users/' . $userData['id'],
+            sprintf('/v1/users/%d', $userData['id']),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
-            '{"name":"Functional Test Edited"}'
+            json_encode($body)
         );
         $response = $client->getResponse();
 
@@ -229,6 +233,30 @@ class UserControllerTest extends AbstractApiTestCase
         $doctrineDataCollector = $profile->getCollector('db');
         // SELECT, START TRANSACTION, UPDATE, COMMIT
         $this->assertEquals(4, $doctrineDataCollector->getQueryCount());
+
+        return array_merge($userData, $body);
+    }
+
+    /**
+     * @depends testEditUserName
+     * @param array $userData
+     */
+    public function testEditUserNameTrimmed(array $userData)
+    {
+        $client = static::createClient();
+
+        $client->request(
+            'GET',
+            sprintf('/v1/users/%d', $userData['id']),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertNotEquals(['name' => $userData['name']], $jsonResponse, $response);
+        $this->assertEquals(['name' => trim($userData['name'])], $jsonResponse, $response);
     }
 
     /**
@@ -242,7 +270,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $client->request(
             'PATCH',
-            '/v1/users/' . $userData['id'],
+            sprintf('/v1/users/%d', $userData['id']),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']]
@@ -266,7 +294,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $client->request(
             'PATCH',
-            '/v1/users/' . $userData['id'],
+            sprintf('/v1/users/%d', $userData['id']),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $userData['apiKey']],
@@ -318,7 +346,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $client->request(
             'PATCH',
-            '/v1/users/' . $userData['id'],
+            sprintf('/v1/users/%d', $userData['id']),
             [],
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer wrong2']
