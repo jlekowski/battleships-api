@@ -28,7 +28,6 @@ class UserControllerTest extends AbstractApiTestCase
         $this->assertEquals('', $response->getContent(), $response);
         $this->assertJsonResponse($response);
 
-        // @todo check that after every request
         $this->assertCorsResponse($response);
 
         $locationHeader = $response->headers->get('Location');
@@ -135,7 +134,6 @@ class UserControllerTest extends AbstractApiTestCase
         $this->assertEquals(['name' => trim($userData['name'])], $jsonResponse, $response);
         $this->assertJsonResponse($response);
 
-        // @todo check that after every request
         $this->assertCorsResponse($response);
 
         $profile = $client->getProfile();
@@ -225,7 +223,6 @@ class UserControllerTest extends AbstractApiTestCase
             'No need for "Content-Type: application/json" header'
         );
 
-        // @todo check that after every request
         $this->assertCorsResponse($response);
 
         $profile = $client->getProfile();

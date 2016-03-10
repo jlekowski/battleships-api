@@ -10,11 +10,13 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * @todo take a look at refactoring maybe
  * @Annotation
  */
 class ShipsValidator extends ConstraintValidator
 {
+    const MAX_SHIP_LENGTH = 4;
+    const TOTAL_LENGTH = 20; // required number of masts
+
     /**
      * @inheritdoc
      */
@@ -56,12 +58,14 @@ class ShipsValidator extends ConstraintValidator
      */
     protected function validateShipsLength(CoordsInfoCollection $shipsCollection)
     {
-        // required number of masts
-        $shipsLength = 20;
-
         // if the number of masts is correct
-        if (count($shipsCollection) !== $shipsLength) {
-            throw new InvalidShipsException('Number of ships\' masts is incorrect');
+        $mastCount = count($shipsCollection);
+        if ($mastCount !== self::TOTAL_LENGTH) {
+            throw new InvalidShipsException(sprintf(
+                'Number of ships\' masts is incorrect: %d (expected: %d)',
+                $mastCount,
+                self::TOTAL_LENGTH
+            ));
         }
     }
 
@@ -99,7 +103,6 @@ class ShipsValidator extends ConstraintValidator
      */
     protected function validateShipsTypes(CoordsInfoCollection $shipsCollection)
     {
-        // @todo length, number of masts etc. to constant
         // sizes of ships to be count
         $shipsTypes = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
         // B3 (index 12), going 2 down and 3 left is D6 (index 35), so 12 + (2 * 10) + (3 * 1) = 35
@@ -119,8 +122,8 @@ class ShipsValidator extends ConstraintValidator
                 // check for masts until the battleground border is reached
                 while ($shipsCollection->contains($checkCoords)) {
                     // ship is too long
-                    if (++$shipLength > 4) {
-                        throw new InvalidShipsException(sprintf('Ships can\'t have more than %s masts', 4));
+                    if (++$shipLength > self::MAX_SHIP_LENGTH) {
+                        throw new InvalidShipsException(sprintf('Ships can\'t have more than %d masts', self::MAX_SHIP_LENGTH));
                     }
 
                     // mark the mast as already checked

@@ -19,8 +19,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Event
 {
-    // @todo types are log related (name_update, start/join as game state), and flow related (chat/shot)
-    //       maybe games/{id} with /chats /shots and game (bit) status and initial get would be to get lastIdEvents? :/
     const TYPE_CHAT = 'chat';
     const TYPE_SHOT = 'shot';
     const TYPE_JOIN_GAME = 'join_game';

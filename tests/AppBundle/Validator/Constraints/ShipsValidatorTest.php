@@ -45,7 +45,7 @@ class ShipsValidatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \AppBundle\Exception\InvalidShipsException
-     * @expectedExceptionMessage Number of ships' masts is incorrect
+     * @expectedExceptionMessage Number of ships' masts is incorrect: 19 (expected: 20)
      */
     public function testValidateThrowsExceptionWhenNotEnoughMasts()
     {
@@ -58,7 +58,7 @@ class ShipsValidatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \AppBundle\Exception\InvalidShipsException
-     * @expectedExceptionMessage Number of ships' masts is incorrect
+     * @expectedExceptionMessage Number of ships' masts is incorrect: 21 (expected: 20)
      */
     public function testValidateThrowsExceptionWhenTooManyMasts()
     {

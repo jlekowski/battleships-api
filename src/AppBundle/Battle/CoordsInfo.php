@@ -5,10 +5,6 @@ namespace AppBundle\Battle;
 use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidOffsetException;
 
-/**
- * @todo rename get*Position to provide CoordsInfo
- * @todo maybe return CoordsInfoCollection, not array
- */
 class CoordsInfo
 {
     const OFFSET_TOP = 'TOP';
@@ -17,14 +13,12 @@ class CoordsInfo
     const OFFSET_LEFT = 'LEFT';
 
     /**
-     * @todo replace with a constant (and composer update to require 5.6)
      * Array with Y axis elements
      * @var array
      */
     protected $axisY = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
     /**
-     * @todo replace with a constant (and composer update to require 5.6)
      * Array with X axis elements
      * @var array
      */
@@ -128,9 +122,9 @@ class CoordsInfo
     {
         return [
             self::OFFSET_TOP => $this->getTopPosition(),
-            self::OFFSET_BOTTOM =>$this->getBottomPosition(),
-            self::OFFSET_RIGHT =>$this->getRightPosition(),
-            self::OFFSET_LEFT =>$this->getLeftPosition()
+            self::OFFSET_BOTTOM => $this->getBottomPosition(),
+            self::OFFSET_RIGHT => $this->getRightPosition(),
+            self::OFFSET_LEFT => $this->getLeftPosition()
         ];
     }
 

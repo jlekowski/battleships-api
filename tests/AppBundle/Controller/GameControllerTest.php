@@ -29,6 +29,27 @@ class GameControllerTest extends AbstractApiTestCase
         return $this->validateAddGame($client->getResponse(), $client->getProfile());
     }
 
+    public function testAddGameWithEmptyShips()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $apiKey = $this->getUserApiKey(1);
+
+        $body = [
+            'playerShips' => []
+        ];
+        $client->request(
+            'POST',
+            '/v1/games',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
+            json_encode($body)
+        );
+
+        $this->validateAddGame($client->getResponse(), $client->getProfile());
+    }
+
     /**
      * @return array
      */
@@ -526,7 +547,6 @@ class GameControllerTest extends AbstractApiTestCase
         $this->assertEquals('', $response->getContent(), $response);
         $this->assertJsonResponse($response);
 
-        // @todo check that after every request
         $this->assertCorsResponse($response);
 
         $locationHeader = $response->headers->get('Location');
@@ -562,13 +582,11 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $this->assertEquals(204, $response->getStatusCode(), $response);
         $this->assertEquals('', $response->getContent(), $response);
-        // @todo after every JSON request
         $this->assertFalse(
             $response->headers->contains('Content-Type', 'application/json'),
             'No need for "Content-Type: application/json" header'
         );
 
-        // @todo check that after every request
         $this->assertCorsResponse($response);
 
         /** @var DoctrineDataCollector $doctrineDataCollector */

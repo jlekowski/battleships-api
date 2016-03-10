@@ -36,8 +36,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @todo maybe rename user to player? (then player/other vs. user)
-     *
      * @param User $requestedUser
      * @return User
      *

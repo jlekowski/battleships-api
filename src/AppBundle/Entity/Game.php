@@ -16,7 +16,6 @@ use JMS\Serializer\Annotation as Serializer;
  * @AppAssert\OnlyBeforeStart(groups={"update"})
  *
  * @Serializer\ExclusionPolicy("all")
- * @todo Unique field for hash and other keys(?) + table relations/foreign keys
  */
 class Game
 {
@@ -224,8 +223,6 @@ class Game
     }
 
     /**
-     * @todo trait or abstract for entity timestamp
-     *
      * @return \DateTime
      */
     public function getTimestamp()

@@ -16,18 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
 
-// @todo test caching games, events, available games etc.
-// @todo check strictly for URI, e.g. /v1/games/1b
-// @todo think about OAuth http://stackoverflow.com/questions/12672169/how-to-restfully-login-symfony2-security-fosuserbundle-fosrestbundle
-// @todo headers for specific version?
-// @todo exclusions on object properties depends on version
-// @todo ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/
-/**
- * @todo exception when accessing not existing game currently is "AppBundle\\Entity\\Game object not found"
- * @todo what URI for shot? It's an update of game/{id/hash}|game/{id/hash}/shots resource and I need a result
- * @todo what URI for ships? It's an update of game/{id/hash} resource, or adding multiple game/{id/hash}/ships resources?
- * @todo maybe go with batch requests (to get game for example) https://parse.com/docs/rest/guide
- */
 class GameController extends FOSRestController
 {
     /**
@@ -133,10 +121,6 @@ class GameController extends FOSRestController
     }
 
     /**
-     * @todo Think about multiple patching (207 response status) http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
-     * @todo specific response (http code?)
-     * @todo be more specific when clearing cache (setting ships does not require that?)
-     *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
      *
@@ -148,7 +132,6 @@ class GameController extends FOSRestController
      */
     public function patchGameAction(ParamFetcher $paramFetcher, Game $game)
     {
-        // @todo - do we need both events if both parameters set in one request?
         if ($paramFetcher->get('joinGame')) {
             $game->setUser2($this->getUser());
             $this->createEvent($game, Event::TYPE_JOIN_GAME);
@@ -165,8 +148,6 @@ class GameController extends FOSRestController
     }
 
     /**
-     * @todo maybe go with subrequest to create event?
-     *
      * @param Game $game
      * @param string $eventType
      */
