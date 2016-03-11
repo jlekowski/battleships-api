@@ -1,6 +1,4 @@
 <?php
-// @todo move to a separate repo as a component
-// @todo make it pretty
 
 namespace BattleshipsApiComponent\Client\Request;
 

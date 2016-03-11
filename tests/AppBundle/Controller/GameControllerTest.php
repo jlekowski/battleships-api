@@ -582,10 +582,7 @@ class GameControllerTest extends AbstractApiTestCase
     {
         $this->assertEquals(204, $response->getStatusCode(), $response);
         $this->assertEquals('', $response->getContent(), $response);
-        $this->assertFalse(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'No need for "Content-Type: application/json" header'
-        );
+        $this->assertNotJsonResponse($response);
 
         $this->assertCorsResponse($response);
 

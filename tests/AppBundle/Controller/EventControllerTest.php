@@ -6,6 +6,7 @@ use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
 use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Response;
 
 class EventControllerTest extends AbstractApiTestCase
@@ -19,14 +20,7 @@ class EventControllerTest extends AbstractApiTestCase
         $game = $this->getGame($userIndex, 1);
         $apiKey = $this->getUserApiKey($userIndex);
 
-        $client->request(
-            'GET',
-            sprintf('/v1/games/%d/events', $game->getId()),
-            [],
-            [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
-        );
-        $response = $client->getResponse();
+        $response = $this->callGetEvents($client, $game, $apiKey);
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->assertInternalType('array', $jsonResponse);
@@ -181,14 +175,7 @@ class EventControllerTest extends AbstractApiTestCase
         $game = $this->getGame($userIndex, 1);
         $apiKey = $this->getUserApiKey($userIndex);
 
-        $client->request(
-            'GET',
-            sprintf('/v1/games/%d/events', $game->getId()),
-            [],
-            [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
-        );
-        $response = $client->getResponse();
+        $response = $this->callGetEvents($client, $game, $apiKey);
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->assertEquals([$eventData], $jsonResponse);
@@ -972,15 +959,7 @@ class EventControllerTest extends AbstractApiTestCase
 
         $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
 
-        // @todo maybe dataProvider instead of API call?
-        $client->request(
-            'GET',
-            sprintf('/v1/games/%d/events', $game->getId()),
-            [],
-            [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
-        );
-        $response = $client->getResponse();
+        $response = $this->callGetEvents($client, $game, $apiKey);
         $allEvents = json_decode($response->getContent(), true);
 
         $this->assertGetJsonCors($response);
@@ -1208,14 +1187,7 @@ class EventControllerTest extends AbstractApiTestCase
         $game = $this->getGame($userIndex, 1);
         $apiKey = $this->getUserApiKey(2);
 
-        $client->request(
-            'GET',
-            sprintf('/v1/games/%d/events', $game->getId()),
-            [],
-            [],
-            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
-        );
-        $response = $client->getResponse();
+        $response = $this->callGetEvents($client, $game, $apiKey);
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
@@ -1248,5 +1220,24 @@ class EventControllerTest extends AbstractApiTestCase
         return array_values(array_filter($events, function ($event) use ($eventField, $eventFieldValue) {
             return $event[$eventField] === $eventFieldValue ? $event : null;
         }));
+    }
+
+    /**
+     * @param Client $client
+     * @param Game $game
+     * @param string $apiKey
+     * @return Response
+     */
+    private function callGetEvents(Client $client, Game $game, $apiKey)
+    {
+        $client->request(
+            'GET',
+            sprintf('/v1/games/%d/events', $game->getId()),
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey]
+        );
+
+        return $client->getResponse();
     }
 }

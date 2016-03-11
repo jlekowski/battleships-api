@@ -43,7 +43,6 @@ class BattleManager
         $shot = new CoordsInfo($shotEvent->getValue());
 
         if ($enemyShips->contains($shot)) {
-            // @todo is there a nicer way to do it (getPlayerShots()), and do I need getEvents() method?
             $attackerShots = $this->getAttackerShots($shotEvent);
             $result = $this->isSunk($shot, $enemyShips, $attackerShots)
                 ? self::SHOT_RESULT_SUNK
@@ -116,8 +115,7 @@ class BattleManager
 
         $attackerShots = [];
         foreach ($shotEvents as $shotEvent) {
-            // @todo DRY - shot event value (see IsAllowedToShootValidator)
-            $attackerShots[] = explode('|', $shotEvent->getValue())[0];
+            $attackerShots[] = $shotEvent->getValue();
         }
 
         return new CoordsInfoCollection($attackerShots);

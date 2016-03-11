@@ -152,9 +152,19 @@ abstract class AbstractApiTestCase extends WebTestCase
     /**
      * @param Response $response
      */
+    protected function assertNotJsonResponse(Response $response)
+    {
+        $this->assertFalse(
+            $response->headers->contains('Content-Type', 'application/json'),
+            'No need for "Content-Type: application/json" header'
+        );
+    }
+
+    /**
+     * @param Response $response
+     */
     protected function assertCorsResponse(Response $response)
     {
-        // @todo check that after every request
         $this->assertTrue(
             $response->headers->contains('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With'),
             'Missing "Access-Control-Allow-Headers: Content-Type, Authorization, Accept, X-Requested-With" header'

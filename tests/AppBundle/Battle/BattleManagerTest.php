@@ -63,7 +63,7 @@ class BattleManagerTest extends \PHPUnit_Framework_TestCase
         $event = $this->prophesize('AppBundle\Entity\Event');
         $game = $this->prophesize('AppBundle\Entity\Game');
 
-        $shotEvent->getValue()->willReturn('D2|hit');
+        $shotEvent->getValue()->willReturn('D2');
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);

@@ -62,7 +62,7 @@ class Event
     private $type;
 
     /**
-     * @var string
+     * @var mixed
      *
      * @ORM\Column(name="value", type="text")
      */
@@ -133,7 +133,7 @@ class Event
     }
 
     /**
-     * Set eventType
+     * Set type
      *
      * @param string $type
      * @return Event
@@ -146,7 +146,7 @@ class Event
     }
 
     /**
-     * Get eventType
+     * Get type
      *
      * @return string
      */
@@ -156,26 +156,32 @@ class Event
     }
 
     /**
-     * Set eventValue
+     * Set value
      *
-     * @param string $value
+     * @param mixed $value
      * @return Event
      */
     public function setValue($value)
     {
-        $this->value = is_string($value) ? trim($value) : $value;
+        if ($this->getType() === self::TYPE_SHOT && is_array($value)) {
+            $value = array_map('trim', $value);
+            $value = implode('|', $value);
+        } elseif (is_string($value)) {
+            $value = trim($value);
+        }
+        $this->value = $value;
 
         return $this;
     }
 
     /**
-     * Get eventValue
+     * Get value
      *
      * @return string
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->getType() !== self::TYPE_SHOT ? $this->value : explode('|', $this->value)[0];
     }
 
     /**

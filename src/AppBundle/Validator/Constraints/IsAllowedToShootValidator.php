@@ -77,13 +77,11 @@ class IsAllowedToShootValidator extends ConstraintValidator
         if (empty($event)) {
             $whoseTurn = 1;
         } elseif ($event->getPlayer() === $game->getPlayerNumber()) {
-            $coords = explode('|', $event->getValue())[0];
-            $whoseTurn = in_array($coords, $game->getOtherShips())
+            $whoseTurn = in_array($event->getValue(), $game->getOtherShips())
                 ? $game->getPlayerNumber()
                 : $game->getOtherNumber();
         } else {
-            $coords = explode('|', $event->getValue())[0];
-            $whoseTurn = in_array($coords, $game->getPlayerShips())
+            $whoseTurn = in_array($event->getValue(), $game->getPlayerShips())
                 ? $game->getOtherNumber()
                 : $game->getPlayerNumber();
         }

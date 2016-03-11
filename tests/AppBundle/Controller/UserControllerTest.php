@@ -33,7 +33,7 @@ class UserControllerTest extends AbstractApiTestCase
         $locationHeader = $response->headers->get('Location');
         $this->assertStringMatchesFormat('http://localhost/v1/users/%d', $locationHeader);
         $apiKey = $response->headers->get(Headers::API_KEY);
-        // @todo better way to validate JWT
+        // imperfect way to validate JWT
         $this->assertStringMatchesFormat('%s.%s.%s', $apiKey);
 
         $profile = $client->getProfile();
@@ -217,11 +217,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(204, $response->getStatusCode(), $response);
         $this->assertEquals('', $response->getContent(), $response);
-        // @todo after every JSON request
-        $this->assertFalse(
-            $response->headers->contains('Content-Type', 'application/json'),
-            'No need for "Content-Type: application/json" header'
-        );
+        $this->assertNotJsonResponse($response);
 
         $this->assertCorsResponse($response);
 

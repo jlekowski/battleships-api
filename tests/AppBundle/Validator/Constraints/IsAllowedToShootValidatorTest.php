@@ -124,7 +124,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit_Framework_TestCase
         $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_START_GAME, 2)->willReturn($collection);
         $this->eventRepository->findLastForGameByType($game, Event::TYPE_SHOT)->willReturn($lastShotEvent);
         $lastShotEvent->getPlayer()->willReturn(1);
-        $lastShotEvent->getValue()->willReturn('A1|miss');
+        $lastShotEvent->getValue()->willReturn('A1');
         $game->getOtherShips()->willReturn(['A2']);
 
         $this->validator->validate($event->reveal(), $constraint->reveal());
@@ -151,7 +151,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit_Framework_TestCase
         $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_START_GAME, 2)->willReturn($collection);
         $this->eventRepository->findLastForGameByType($game, Event::TYPE_SHOT)->willReturn($lastShotEvent);
         $lastShotEvent->getPlayer()->willReturn(2);
-        $lastShotEvent->getValue()->willReturn('A1|hit');
+        $lastShotEvent->getValue()->willReturn('A1');
         $game->getPlayerShips()->willReturn(['A1']);
 
         $this->validator->validate($event->reveal(), $constraint->reveal());
@@ -174,7 +174,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit_Framework_TestCase
         $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_START_GAME, 2)->willReturn($collection);
         $this->eventRepository->findLastForGameByType($game, Event::TYPE_SHOT)->willReturn($lastShotEvent);
         $lastShotEvent->getPlayer()->willReturn(1);
-        $lastShotEvent->getValue()->willReturn('A1|hit');
+        $lastShotEvent->getValue()->willReturn('A1');
         $game->getOtherShips()->willReturn(['A1']);
 
         $this->validator->validate($event->reveal(), $constraint->reveal());
@@ -197,7 +197,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit_Framework_TestCase
         $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_START_GAME, 2)->willReturn($collection);
         $this->eventRepository->findLastForGameByType($game, Event::TYPE_SHOT)->willReturn($lastShotEvent);
         $lastShotEvent->getPlayer()->willReturn(2);
-        $lastShotEvent->getValue()->willReturn('A1|miss');
+        $lastShotEvent->getValue()->willReturn('A1');
         $game->getPlayerShips()->willReturn(['A2']);
 
         $this->validator->validate($event->reveal(), $constraint->reveal());
