@@ -38,7 +38,11 @@ class UniqueEventValidator extends ConstraintValidator
         }
 
         $root = $this->context->getRoot();
-        if (!$root instanceof Event || !in_array($value, $constraint->uniqueEvents)) {
+        if (!$root instanceof Event) {
+            throw new UnexpectedTypeException($root, 'AppBundle\Entity\Event');
+        }
+
+        if (!in_array($value, $constraint->uniqueEvents)) {
             return;
         }
 

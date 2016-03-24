@@ -2,8 +2,8 @@
 
 namespace AppBundle\Validator\Constraints;
 
-use AppBundle\Battle\CoordsInfo;
-use AppBundle\Battle\CoordsInfoCollection;
+use AppBundle\Battle\CoordsCollection;
+use AppBundle\Battle\CoordsManager;
 use AppBundle\Exception\InvalidShipsException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -16,6 +16,19 @@ class ShipsValidator extends ConstraintValidator
 {
     const MAX_SHIP_LENGTH = 4;
     const TOTAL_LENGTH = 20; // required number of masts
+
+    /**
+     * @var CoordsManager
+     */
+    protected $coordsManager;
+
+    /**
+     * @param CoordsManager $coordsManager
+     */
+    public function __construct(CoordsManager $coordsManager)
+    {
+        $this->coordsManager = $coordsManager;
+    }
 
     /**
      * @inheritdoc
@@ -44,22 +57,23 @@ class ShipsValidator extends ConstraintValidator
      */
     protected function validateShips(array $ships)
     {
-        $shipsCollection = new CoordsInfoCollection($ships);
-        $shipsCollection->sort();
+        $shipsCollection = new CoordsCollection($ships);
+        $shipsCollection->sort(); // required for validateEdgeConnections and validateShipsTypes
 
+        $this->coordsManager->validateCoordsArray($shipsCollection->toArray());
         $this->validateShipsLength($shipsCollection);
         $this->validateEdgeConnections($shipsCollection);
         $this->validateShipsTypes($shipsCollection);
     }
 
     /**
-     * @param CoordsInfoCollection $shipsCollection
+     * @param CoordsCollection $shipsCollection
      * @throws InvalidShipsException
      */
-    protected function validateShipsLength(CoordsInfoCollection $shipsCollection)
+    private function validateShipsLength(CoordsCollection $shipsCollection)
     {
         // if the number of masts is correct
-        $mastCount = count($shipsCollection);
+        $mastCount = $shipsCollection->count();
         if ($mastCount !== self::TOTAL_LENGTH) {
             throw new InvalidShipsException(sprintf(
                 'Number of ships\' masts is incorrect: %d (expected: %d)',
@@ -70,55 +84,55 @@ class ShipsValidator extends ConstraintValidator
     }
 
     /**
-     * @param CoordsInfoCollection $shipsCollection
+     * @param CoordsCollection $shipsCollection
      * @throws InvalidShipsException
      */
-    protected function validateEdgeConnections(CoordsInfoCollection $shipsCollection)
+    private function validateEdgeConnections(CoordsCollection $shipsCollection)
     {
-        /** @var CoordsInfo $shipCoords */
+        $rightOffsets = [CoordsManager::OFFSET_TOP_RIGHT, CoordsManager::OFFSET_BOTTOM_RIGHT];
         foreach ($shipsCollection as $shipCoords) {
             // if max to right
-            if ($shipCoords->getRightPosition() === null) {
+            if ($this->coordsManager->getByOffset($shipCoords, CoordsManager::OFFSET_RIGHT) === null) {
                 continue;
             }
 
             // Enough to check one side corners, because I check all masts.
             // Checking right is more efficient because masts are sorted from the top left corner
-            // B3 (index 12), upper right corner is A4 (index 03), so 12 - 3 = 9 -
-            // second digit 0 is first row, so no upper corner
-            $upperRightCorner = $shipsCollection->contains($shipCoords->getRightTopPosition()); // exists and in ships
-            // B3 (index 12), lower right corner is C4 (index 23), so 23 - 12 = 11 -
-            // second digit 9 is last row, so no lower corner
-            $lowerRightCorner = $shipsCollection->contains($shipCoords->getRightBottomPosition()); // exists and in ships
-
-            if ($upperRightCorner || $lowerRightCorner) {
-                throw new InvalidShipsException('Ships\'s corners can\'t touch each other');
+            // B3 (index 12), top right corner is A4 (index 03), so 12 - 3 = 9 -
+            // second digit 0 is first row, so no top corner
+            // B3 (index 12), bottom right corner is C4 (index 23), so 23 - 12 = 11 -
+            // second digit 9 is last row, so no bottom corner
+            foreach ($rightOffsets as $rightOffset) {
+                $offsetCoords = $this->coordsManager->getByOffset($shipCoords, $rightOffset);
+                $offsetCoordsNotEmpty = $shipsCollection->contains($offsetCoords); // exists and in ships
+                if ($offsetCoordsNotEmpty) {
+                    throw new InvalidShipsException('Ships\'s corners can\'t touch each other');
+                }
             }
         }
     }
 
     /**
-     * @param CoordsInfoCollection $shipsCollection
+     * @param CoordsCollection $shipsCollection
      * @throws InvalidShipsException
      */
-    protected function validateShipsTypes(CoordsInfoCollection $shipsCollection)
+    private function validateShipsTypes(CoordsCollection $shipsCollection)
     {
         // sizes of ships to be count
         $shipsTypes = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
         // B3 (index 12), going 2 down and 3 left is D6 (index 35), so 12 + (2 * 10) + (3 * 1) = 35
-        $directionOffsets = [CoordsInfo::OFFSET_RIGHT, CoordsInfo::OFFSET_BOTTOM];
+        $directionOffsets = [CoordsManager::OFFSET_RIGHT, CoordsManager::OFFSET_BOTTOM];
 
-        $checkedCollection = new CoordsInfoCollection();
-        /** @var CoordsInfo $shipCoords */
+        $checkedCoordsCollection = new CoordsCollection();
         foreach ($shipsCollection as $shipCoords) {
             // we ignore masts which have already been marked as a part of a ship
-            if ($checkedCollection->contains($shipCoords)) {
+            if ($checkedCoordsCollection->contains($shipCoords)) {
                 continue;
             }
 
             $shipLength = 1;
             foreach ($directionOffsets as $offset) {
-                $checkCoords = $shipCoords->getOffsetCoords($offset);
+                $checkCoords = $this->coordsManager->getByOffset($shipCoords, $offset);
                 // check for masts until the battleground border is reached
                 while ($shipsCollection->contains($checkCoords)) {
                     // ship is too long
@@ -127,8 +141,8 @@ class ShipsValidator extends ConstraintValidator
                     }
 
                     // mark the mast as already checked
-                    $checkedCollection->append($checkCoords);
-                    $checkCoords = $checkCoords->getOffsetCoords($offset);
+                    $checkedCoordsCollection->append($checkCoords);
+                    $checkCoords = $this->coordsManager->getByOffset($checkCoords, $offset);
                 }
 
                 // masts found so don't look for more

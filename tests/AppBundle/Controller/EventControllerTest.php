@@ -660,6 +660,36 @@ class EventControllerTest extends AbstractApiTestCase
      * @depends testAddEventShotFollowupMiss
      * @param Game $game
      */
+    public function testAddEventShotWithIncorrectCoordsNotMyTurnError(Game $game)
+    {
+        $client = static::createClient();
+
+        $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
+
+        $body = [
+            'type' => Event::TYPE_SHOT,
+            'value' => 'C11'
+        ];
+        $client->request(
+            'POST',
+            sprintf('/v1/games/%d/events', $game->getId()),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer ' . $apiKey],
+            json_encode($body)
+        );
+        $response = $client->getResponse();
+        $jsonResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals(409, $response->getStatusCode(), $response);
+        $this->assertEquals(170, $jsonResponse['code'], $response->getContent());
+        $this->assertEquals('It\'s other player\'s turn', $jsonResponse['message'], $response->getContent());
+    }
+
+    /**
+     * @depends testAddEventShotFollowupMiss
+     * @param Game $game
+     */
     public function testAddEventShotNotMyTurnError(Game $game)
     {
         $client = static::createClient();
@@ -686,16 +716,15 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals('It\'s other player\'s turn', $jsonResponse['message'], $response->getContent());
     }
 
-
     /**
      * @depends testAddEventShotFollowupMiss
      * @param Game $game
      */
-    public function testAddEventShotIncorrectCoordError(Game $game)
+    public function testAddEventShotIncorrectCoordsError(Game $game)
     {
         $client = static::createClient();
 
-        $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser1());
+        $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($game->getUser2());
 
         $body = [
             'type' => Event::TYPE_SHOT,
@@ -713,7 +742,7 @@ class EventControllerTest extends AbstractApiTestCase
         $jsonResponse = json_decode($response->getContent(), true);
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
-        $this->assertEquals(160, $jsonResponse['code'], $response->getContent());
+        $this->assertEquals(151, $jsonResponse['code'], $response->getContent());
         $this->assertEquals(sprintf('Invalid coordinates provided: %s', $body['value']), $jsonResponse['message'], $response->getContent());
     }
 

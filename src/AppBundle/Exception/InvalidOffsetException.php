@@ -2,9 +2,9 @@
 
 namespace AppBundle\Exception;
 
-class InvalidOffsetException extends InvalidCoordinatesException
+class InvalidOffsetException extends InvalidShipsException
 {
-    protected $code = 161;
+    protected $code = 152;
 
     /**
      * @param string $offset

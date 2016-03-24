@@ -2,6 +2,7 @@
 
 namespace Tests\AppBundle\Validator\Constraints;
 
+use AppBundle\Battle\CoordsManager;
 use AppBundle\Validator\Constraints\ShipsValidator;
 
 class ShipsValidatorTest extends \PHPUnit_Framework_TestCase
@@ -13,7 +14,7 @@ class ShipsValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->validator = new ShipsValidator();
+        $this->validator = new ShipsValidator(new CoordsManager());
     }
 
     /**

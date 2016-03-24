@@ -42,7 +42,11 @@ class UniqueEventValidatorTest extends \PHPUnit_Framework_TestCase
         $this->validator->validate('test', $constraint->reveal());
     }
 
-    public function testValidateInNonEventContext()
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
+     * @expectedExceptionMessage Expected argument of type "AppBundle\Entity\Event"
+     */
+    public function testValidateThrowsExceptionInNonEventContext()
     {
         $constraint = $this->prophesize('AppBundle\Validator\Constraints\UniqueEvent');
 

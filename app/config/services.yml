@@ -68,7 +68,10 @@ services:
 
     app.battle.battle_manager:
         class: AppBundle\Battle\BattleManager
-        arguments: ['@app.entity.event_repository']
+        arguments: ['@app.entity.event_repository', '@app.battle.coords_manager']
+
+    app.battle.coords_manager:
+        class: AppBundle\Battle\CoordsManager
 
     app.validator.cache.apc:
         class: Doctrine\Common\Cache\ApcuCache
@@ -87,6 +90,12 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: only_before_start_validator }
 
+    app.validator.event_value:
+        class: AppBundle\Validator\Constraints\EventValueValidator
+        arguments: ['@app.battle.coords_manager']
+        tags:
+            - { name: validator.constraint_validator, alias: event_value }
+
     app.validator.unique_event:
         class: AppBundle\Validator\Constraints\UniqueEventValidator
         arguments: ['@app.entity.event_repository']
@@ -103,6 +112,12 @@ services:
         class: AppBundle\Validator\Constraints\IsAllowedToStartValidator
         tags:
             - { name: validator.constraint_validator, alias: is_allowed_to_start }
+
+    app.validator.ships:
+        class: AppBundle\Validator\Constraints\ShipsValidator
+        arguments: ['@app.battle.coords_manager']
+        tags:
+            - { name: validator.constraint_validator, alias: ships }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

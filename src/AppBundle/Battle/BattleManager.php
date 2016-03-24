@@ -4,7 +4,6 @@ namespace AppBundle\Battle;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\EventRepository;
-use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\UnexpectedEventTypeException;
 
 class BattleManager
@@ -19,18 +18,24 @@ class BattleManager
     protected $eventRepository;
 
     /**
-     * @param EventRepository $eventRepository
+     * @var CoordsManager
      */
-    public function __construct(EventRepository $eventRepository)
+    protected $coordsManager;
+
+    /**
+     * @param EventRepository $eventRepository
+     * @param CoordsManager $coordsManager
+     */
+    public function __construct(EventRepository $eventRepository, CoordsManager $coordsManager)
     {
         $this->eventRepository = $eventRepository;
+        $this->coordsManager = $coordsManager;
     }
 
     /**
      * @param Event $shotEvent
      * @return string miss|hit|sunk
      * @throws UnexpectedEventTypeException
-     * @throws InvalidCoordinatesException
      */
     public function getShotResult(Event $shotEvent)
     {
@@ -39,12 +44,12 @@ class BattleManager
         }
 
         $game = $shotEvent->getGame();
-        $enemyShips = new CoordsInfoCollection($game->getOtherShips());
-        $shot = new CoordsInfo($shotEvent->getValue());
+        $enemyShipsCollection = new CoordsCollection($game->getOtherShips());
+        $shotCoord = $shotEvent->getValue();
 
-        if ($enemyShips->contains($shot)) {
+        if ($enemyShipsCollection->contains($shotCoord)) {
             $attackerShots = $this->getAttackerShots($shotEvent);
-            $result = $this->isSunk($shot, $enemyShips, $attackerShots)
+            $result = $this->isSunk($shotCoord, $enemyShipsCollection, $attackerShots)
                 ? self::SHOT_RESULT_SUNK
                 : self::SHOT_RESULT_HIT;
         } else {
@@ -57,15 +62,18 @@ class BattleManager
     /**
      * Checks if the shot sinks the ship (if all other masts have been hit)
      *
-     * @param CoordsInfo $mast
-     * @param CoordsInfoCollection $allShips
-     * @param CoordsInfoCollection $allShots
+     * @param string $mast
+     * @param CoordsCollection $allShips
+     * @param CoordsCollection $allShots
      * @return bool
-     * @throws InvalidCoordinatesException
      */
-    public function isSunk(CoordsInfo $mast, CoordsInfoCollection $allShips, CoordsInfoCollection $allShots)
+    public function isSunk($mast, CoordsCollection $allShips, CoordsCollection $allShots)
     {
-        $sidePositions = $mast->getSidePositions();
+        // @todo maybe getSidePositions()
+        $sidePositions = $this->coordsManager->getByOffsets(
+            $mast,
+            [CoordsManager::OFFSET_TOP, CoordsManager::OFFSET_BOTTOM, CoordsManager::OFFSET_RIGHT, CoordsManager::OFFSET_LEFT]
+        );
         // try to find a mast which hasn't been hit
         foreach ($sidePositions as $offset => $sidePosition) {
             if ($sidePosition
@@ -79,23 +87,19 @@ class BattleManager
     }
 
     /**
-     * @param CoordsInfo $mast
-     * @param CoordsInfoCollection $allShips
-     * @param CoordsInfoCollection $allShots
+     * @param string $mast
+     * @param CoordsCollection $allShips
+     * @param CoordsCollection $allShots
      * @param string $offset
      * @return bool
      */
-    private function remainingMastInDirectionExists(
-        CoordsInfo $mast,
-        CoordsInfoCollection $allShips,
-        CoordsInfoCollection $allShots,
-        $offset
-    ) {
+    private function remainingMastInDirectionExists($mast, CoordsCollection $allShips, CoordsCollection $allShots, $offset)
+    {
         while ($allShips->contains($mast)) {
             if (!$allShots->contains($mast)) {
                 return true;
             }
-            $mast = $mast->getOffsetCoords($offset);
+            $mast = $this->coordsManager->getByOffset($mast, $offset);
         }
 
         return false;
@@ -103,7 +107,7 @@ class BattleManager
 
     /**
      * @param Event $event
-     * @return CoordsInfoCollection
+     * @return CoordsCollection
      */
     private function getAttackerShots(Event $event)
     {
@@ -113,11 +117,11 @@ class BattleManager
             $event->getPlayer()
         );
 
-        $attackerShots = [];
+        $attackerShots = new CoordsCollection();
         foreach ($shotEvents as $shotEvent) {
-            $attackerShots[] = $shotEvent->getValue();
+            $attackerShots->append($shotEvent->getValue());
         }
 
-        return new CoordsInfoCollection($attackerShots);
+        return $attackerShots;
     }
 }

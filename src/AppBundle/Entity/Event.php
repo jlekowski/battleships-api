@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @AppAssert\IsAllowedToShoot()
  * @AppAssert\IsAllowedToStart()
+ * @AppAssert\EventValue()
  *
  * @Serializer\ExclusionPolicy("none")
  */

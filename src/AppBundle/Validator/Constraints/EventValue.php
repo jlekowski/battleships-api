@@ -7,19 +7,14 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class UniqueEvent extends Constraint
+class EventValue extends Constraint
 {
-    /**
-     * @var array
-     */
-    public $uniqueEvents = [];
-
     /**
      * @inheritdoc
      */
-    public function getDefaultOption()
+    public function getTargets()
     {
-        return 'uniqueEvents';
+        return self::CLASS_CONSTRAINT;
     }
 
     /**
@@ -27,6 +22,6 @@ class UniqueEvent extends Constraint
      */
     public function validatedBy()
     {
-        return 'unique_event';
+        return 'event_value';
     }
 }

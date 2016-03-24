@@ -3,9 +3,10 @@
 namespace Tests\AppBundle\Battle;
 
 use AppBundle\Battle\BattleManager;
-use AppBundle\Battle\CoordsInfo;
-use AppBundle\Battle\CoordsInfoCollection;
+use AppBundle\Battle\CoordsCollection;
+use AppBundle\Battle\CoordsManager;
 use AppBundle\Entity\Event;
+use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class BattleManagerTest extends \PHPUnit_Framework_TestCase
@@ -23,7 +24,7 @@ class BattleManagerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->eventRepository = $this->prophesize('AppBundle\Entity\EventRepository');
-        $this->battleManager = new BattleManager($this->eventRepository->reveal());
+        $this->battleManager = new BattleManager($this->eventRepository->reveal(), new CoordsManager());
     }
 
     public function testGetShotResultMiss()
@@ -92,27 +93,27 @@ class BattleManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testIsSunk()
     {
-        $mast = new CoordsInfo('B2');
-        $allShips = new CoordsInfoCollection(['B1', 'B2', 'B3']);
-        $allShots = new CoordsInfoCollection(['B1', 'B3']);
+        $mast = 'B2';
+        $allShips = new CoordsCollection(['B1', 'B2', 'B3']);
+        $allShots = new CoordsCollection(['B1', 'B3']);
 
         $this->assertTrue($this->battleManager->isSunk($mast, $allShips, $allShots));
 
-        $mast = new CoordsInfo('B3');
-        $allShips = new CoordsInfoCollection(['B1', 'B2', 'B3', 'B4']);
-        $allShots = new CoordsInfoCollection(['B1', 'B2', 'B4']);
+        $mast = 'B3';
+        $allShips = new CoordsCollection(['B1', 'B2', 'B3', 'B4']);
+        $allShots = new CoordsCollection(['B1', 'B2', 'B4']);
 
         $this->assertTrue($this->battleManager->isSunk($mast, $allShips, $allShots));
 
-        $mast = new CoordsInfo('B3');
-        $allShips = new CoordsInfoCollection(['B3']);
-        $allShots = new CoordsInfoCollection([]);
+        $mast = 'B3';
+        $allShips = new CoordsCollection(['B3']);
+        $allShots = new CoordsCollection([]);
 
         $this->assertTrue($this->battleManager->isSunk($mast, $allShips, $allShots));
 
-        $mast = new CoordsInfo('B3');
-        $allShips = new CoordsInfoCollection(['B1', 'B2', 'B3', 'B4']);
-        $allShots = new CoordsInfoCollection(['B1', 'B4']);
+        $mast = 'B3';
+        $allShips = new CoordsCollection(['B1', 'B2', 'B3', 'B4']);
+        $allShots = new CoordsCollection(['B1', 'B4']);
 
         $this->assertFalse($this->battleManager->isSunk($mast, $allShips, $allShots));
     }

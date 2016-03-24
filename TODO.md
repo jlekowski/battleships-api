@@ -1,15 +1,18 @@
+- CoordsManager
+  * add tests
+  * maybe mock it for ShipsValidatorTest and BattleManagerTest
+
+- EventValueValidator add tests
+
 - BattleshipsApiComponent
   * move to a separate repo as a component
   * make it pretty (ApiRequest)
   * move to client component too (and check how to register as a command in API) (E2eCommand)
 
-- CoordsInfo and CoordsInfoCollection refactoring:
-  * rename get*Position to provide CoordsInfo
-  * maybe return CoordsInfoCollection, not array
+- CoordsCollection refactoring:
   * maybe always return object with isEmpty() === true instead of null?
-  * cache all coords? But what if appended?
 
-- CoordsInfo::$axisY - replace with a constant (and composer update to require 5.6)
+- CoordsManager::$axisY - replace with a constant (and composer update to require 5.6)
 
 - exception when accessing not existing game currently is "AppBundle\\Entity\\Game object not found"
 - test caching games, events, available games etc.

@@ -2,9 +2,9 @@
 
 namespace AppBundle\Exception;
 
-class InvalidCoordinatesException extends InvalidArgument400Exception
+class InvalidCoordinatesException extends InvalidShipsException
 {
-    protected $code = 160;
+    protected $code = 151;
 
     /**
      * @param string $coords
@@ -13,8 +13,7 @@ class InvalidCoordinatesException extends InvalidArgument400Exception
      */
     public function __construct($coords = '', $code = 0, \Exception $previous = null)
     {
-        // just in case to prevent array to string conversion warning
-        $message = sprintf('Invalid coordinates provided: %s', is_array($coords) ? 'array()' : $coords);
+        $message = sprintf('Invalid coordinates provided: %s', $coords);
 
         parent::__construct($message, $code, $previous);
     }
