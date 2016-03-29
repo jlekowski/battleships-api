@@ -4,6 +4,7 @@ namespace AppBundle\Battle;
 
 use AppBundle\Exception\InvalidCoordinatesException;
 use AppBundle\Exception\InvalidOffsetException;
+use AppBundle\Exception\InvalidShipsException;
 
 class CoordsManager
 {
@@ -32,55 +33,55 @@ class CoordsManager
      * @param string $coords
      * @param string $offset
      * @return string|null
-     * @throws InvalidOffsetException
+     * @throws InvalidShipsException
      */
     public function getByOffset($coords, $offset)
     {
         switch ($offset) {
             case self::OFFSET_TOP:
-                $offsets = [-1, 0];
+                $offsetIndexes = [-1, 0];
                 break;
 
             case self::OFFSET_BOTTOM:
-                $offsets = [1, 0];
+                $offsetIndexes = [1, 0];
                 break;
 
             case self::OFFSET_RIGHT:
-                $offsets = [0, 1];
+                $offsetIndexes = [0, 1];
                 break;
 
             case self::OFFSET_LEFT:
-                $offsets = [0, -1];
+                $offsetIndexes = [0, -1];
                 break;
 
             case self::OFFSET_TOP_RIGHT:
-                $offsets = [-1, 1];
+                $offsetIndexes = [-1, 1];
                 break;
 
             case self::OFFSET_TOP_LEFT:
-                $offsets = [-1, -1];
+                $offsetIndexes = [-1, -1];
                 break;
 
             case self::OFFSET_BOTTOM_RIGHT:
-                $offsets = [1, 1];
+                $offsetIndexes = [1, 1];
                 break;
 
             case self::OFFSET_BOTTOM_LEFT:
-                $offsets = [1, -1];
+                $offsetIndexes = [1, -1];
                 break;
 
             default:
                 throw new InvalidOffsetException($offset);
         }
 
-        return $this->findCoordsOffset($coords, $offsets);
+        return $this->findCoordsOffset($coords, $offsetIndexes);
     }
 
     /**
      * @param array $offsets
      * @param string $coords
      * @return array
-     * @throws InvalidOffsetException
+     * @throws InvalidShipsException
      */
     public function getByOffsets($coords, array $offsets)
     {
@@ -98,10 +99,7 @@ class CoordsManager
      */
     public function validateCoords($coords)
     {
-        list($positionY, $positionX) = $this->coordsToPositions($coords);
-        if ($positionY === false || $positionX === false) {
-            throw new InvalidCoordinatesException($coords);
-        }
+        $this->coordsToPositions($coords);
     }
 
     /**
@@ -117,14 +115,15 @@ class CoordsManager
 
     /**
      * @param string $coords
-     * @param array $offsets
+     * @param array $offsetIndexes
      * @return string
+     * @throws InvalidCoordinatesException
      */
-    protected function findCoordsOffset($coords, array $offsets = [])
+    protected function findCoordsOffset($coords, array $offsetIndexes)
     {
         list($positionY, $positionX) = $this->coordsToPositions($coords);
-        $newPositionY = $positionY + $offsets[0];
-        $newPositionX = $positionX + $offsets[1];
+        $newPositionY = $positionY + $offsetIndexes[0];
+        $newPositionX = $positionX + $offsetIndexes[1];
 
         return isset($this->axisY[$newPositionY]) && isset($this->axisX[$newPositionX])
             ? $this->axisY[$newPositionY] . $this->axisX[$newPositionX]
@@ -134,13 +133,22 @@ class CoordsManager
     /**
      * @param string $coords
      * @return array
+     * @throws InvalidCoordinatesException
      */
     private function coordsToPositions($coords)
     {
-        $coordY = $coords[0];
-        $coordX = substr($coords, 1);
-        $positionY = array_search($coordY, $this->axisY);
-        $positionX = array_search($coordX, $this->axisX);
+        $positionY = $positionX = false;
+        // string with at least 2 characters
+        if (is_string($coords) && isset($coords[1])) {
+            $coordY = $coords[0];
+            $coordX = substr($coords, 1);
+            $positionY = array_search($coordY, $this->axisY);
+            $positionX = array_search($coordX, $this->axisX);
+        }
+
+        if ($positionY === false || $positionX === false) {
+            throw new InvalidCoordinatesException($coords);
+        }
 
         return [$positionY, $positionX];
     }

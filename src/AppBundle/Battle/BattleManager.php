@@ -69,7 +69,6 @@ class BattleManager
      */
     public function isSunk($mast, CoordsCollection $allShips, CoordsCollection $allShots)
     {
-        // @todo maybe getSidePositions()
         $sidePositions = $this->coordsManager->getByOffsets(
             $mast,
             [CoordsManager::OFFSET_TOP, CoordsManager::OFFSET_BOTTOM, CoordsManager::OFFSET_RIGHT, CoordsManager::OFFSET_LEFT]

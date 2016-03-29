@@ -1,8 +1,5 @@
 - CoordsManager
-  * add tests
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
-
-- EventValueValidator add tests
 
 - BattleshipsApiComponent
   * move to a separate repo as a component
