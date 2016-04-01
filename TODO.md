@@ -6,9 +6,6 @@
   * make it pretty (ApiRequest)
   * move to client component too (and check how to register as a command in API) (E2eCommand)
 
-- CoordsCollection refactoring:
-  * maybe always return object with isEmpty() === true instead of null?
-
 - CoordsManager::$axisY - replace with a constant (and composer update to require 5.6)
 
 - exception when accessing not existing game currently is "AppBundle\\Entity\\Game object not found"

@@ -116,7 +116,7 @@ class CoordsManager
     /**
      * @param string $coords
      * @param array $offsetIndexes
-     * @return string
+     * @return string|null
      * @throws InvalidCoordinatesException
      */
     protected function findCoordsOffset($coords, array $offsetIndexes)
