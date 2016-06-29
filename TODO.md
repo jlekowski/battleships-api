@@ -8,6 +8,8 @@
 
 - CoordsManager::$axisY - replace with a constant (and composer update to require 5.6)
 
+- GameController::patchGameAction - do we need both events if both parameters set in one request?
+
 - exception when accessing not existing game currently is "AppBundle\\Entity\\Game object not found"
 - test caching games, events, available games etc.
 - check strictly for URI, e.g. /v1/games/1b

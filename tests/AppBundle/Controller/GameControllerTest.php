@@ -99,7 +99,7 @@ class GameControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Request parameter playerShips value \'A11\' violated a constraint %s',
+            'Parameter "playerShips" of value "A11" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );

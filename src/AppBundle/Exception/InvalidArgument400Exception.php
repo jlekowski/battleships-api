@@ -2,7 +2,7 @@
 
 namespace AppBundle\Exception;
 
-use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class InvalidArgument400Exception extends \InvalidArgumentException implements HttpExceptionInterface
@@ -10,7 +10,7 @@ class InvalidArgument400Exception extends \InvalidArgumentException implements H
     /**
      * @var int
      */
-    protected $statusCode = Codes::HTTP_BAD_REQUEST;
+    protected $statusCode = Response::HTTP_BAD_REQUEST;
 
     /**
      * @var array

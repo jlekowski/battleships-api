@@ -413,7 +413,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Request parameter value value \'\' violated a constraint %s',
+            'Parameter "value" of value "" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -445,7 +445,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Request parameter value value \'%a\' violated a constraint %a',
+            'Parameter "value" of value "%a" violated a constraint %a',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -908,7 +908,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Request parameter "type" is empty',
+            'Parameter "type" of value "" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -939,7 +939,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Request parameter type value \'\' violated a constraint %s',
+            'Parameter "type" of value "" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -970,7 +970,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Request parameter type value \'Incorrect\' violated a constraint %s',
+            'Parameter "type" of value "Incorrect" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -1148,7 +1148,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Query parameter gt value \'1a\' violated a constraint %s',
+            'Parameter "gt" of value "1a" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -1175,7 +1175,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Query parameter type value \'Incorrect\' violated a constraint %s',
+            'Parameter "type" of value "Incorrect" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
@@ -1202,7 +1202,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Query parameter player value \'3\' violated a constraint %s',
+            'Parameter "player" of value "3" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );

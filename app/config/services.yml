@@ -30,6 +30,10 @@ services:
     app.controller.cors:
         class: AppBundle\Controller\CorsController
 
+    app.controller.exception_controller:
+        parent: fos_rest.exception.controller
+        class: AppBundle\Controller\ExceptionController
+
     app.controller.user:
         class: AppBundle\Controller\UserController
         arguments: ['@doctrine.orm.default_entity_manager', '@app.security.api_key_manager']
@@ -121,4 +125,4 @@ services:
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:
-        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
+        class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy

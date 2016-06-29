@@ -85,7 +85,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
-        $this->assertEquals('Request parameter "name" is empty', $jsonResponse['message'], $response->getContent());
+        $this->assertStringStartsWith('Parameter "name" of value "" violated a constraint', $jsonResponse['message'], $response->getContent());
     }
 
     public function testAddUserInvalidNameError()
@@ -107,7 +107,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
-        $this->assertStringStartsWith('Request parameter name value \'   \' violated a constraint', $jsonResponse['message'], $response->getContent());
+        $this->assertStringStartsWith('Parameter "name" of value "   " violated a constraint', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -273,7 +273,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
-        $this->assertEquals('Request parameter "name" is empty', $jsonResponse['message'], $response->getContent());
+        $this->assertStringStartsWith('Parameter "name" of value "" violated a constraint', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -299,7 +299,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
-        $this->assertStringStartsWith('Request parameter name value \'   \' violated a constraint', $jsonResponse['message'], $response->getContent());
+        $this->assertStringStartsWith('Parameter "name" of value "   " violated a constraint', $jsonResponse['message'], $response->getContent());
     }
 
     /**

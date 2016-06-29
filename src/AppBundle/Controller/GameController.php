@@ -95,13 +95,13 @@ class GameController extends FOSRestController
      * @return Response
      *
      * @Tag("games")
-     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
+     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, map=true)
      */
     public function postGameAction(ParamFetcher $paramFetcher)
     {
         $user = $this->getUser();
 
-        $playerShips = $paramFetcher->get('playerShips');
+        $playerShips = (array)$paramFetcher->get('playerShips');
         $game = new Game();
         $game
             ->setLoggedUser($user)
@@ -127,8 +127,8 @@ class GameController extends FOSRestController
      * @Tag(expression="'game-' ~ game.getId()")
      * @Tag(expression="'game-' ~ game.getId() ~ 'events'"))
      * @Security("request.request.get('joinGame') ? game.canJoin(user) : game.belongsToUser(user)")
-     * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=false, nullable=true)
-     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, array=true)
+     * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=true, nullable=true)
+     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=true, map=true)
      */
     public function patchGameAction(ParamFetcher $paramFetcher, Game $game)
     {

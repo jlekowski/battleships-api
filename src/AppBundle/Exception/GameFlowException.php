@@ -2,7 +2,7 @@
 
 namespace AppBundle\Exception;
 
-use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Response;
 
 class GameFlowException extends InvalidArgument400Exception
 {
@@ -11,5 +11,5 @@ class GameFlowException extends InvalidArgument400Exception
     /**
      * @var int
      */
-    protected $statusCode = Codes::HTTP_CONFLICT;
+    protected $statusCode = Response::HTTP_CONFLICT;
 }

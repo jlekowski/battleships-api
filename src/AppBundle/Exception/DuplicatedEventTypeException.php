@@ -2,7 +2,7 @@
 
 namespace AppBundle\Exception;
 
-use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Response;
 
 class DuplicatedEventTypeException extends InvalidArgument400Exception
 {
@@ -11,7 +11,7 @@ class DuplicatedEventTypeException extends InvalidArgument400Exception
     /**
      * @var int
      */
-    protected $statusCode = Codes::HTTP_FORBIDDEN;
+    protected $statusCode = Response::HTTP_FORBIDDEN;
 
     /**
      * @param string $eventType

@@ -101,7 +101,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        // not to throw AuthenticationCredentialsNotFoundException and use ExceptionWrapperHandler
+        // not to throw AuthenticationCredentialsNotFoundException and use ExceptionController
         throw $exception;
     }
 }
