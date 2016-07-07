@@ -171,7 +171,7 @@ class ApiRequest
         }
         $paramString = $params ? ('?' . implode('&', $params)) : '';
 
-        $requestDetails = new RequestDetails(sprintf('/games/%s/events', $gameId, $paramString), 'GET', null, 200);
+        $requestDetails = new RequestDetails(sprintf('/games/%s/events%s', $gameId, $paramString), 'GET', null, 200);
 
         return $this->call($requestDetails);
     }
