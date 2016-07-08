@@ -11,6 +11,7 @@ http://dev.lekowski.pl
 
 ### LINKS
 * https://github.com/jlekowski/battleships-webclient - web client for the API
+* https://github.com/jlekowski/battleships-apiclient - PHP client for the API
 * https://github.com/jlekowski/battleships-offline - offline version
 * https://github.com/jlekowski/battleships - legacy full web version
 
@@ -34,7 +35,7 @@ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
 ```
 
 ## === Test ===
-1. Install dev dependencies. 
+1. Install dev dependencies.
 ```
 composer install
 ```
@@ -42,12 +43,9 @@ composer install
 ```
 bin/phpunit
 ```
-3. You can run E2E tests too.
-```
-bin/console test:e2e -v "battleships-api.localhost/v1"
-```
+3. You can run E2E tests (see https://github.com/jlekowski/battleships-apiclient)
 
 ## === Changelog ===
 * version **1.0**
  * Working version of the API deployed
- * Still many TODOs, but they should not affect the stability and will be fixed on an ongoing basis  
+ * Still many TODOs, but they should not affect the stability and will be fixed on an ongoing basis

@@ -1,11 +1,6 @@
 - CoordsManager
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
 
-- BattleshipsApiComponent
-  * move to a separate repo as a component
-  * make it pretty (ApiRequest)
-  * move to client component too (and check how to register as a command in API) (E2eCommand)
-
 - CoordsManager::$axisY - replace with a constant (and composer update to require 5.6)
 
 - GameController::patchGameAction - do we need both events if both parameters set in one request?
