@@ -8,13 +8,13 @@ class UnexpectedEventTypeException extends \InvalidArgumentException
 
     /**
      * @param string $eventTypeReceived
-     * @param string $eventTypeExcepted
+     * @param string $eventTypeExpected
      * @param int $code
      * @param \Exception $previous
      */
-    public function __construct($eventTypeReceived, $eventTypeExcepted, $code = 0, \Exception $previous = null)
+    public function __construct($eventTypeReceived, $eventTypeExpected, $code = 0, \Exception $previous = null)
     {
-        $message = sprintf('Incorrect event type provided: %s (expected: %s)', $eventTypeReceived, $eventTypeExcepted);
+        $message = sprintf('Incorrect event type provided: %s (expected: %s)', $eventTypeReceived, $eventTypeExpected);
 
         parent::__construct($message, $code, $previous);
     }

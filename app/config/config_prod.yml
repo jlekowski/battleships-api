@@ -38,6 +38,8 @@ monolog:
             type:  console
 
 fos_http_cache:
+    debug:
+        enabled: "%varnish_debug%"
     tags:
         enabled: "%varnish_enabled%"
     cache_manager:
