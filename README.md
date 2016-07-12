@@ -46,6 +46,12 @@ bin/phpunit
 3. You can run E2E tests (see https://github.com/jlekowski/battleships-apiclient)
 
 ## === Changelog ===
+* version **1.1**
+ * Changed the way coordinates are handled
+ * Moved E2E to battleships-apiclient repo
+ * Updated dependencies
+ * Cleaning and refactoring
+
 * version **1.0**
  * Working version of the API deployed
  * Still many TODOs, but they should not affect the stability and will be fixed on an ongoing basis
