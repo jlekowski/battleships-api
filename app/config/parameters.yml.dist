@@ -7,6 +7,14 @@ parameters:
     database_name:     battleships
     database_user:     battleships
     database_password: ~
+    database_slaves:   ~ # example configuration for 1 or more slaves below:
+    #    slave1:
+    #        host:     "10.10.10.12"
+    #        port:     "%database_port%"
+    #        dbname:   "%database_name%"
+    #        user:     "%database_user%"
+    #        password: "%database_password%"
+
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt

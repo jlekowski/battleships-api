@@ -40,6 +40,8 @@ doctrine:
         password: "%database_password%"
         charset:  utf8mb4
         server_version: 5.5
+        keep_slave: true
+        slaves: "%database_slaves%"
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
