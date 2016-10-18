@@ -1,8 +1,7 @@
 language: php
 php:
-  - 5.5
   - 5.6
-  - 7
+  - 7.0
   - nightly
 
 before_install:
@@ -17,4 +16,4 @@ before_script:
 
 script:
   - bin/phpunit
-  - bin/phpcs -p -n --standard=PSR2 src/ tests/
+  - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/
