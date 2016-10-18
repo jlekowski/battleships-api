@@ -85,7 +85,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
-        $this->assertStringStartsWith('Parameter "name" of value "" violated a constraint', $jsonResponse['message'], $response->getContent());
+        $this->assertStringStartsWith('Parameter "name" of value "NULL" violated a constraint', $jsonResponse['message'], $response->getContent());
     }
 
     public function testAddUserInvalidNameError()
@@ -273,7 +273,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
-        $this->assertStringStartsWith('Parameter "name" of value "" violated a constraint', $jsonResponse['message'], $response->getContent());
+        $this->assertStringStartsWith('Parameter "name" of value "NULL" violated a constraint', $jsonResponse['message'], $response->getContent());
     }
 
     /**

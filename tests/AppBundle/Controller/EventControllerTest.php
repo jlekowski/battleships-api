@@ -908,7 +908,7 @@ class EventControllerTest extends AbstractApiTestCase
         $this->assertEquals(400, $response->getStatusCode(), $response);
         $this->assertEquals(400, $jsonResponse['code'], $response->getContent());
         $this->assertStringMatchesFormat(
-            'Parameter "type" of value "" violated a constraint %s',
+            'Parameter "type" of value "NULL" violated a constraint %s',
             $jsonResponse['message'],
             $response->getContent()
         );
