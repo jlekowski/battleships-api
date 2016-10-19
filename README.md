@@ -46,6 +46,10 @@ bin/phpunit
 3. You can run E2E tests (see https://github.com/jlekowski/battleships-apiclient)
 
 ## === Changelog ===
+* version **1.2**
+ * Fixed critical bug in sorting when setting some ships with mast in column 10
+ * Small changes for build/analysis tools (PSR4 declaration, no 5.5 support)
+
 * version **1.1**
  * Changed the way coordinates are handled
  * Moved E2E to battleships-apiclient repo

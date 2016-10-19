@@ -246,7 +246,7 @@ sudo netstat -tulpn
 
 #### Handy commands:
 ```
-varnishncsa -F '%U%q (%m) %{Varnish:hitmiss}x' -n ubuntu # see varnish hits
+varnishncsa -F '%U%q (%m) %{Varnish:hitmiss}x' -n $(hostname) # see varnish hits
 sudo varnishadm "ban req.url ~ /" # ban/clear cache
 ```
 
