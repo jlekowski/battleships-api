@@ -287,7 +287,7 @@ class GameControllerTest extends AbstractApiTestCase
         $apiKey = $this->getUserApiKey(1);
 
         $body = [
-            'playerShips' => ['A10','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10']
+            'playerShips' => ['A1','E1','A2','D3','E3','F3','J3','H4','J4','A5','B5','C5','D5','J5','H6','B9','E9','F9','B10','H10']
         ];
         $client->request(
             'PATCH',

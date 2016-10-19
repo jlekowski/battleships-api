@@ -47,7 +47,7 @@ class CoordsCollection implements \Countable, \IteratorAggregate
      */
     public function sort()
     {
-        sort($this->coordsArray);
+        sort($this->coordsArray, SORT_NATURAL);
     }
 
     /**

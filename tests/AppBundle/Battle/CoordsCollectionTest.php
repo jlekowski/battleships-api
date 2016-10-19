@@ -32,11 +32,12 @@ class CoordsCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testSort()
     {
-        $coordsArray = ['A1', 'J10', 'J1', 'B2', 'A10'];
+        // make sure it's natural sort (A1, A2, A10 vs. A1, A10, A2)
+        $coordsArray = ['A1', 'J10', 'J1', 'B2', 'A10', 'A2', 'A9'];
         $coordsCollection = new CoordsCollection($coordsArray);
         $coordsCollection->sort();
 
-        $coordsArraySorted = ['A1', 'A10', 'B2', 'J1', 'J10'];
+        $coordsArraySorted = ['A1', 'A2', 'A9', 'A10', 'B2', 'J1', 'J10'];
         foreach ($coordsCollection as $key => $coords) {
             $this->assertEquals($coordsArraySorted[$key], $coords);
         }
