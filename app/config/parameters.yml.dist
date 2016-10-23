@@ -7,6 +7,7 @@ parameters:
     database_name:     battleships
     database_user:     battleships
     database_password: ~
+    database_version:  5.7
     database_slaves:   ~ # example configuration for 1 or more slaves below:
     #    slave1:
     #        host:     "10.10.10.12"
