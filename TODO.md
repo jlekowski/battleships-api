@@ -1,5 +1,3 @@
-- Update composer to PHP >= 5.6 (already required for PHPUnit to work)
-
 - CoordsManager
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
 
