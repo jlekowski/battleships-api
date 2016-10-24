@@ -1,3 +1,8 @@
+- ApiDoc
+  * to have options explained (e.g. event types)
+  * add 403 (missing/invalid token) and 409 (game flow) as generic errors + other error code from exceptions
+  * explain key being `Bearer key.jtw.format`
+
 - CoordsManager
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
 
@@ -19,7 +24,6 @@
 
 - headers for specific version? # in the future
 - exclusions on object properties depends on version # in the future
-- ApiDoc ? http://welcometothebundle.com/web-api-rest-with-symfony2-the-best-way-the-post-method/ # in the future
 
 - in EventRepository check difference for this->matching() and game->getEvents() (if game->getEvents()->toArray() called beforehand?)
 

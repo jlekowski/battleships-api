@@ -13,6 +13,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -55,11 +56,35 @@ class EventController extends FOSRestController
     }
 
     /**
+     * Example response:<pre>
+     * {
+     *     "id": 1,
+     *     "player": 1,
+     *     "type": "start_game",
+     *     "value": "1",
+     *     "timestamp": "2016-10-18T16:08:37+0000"
+     * }</pre>
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get event data",
+     *  section="Event",
+     *  requirements={
+     *     {"name"="game", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Game id"},
+     *     {"name"="event", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Event id"}
+     *  },
+     *  statusCodes = {
+     *     200="Event data received",
+     *     403="Requested details someone else's game",
+     *     404="Game|Event not found",
+     *   }
+     * )
+     *
+     * @Security("game.belongsToUser(user) && (game === event.getGame())")
+     *
      * @param Game $game
      * @param Event $event
      * @return Event
-     *
-     * @Security("game.belongsToUser(user) && (game === event.getGame())")
      */
     public function getEventAction(Game $game, Event $event)
     {
@@ -67,9 +92,31 @@ class EventController extends FOSRestController
     }
 
     /**
-     * @param ParamFetcher $paramFetcher
-     * @param Game $game
-     * @return array
+     * Example response:<pre>
+     * [
+     *     {
+     *         "id": 5,
+     *         "player": 2,
+     *         "type": "shot",
+     *         "value": "A10|sunk",
+     *         "timestamp": "2016-10-18T16:08:47+0000"
+     *     },
+     *     ...
+     * ]</pre>
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get events data",
+     *  section="Event",
+     *  requirements={
+     *     {"name"="game", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Game id"}
+     *  },
+     *  statusCodes = {
+     *     200="Events data received",
+     *     403="Requested details someone else's game",
+     *     404="Game not found"
+     *   }
+     * )
      *
      * @Tag(expression="'game-' ~ game.getId() ~ 'events'")
      * @Security("game.belongsToUser(user)")
@@ -77,10 +124,15 @@ class EventController extends FOSRestController
      *     name="type",
      *     requirements=@Assert\Choice(callback = {"AppBundle\Entity\Event", "getTypes"}),
      *     nullable=true,
-     *     strict=true
+     *     strict=true,
+     *     description="Filter by type"
      * )
-     * @QueryParam(name="gt", requirements="\d+", nullable=true, strict=true)
-     * @QueryParam(name="player", requirements="[1-2]", nullable=true, strict=true)
+     * @QueryParam(name="gt", requirements="\d+", nullable=true, strict=true, description="Filter by id greater than")
+     * @QueryParam(name="player", requirements="[1-2]", nullable=true, strict=true, description="Filter by player number")
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param Game $game
+     * @return array
      */
     public function getEventsAction(ParamFetcher $paramFetcher, Game $game)
     {
@@ -93,9 +145,21 @@ class EventController extends FOSRestController
     }
 
     /**
-     * @param ParamFetcher $paramFetcher
-     * @param Game $game
-     * @return Response
+     * Example response:<pre>
+     *  {"timestamp":"2016-11-11T16:21:16+0000"} # for chat
+     *  {"result":"miss"} # for shot</pre>
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Create new event",
+     *  section="Event",
+     *  statusCodes={
+     *     201="Event created",
+     *     400="Incorrect parameter provided",
+     *     404="Game not found",
+     *     409="Action not allow due to game flow restrictions"
+     *  }
+     * )
      *
      * @Tag(expression="'game-' ~ game.getId() ~ 'events'")
      * @Security("game.belongsToUser(user)")
@@ -104,6 +168,10 @@ class EventController extends FOSRestController
      *     requirements=@Assert\Choice(callback = {"AppBundle\Entity\Event", "getTypes"})
      * )
      * @RequestParam(name="value", requirements=".*\S.*", allowBlank=false, default=true)
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param Game $game
+     * @return Response
      */
     public function postEventAction(ParamFetcher $paramFetcher, Game $game)
     {

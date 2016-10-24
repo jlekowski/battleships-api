@@ -11,6 +11,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -39,11 +40,38 @@ class GameController extends FOSRestController
     }
 
     /**
-     * @param Game $game
-     * @return Game
+     * Example response:<pre>
+     * {
+     *     "player": {
+     *         "name": "My Player"
+     *     },
+     *     "other": {
+     *         "name": "Opponent Name"
+     *     },
+     *     "playerShips": ["A1", "C2", "D2", "F2", "H2", "J2", "F5", "F6", "I6", "J6", "A7", "B7", "C7", "F7", "F8", "I9", "J9", "E10", "F10", "G10"],
+     *     "playerNumber": 1,
+     *     "id": 1,
+     *     "timestamp": "2016-10-18T16:08:32+0000"
+     * }</pre>
      *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get game data",
+     *  section="Game",
+     *  requirements={
+     *     {"name"="game", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Game id"}
+     *  },
+     *  statusCodes = {
+     *     200="Game data received",
+     *     403="Requested details someone else's game",
+     *     404="Game not found",
+     *   }
+     * )
      * @Tag(expression="'game-' ~ game.getId()")
      * @Security("game.belongsToUser(user) || game.canJoin(user)")
+     *
+     * @param Game $game
+     * @return Game
      */
     public function getGameAction(Game $game)
     {
@@ -51,12 +79,35 @@ class GameController extends FOSRestController
     }
 
     /**
+     * Example response:<pre>
+     * [
+     *     {
+     *         "other": {
+     *             "name": "New Player"
+     *         },
+     *         "playerShips": ["A1", "C2", "D2", "F2", "H2", "J2", "F5", "F6", "I6", "J6", "A7", "B7", "C7", "F7", "F8", "I9", "J9", "E10", "F10", "G10"],
+     *         "playerNumber": 2,
+     *         "id": 102,
+     *         "timestamp": "2016-10-24T14:26:48+0000"
+     *     },
+     *     ...
+     * ]</pre>
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get list of games",
+     *  section="Game",
+     *  statusCodes={
+     *     200="Games data received",
+     *     400="Parameter 'available' is not true"
+     *  }
+     * )
+     * @Tag("games")
+     * @QueryParam(name="available", requirements=@Assert\EqualTo("true"), nullable=true, strict=true, description="Filter games available to join")
+     *
      * @param ParamFetcher $paramFetcher
      * @return Response
      * @throws BadRequestHttpException
-     *
-     * @Tag("games")
-     * @QueryParam(name="available", requirements=@Assert\EqualTo("true"), nullable=true, strict=true)
      */
     public function getGamesAction(ParamFetcher $paramFetcher)
     {
@@ -91,11 +142,24 @@ class GameController extends FOSRestController
     }
 
     /**
-     * @param ParamFetcher $paramFetcher
-     * @return Response
+     * Example request in <strong>Content</strong> (not required):
+     *  <pre>{"playerShips":["A1","C2","D2","F2","H2","J2","F5","F6","I6","J6","A7","B7","C7","F7","F8","I9","J9","E10","F10","G10"]}</pre>
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Create new game",
+     *  section="Game",
+     *  statusCodes={
+     *     201="Game created",
+     *     400="Incorrect 'playerShips' provided"
+     *  }
+     * )
      *
      * @Tag("games")
-     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, map=true)
+     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, map=true)
+     *
+     * @param ParamFetcher $paramFetcher
+     * @return Response
      */
     public function postGameAction(ParamFetcher $paramFetcher)
     {
@@ -121,8 +185,20 @@ class GameController extends FOSRestController
     }
 
     /**
-     * @param ParamFetcher $paramFetcher
-     * @param Game $game
+     * Example request in <strong>Content</strong>:
+     *  <pre>{"joinGame":true,"playerShips":["A1","C2","D2","F2","H2","J2","F5","F6","I6","J6","A7","B7","C7","F7","F8","I9","J9","E10","F10","G10"]}</pre>
+     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Update game",
+     *  section="Game",
+     *  statusCodes={
+     *     204="Game updated",
+     *     400="Incorrect parameter provided",
+     *     403="No access to game",
+     *     404="Game not found",
+     *  }
+     * )
      *
      * @Tag(expression="'game-' ~ game.getId()")
      * @Tag(expression="'game-' ~ game.getId() ~ 'events'"))
@@ -130,6 +206,9 @@ class GameController extends FOSRestController
      * @Security("request.request.get('joinGame') ? game.canJoin(user) : game.belongsToUser(user)")
      * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=true, nullable=true)
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=true, map=true)
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param Game $game
      */
     public function patchGameAction(ParamFetcher $paramFetcher, Game $game)
     {

@@ -9,6 +9,10 @@ security:
             pattern: ^/(_(profiler|wdt))/
             security: false
 
+        doc:
+            pattern: ^/doc
+            security: false
+
         cors:
             pattern: ^/(v\d+)/
             methods: [OPTIONS]
