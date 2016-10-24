@@ -1,7 +1,7 @@
 - CoordsManager
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
 
-- CoordsManager::$axisY - replace with a constant (and composer update to require 5.6)
+- CoordsManager::AXIS_Y - set to protected when PHP 7.1
 
 - GameController::patchGameAction - do we need both events if both parameters set in one request?
 

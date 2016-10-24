@@ -16,18 +16,10 @@ class CoordsManager
     const OFFSET_TOP_LEFT = 'TOP_LEFT';
     const OFFSET_BOTTOM_RIGHT = 'BOTTOM_RIGHT';
     const OFFSET_BOTTOM_LEFT = 'BOTTOM_LEFT';
-
-    /**
-     * Array with Y axis elements
-     * @var array
-     */
-    protected $axisY = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-
-    /**
-     * Array with X axis elements
-     * @var array
-     */
-    protected $axisX = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+    /** Array with Y axis elements */
+    /* protected */ const AXIS_Y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    /** Array with X axis elements */
+    /* protected */ const AXIS_X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
     /**
      * @param string $coords
@@ -125,8 +117,8 @@ class CoordsManager
         $newPositionY = $positionY + $offsetIndexes[0];
         $newPositionX = $positionX + $offsetIndexes[1];
 
-        return isset($this->axisY[$newPositionY]) && isset($this->axisX[$newPositionX])
-            ? $this->axisY[$newPositionY] . $this->axisX[$newPositionX]
+        return array_key_exists($newPositionY, self::AXIS_Y) && array_key_exists($newPositionX, self::AXIS_X)
+            ? self::AXIS_Y[$newPositionY] . self::AXIS_X[$newPositionX]
             : null;
     }
 
@@ -142,8 +134,8 @@ class CoordsManager
         if (is_string($coords) && isset($coords[1])) {
             $coordY = $coords[0];
             $coordX = substr($coords, 1);
-            $positionY = array_search($coordY, $this->axisY);
-            $positionX = array_search($coordX, $this->axisX);
+            $positionY = array_search($coordY, self::AXIS_Y);
+            $positionX = array_search($coordX, self::AXIS_X);
         }
 
         if ($positionY === false || $positionX === false) {
