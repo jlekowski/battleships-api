@@ -29,3 +29,6 @@ parameters:
     varnish_enabled:    false
     varnish_servers:    localhost # comma separated
     varnish_base_url:   battleships-api.dev.lekowski.pl
+
+    # mongodb config
+    mongodb_server:     "mongodb://localhost:27017"

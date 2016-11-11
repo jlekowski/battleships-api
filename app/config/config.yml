@@ -71,3 +71,13 @@ fos_rest:
             'AppBundle\Exception\InvalidShipsException': true
             'AppBundle\Exception\InvalidCoordinatesException': true
             'Symfony\Component\Security\Core\Exception\AuthenticationException': true
+
+doctrine_mongodb:
+    connections:
+        default:
+            server: "%mongodb_server%"
+            options: {}
+    default_database: test_database
+    document_managers:
+        default:
+            auto_mapping: true
