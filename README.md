@@ -9,6 +9,9 @@ API to manage users and interactions between them in games.
 ### DEMO
 http://dev.lekowski.pl
 
+### DOCS
+http://battleships-api.dev.lekowski.pl/doc
+
 ### LINKS
 * https://github.com/jlekowski/battleships-webclient - web client for the API
 * https://github.com/jlekowski/battleships-apiclient - PHP client for the API
@@ -47,7 +50,8 @@ bin/phpunit
 
 ## === Changelog ===
 * version **1.3**
- * Added ApiDoc under `/doc` (see battleships-api.dev.lekowski.pl/doc)
+ * Dropped support for PHP 5.* version
+ * Added ApiDoc under `/doc` (see http://battleships-api.dev.lekowski.pl/doc)
 
 * version **1.2**
  * Fixed critical bug in sorting when setting some ships with mast in column 10
