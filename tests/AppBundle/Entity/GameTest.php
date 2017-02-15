@@ -202,4 +202,11 @@ class GameTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($user2Ships, $this->game->getPlayerShips());
         $this->assertEquals($user1Ships, $this->game->getOtherShips());
     }
+
+    public function testGetEvents()
+    {
+        $events = $this->game->getEvents();
+        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $events);
+        $this->assertCount(0, $events);
+    }
 }

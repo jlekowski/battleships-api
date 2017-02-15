@@ -3,6 +3,8 @@
   * add 403 (missing/invalid token) and 409 (game flow) as generic errors + other error code from exceptions
   * explain key being `Bearer key.jtw.format`
 
+- Remove XML defaults like for http://battleships-api.vagrant:8080/app_dev.php/v1/users (no route found)
+
 - CoordsManager
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
 

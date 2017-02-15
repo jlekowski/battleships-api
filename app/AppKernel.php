@@ -38,16 +38,25 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
+        return $this->getVarBaseDir() . '/var/cache/' . $this->getEnvironment();
     }
 
     public function getLogDir()
     {
-        return dirname(__DIR__).'/var/logs';
+        return $this->getVarBaseDir() . '/var/logs';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
+    }
+
+    /**
+     * @return string
+     */
+    private function getVarBaseDir(): string
+    {
+        // for VM with shared files to avoid permission issues (env var must be defined both for CLI and WEB)
+        return $this->getEnvParameters()['var_dir'] ?? dirname(__DIR__);
     }
 }
