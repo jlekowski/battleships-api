@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\OnlyBeforeStartValidator;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class OnlyBeforeStartValidatorTest extends \PHPUnit_Framework_TestCase
+class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ObjectProphecy

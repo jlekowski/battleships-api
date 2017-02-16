@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Security;
 use AppBundle\Entity\UserRepository;
 use AppBundle\Security\ApiKeyUserProvider;
 
-class ApiKeyUserProviderTest extends \PHPUnit_Framework_TestCase
+class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ApiKeyUserProvider

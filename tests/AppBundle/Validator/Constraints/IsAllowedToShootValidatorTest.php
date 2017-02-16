@@ -6,7 +6,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Validator\Constraints\IsAllowedToShootValidator;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class IsAllowedToShootValidatorTest extends \PHPUnit_Framework_TestCase
+class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var IsAllowedToShootValidator

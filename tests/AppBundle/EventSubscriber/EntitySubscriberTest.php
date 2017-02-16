@@ -5,7 +5,7 @@ namespace Tests\AppBundle\EventSubscriber;
 use AppBundle\EventSubscriber\EntitySubscriber;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class EntitySubscriberTest extends \PHPUnit_Framework_TestCase
+class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var EntitySubscriber

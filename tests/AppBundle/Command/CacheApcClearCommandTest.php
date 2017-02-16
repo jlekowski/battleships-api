@@ -6,7 +6,7 @@ use AppBundle\Command\CacheApcClearCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CacheApcClearCommandTest extends \PHPUnit_Framework_TestCase
+class CacheApcClearCommandTest extends \PHPUnit\Framework\TestCase
 {
     public function testExecute()
     {

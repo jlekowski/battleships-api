@@ -7,7 +7,7 @@ use AppBundle\Validator\Constraints\EventValueValidator;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class EventValueValidatorTest extends \PHPUnit_Framework_TestCase
+class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var EventValueValidator

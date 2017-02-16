@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Validator\Constraints\UniqueEvent;
 
-class UniqueEventTest extends \PHPUnit_Framework_TestCase
+class UniqueEventTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetDefaultOption()
     {

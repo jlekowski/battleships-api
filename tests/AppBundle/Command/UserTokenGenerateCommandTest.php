@@ -6,7 +6,7 @@ use AppBundle\Command\UserTokenGenerateCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class UserTokenGenerateCommandTest extends \PHPUnit_Framework_TestCase
+class UserTokenGenerateCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var UserTokenGenerateCommand

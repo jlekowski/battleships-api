@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Entity\Event;
 use AppBundle\Validator\Constraints\IsAllowedToStartValidator;
 
-class IsAllowedToStartValidatorTest extends \PHPUnit_Framework_TestCase
+class IsAllowedToStartValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var IsAllowedToStartValidator

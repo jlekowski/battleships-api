@@ -16,4 +16,4 @@ before_script:
 
 script:
   - bin/phpunit
-  - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/
+  - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/ --ignore=tests/bootstrap.php

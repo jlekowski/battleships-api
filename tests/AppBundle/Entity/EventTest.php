@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\Event;
 
-class EventTest extends \PHPUnit_Framework_TestCase
+class EventTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Event

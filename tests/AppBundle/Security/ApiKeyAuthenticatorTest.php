@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Role\Role;
 
-class ApiKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
+class ApiKeyAuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ApiKeyAuthenticator

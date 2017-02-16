@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\IsAllowedToShoot;
 use Symfony\Component\Validator\Constraint;
 
-class IsAllowedToShootTest extends \PHPUnit_Framework_TestCase
+class IsAllowedToShootTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetTargets()
     {
