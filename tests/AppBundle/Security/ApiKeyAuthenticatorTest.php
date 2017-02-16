@@ -43,7 +43,7 @@ class ApiKeyAuthenticatorTest extends \PHPUnit\Framework\TestCase
 
         /** @var PreAuthenticatedToken $token */
         $token = $this->apiKeyAuthenticator->createToken($request->reveal(), 'key');
-        $this->assertInstanceOf('Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken', $token);
+        $this->assertInstanceOf(PreAuthenticatedToken::class, $token);
         $this->assertEquals('anon.', $token->getUser());
         $this->assertEquals('a2,.@#$%)*/\!', $token->getCredentials());
         $this->assertEquals('key', $token->getProviderKey());
@@ -81,7 +81,7 @@ class ApiKeyAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user->getRoles()->willReturn($roles);
 
         $token = $this->apiKeyAuthenticator->authenticateToken($oldToken->reveal(), $userProvider->reveal(), 'key');
-        $this->assertInstanceOf('Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken', $token);
+        $this->assertInstanceOf(PreAuthenticatedToken::class, $token);
         $this->assertEquals($user->reveal(), $token->getUser());
         $this->assertEquals('apiKey', $token->getCredentials());
         $this->assertEquals('key', $token->getProviderKey());

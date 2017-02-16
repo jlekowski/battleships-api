@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\Game;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class GameTest extends \PHPUnit\Framework\TestCase
 {
@@ -142,7 +143,7 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
         $this->game->applyCurrentTimestamp();
 
-        $this->assertInstanceOf('\DateTime', $this->game->getTimestamp());
+        $this->assertInstanceOf(\DateTime::class, $this->game->getTimestamp());
         $timeDiff = time() - $this->game->getTimestamp()->getTimestamp();
         $this->assertTrue($timeDiff < 1 && $timeDiff >=0);
 
@@ -206,7 +207,7 @@ class GameTest extends \PHPUnit\Framework\TestCase
     public function testGetEvents()
     {
         $events = $this->game->getEvents();
-        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $events);
+        $this->assertInstanceOf(ArrayCollection::class, $events);
         $this->assertCount(0, $events);
     }
 }

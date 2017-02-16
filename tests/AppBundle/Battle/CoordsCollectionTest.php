@@ -9,7 +9,7 @@ class CoordsCollectionTest extends \PHPUnit\Framework\TestCase
     public function testConstructorDoesNotThrowExceptionWhenAnyCoordsInvalid()
     {
         $coordsCollection = new CoordsCollection(['A1', 'B2', 'J10', 'A11']);
-        $this->assertInstanceOf('\AppBundle\Battle\CoordsCollection', $coordsCollection);
+        $this->assertInstanceOf(CoordsCollection::class, $coordsCollection);
     }
 
     public function testClassIsTraversable()
@@ -84,7 +84,7 @@ class CoordsCollectionTest extends \PHPUnit\Framework\TestCase
         $coordsArray = ['A1', 'J10', 'J1', 'B2', 'A10'];
         $coordsCollection = new CoordsCollection($coordsArray);
 
-        $this->assertInstanceOf('\ArrayIterator', $coordsCollection->getIterator());
+        $this->assertInstanceOf(\ArrayIterator::class, $coordsCollection->getIterator());
         $this->assertEquals(count($coordsArray), $coordsCollection->getIterator()->count());
     }
 }
