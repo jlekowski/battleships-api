@@ -2,7 +2,7 @@ language: php
 php:
   - 7.0
   - 7.1
-#  - nightly # dependencies incompatible with PHP 7.2
+  - nightly
 
 before_install:
   - ./travis-before-install.sh
