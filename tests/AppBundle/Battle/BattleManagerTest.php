@@ -6,7 +6,6 @@ use AppBundle\Battle\BattleManager;
 use AppBundle\Battle\CoordsCollection;
 use AppBundle\Battle\CoordsManager;
 use AppBundle\Entity\Event;
-use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class BattleManagerTest extends \PHPUnit_Framework_TestCase
@@ -51,7 +50,7 @@ class BattleManagerTest extends \PHPUnit_Framework_TestCase
         $event->getValue()->willReturn('C2');
         $event->getPlayer()->willReturn(1);
 
-        $game->getOtherShips()->willReturn(['C2','D2']);
+        $game->getOtherShips()->willReturn(['C2', 'D2']);
 
         $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_SHOT, 1)->willReturn([]);
 
@@ -71,7 +70,7 @@ class BattleManagerTest extends \PHPUnit_Framework_TestCase
         $event->getValue()->willReturn('C2');
         $event->getPlayer()->willReturn(1);
 
-        $game->getOtherShips()->willReturn(['C2','D2']);
+        $game->getOtherShips()->willReturn(['C2', 'D2']);
 
         $attackerShots = [$shotEvent];
         $this->eventRepository->findForGameByTypeAndPlayer($game, Event::TYPE_SHOT, 1)->willReturn($attackerShots);
