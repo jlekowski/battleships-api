@@ -51,8 +51,7 @@ class UserTokenBreakCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertStringMatchesFormat("Secret found: 2 (took: %s, memory: %s)\n", $this->commandTester->getDisplay());
     }
 
-    // step is hardcoded and 100000 means that the test would run too long
-    public function ignoreTestExecuteSecretNotFound()
+    public function testExecuteSecretNotFound()
     {
         $container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
         $userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
@@ -69,9 +68,10 @@ class UserTokenBreakCommandTest extends \PHPUnit_Framework_TestCase
         $this->commandTester->execute([
             'command' => $this->command->getName(),
             'jwt' => $jwt,
-            'timeout' => 1
+            'timeout' => 0.1,
+            'step' => 1000
         ]);
 
-        $this->assertStringMatchesFormat("Secret not found: finished on %s (took: %s, memory: %s)\n", $this->commandTester->getDisplay());
+        $this->assertStringMatchesFormat("%sSecret not found: finished on %s (took: %s, memory: %s)\n", $this->commandTester->getDisplay());
     }
 }

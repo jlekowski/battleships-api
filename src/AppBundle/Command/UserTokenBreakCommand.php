@@ -32,6 +32,7 @@ class UserTokenBreakCommand extends ContainerAwareCommand
             ->addArgument('jwt', InputArgument::REQUIRED)
             ->addArgument('start', InputArgument::OPTIONAL, 'String it starts searching from', '')
             ->addArgument('timeout', InputArgument::OPTIONAL, 'How long should it try to find secret (in seconds)', 1200)
+            ->addArgument('step', InputArgument::OPTIONAL, 'How many times it should try to find secret before checking timeout and marking progress', 100000)
         ;
 
         // 0-9, A-Z, a-z (http://www.asciitable.com)
@@ -46,10 +47,10 @@ class UserTokenBreakCommand extends ContainerAwareCommand
         $jwt = $input->getArgument('jwt');
         $secret = $input->getArgument('start');
         $timeout = $input->getArgument('timeout');
+        $step = $input->getArgument('step');
 
         $found = false;
         $start = microtime(true);
-        $step = 100000;
         while (microtime(true) - $start < $timeout) {
             for ($i = 0; $i < $step; $i++) {
                 try {
