@@ -74,14 +74,14 @@ class Game
      *
      * @ORM\Column(name="user1_ships", type="simple_array", nullable=true)
      */
-    private $user1Ships;
+    private $user1Ships = [];
 
     /**
      * @var array
      *
      * @ORM\Column(name="user2_ships", type="simple_array", nullable=true)
      */
-    private $user2Ships;
+    private $user2Ships = [];
 
     /**
      * @var \DateTime
