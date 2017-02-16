@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Battle;
 
 use AppBundle\Battle\CoordsCollection;
 
-class CoordsCollectionTest extends \PHPUnit_Framework_TestCase
+class CoordsCollectionTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstructorDoesNotThrowExceptionWhenAnyCoordsInvalid()
     {

@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\IsAllowedToStart;
 use Symfony\Component\Validator\Constraint;
 
-class IsAllowedToStartTest extends \PHPUnit_Framework_TestCase
+class IsAllowedToStartTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetTargets()
     {

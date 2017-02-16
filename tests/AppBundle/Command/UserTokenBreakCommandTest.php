@@ -7,7 +7,7 @@ use Firebase\JWT\JWT;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class UserTokenBreakCommandTest extends \PHPUnit_Framework_TestCase
+class UserTokenBreakCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var UserTokenBreakCommand

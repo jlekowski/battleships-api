@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Battle;
 
 use AppBundle\Battle\CoordsManager;
 
-class CoordsManagerTest extends \PHPUnit_Framework_TestCase
+class CoordsManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var array

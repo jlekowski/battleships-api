@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\Game;
 
-class GameTest extends \PHPUnit_Framework_TestCase
+class GameTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Game

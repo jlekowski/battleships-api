@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\OnlyBeforeStart;
 use Symfony\Component\Validator\Constraint;
 
-class OnlyBeforeStartTest extends \PHPUnit_Framework_TestCase
+class OnlyBeforeStartTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetTargets()
     {

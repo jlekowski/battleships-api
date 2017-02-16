@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Security;
 
 use AppBundle\Security\ApiKeyManager;
 
-class ApiKeyManagerTest extends \PHPUnit_Framework_TestCase
+class ApiKeyManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ApiKeyManager

@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\UniqueEventValidator;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class UniqueEventValidatorTest extends \PHPUnit_Framework_TestCase
+class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var UniqueEventValidator

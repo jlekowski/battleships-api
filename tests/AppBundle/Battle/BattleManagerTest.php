@@ -8,7 +8,7 @@ use AppBundle\Battle\CoordsManager;
 use AppBundle\Entity\Event;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class BattleManagerTest extends \PHPUnit_Framework_TestCase
+class BattleManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var BattleManager

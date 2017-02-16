@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\Ships;
 use Symfony\Component\Validator\Constraint;
 
-class ShipsTest extends \PHPUnit_Framework_TestCase
+class ShipsTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetTargets()
     {

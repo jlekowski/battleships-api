@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Validator\Constraints;
 use AppBundle\Validator\Constraints\EventValue;
 use Symfony\Component\Validator\Constraint;
 
-class EventValueTest extends \PHPUnit_Framework_TestCase
+class EventValueTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetTargets()
     {
