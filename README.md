@@ -51,27 +51,27 @@ bin/phpunit
 
 ## === Changelog ===
 * version **1.4**
- * Added tests to reach 100% code coverage
- * Added Codecov support
- * Upgraded dependencies and support for PHP 7.2
- * Added `step` option to `UserTokenBreakCommand`
- * Added support for `SYMFONY__VAR_DIR` and `SYMFONY__DEV_ENABLED` env variables (see battleships-vagrant repository)
- * Changed cache tags format for game events
+  * Added tests to reach 100% code coverage
+  * Added Codecov support
+  * Upgraded dependencies and support for PHP 7.2
+  * Added `step` option to `UserTokenBreakCommand`
+  * Added support for `SYMFONY__VAR_DIR` and `SYMFONY__DEV_ENABLED` env variables (see battleships-vagrant repository)
+  * Changed cache tags format for game events
 
 * version **1.3**
- * Dropped support for PHP 5.* version
- * Added ApiDoc under `/doc` (see http://battleships-api.dev.lekowski.pl/doc)
+  * Dropped support for PHP 5.* version
+  * Added ApiDoc under `/doc` (see http://battleships-api.dev.lekowski.pl/doc)
 
 * version **1.2**
- * Fixed critical bug in sorting when setting some ships with mast in column 10
- * Small changes for build/analysis tools (PSR4 declaration, no 5.5 support)
+  * Fixed critical bug in sorting when setting some ships with mast in column 10
+  * Small changes for build/analysis tools (PSR4 declaration, no 5.5 support)
 
 * version **1.1**
- * Changed the way coordinates are handled
- * Moved E2E to battleships-apiclient repo
- * Updated dependencies
- * Cleaning and refactoring
+  * Changed the way coordinates are handled
+  * Moved E2E to battleships-apiclient repo
+  * Updated dependencies
+  * Cleaning and refactoring
 
 * version **1.0**
- * Working version of the API deployed
- * Still many TODOs, but they should not affect the stability and will be fixed on an ongoing basis
+  * Working version of the API deployed
+  * Still many TODOs, but they should not affect the stability and will be fixed on an ongoing basis
