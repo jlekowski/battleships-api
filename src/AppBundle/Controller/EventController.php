@@ -118,7 +118,7 @@ class EventController extends FOSRestController
      *   }
      * )
      *
-     * @Tag(expression="'game-' ~ game.getId() ~ 'events'")
+     * @Tag(expression="'game-' ~ game.getId() ~ '-events'")
      * @Security("game.belongsToUser(user)")
      * @QueryParam(
      *     name="type",
@@ -161,7 +161,7 @@ class EventController extends FOSRestController
      *  }
      * )
      *
-     * @Tag(expression="'game-' ~ game.getId() ~ 'events'")
+     * @Tag(expression="'game-' ~ game.getId() ~ '-events'")
      * @Security("game.belongsToUser(user)")
      * @RequestParam(
      *     name="type",

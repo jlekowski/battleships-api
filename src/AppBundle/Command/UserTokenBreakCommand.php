@@ -99,7 +99,7 @@ class UserTokenBreakCommand extends ContainerAwareCommand
                 }
             }
 
-            $next = $this->findNext(substr($txt, 0, strlen($txt) - $i)) .  str_repeat(chr($this->charIds[0]), $i);
+            $next = $this->findNext(substr($txt, 0, strlen($txt) - $i)) . str_repeat(chr($this->charIds[0]), $i);
         }
 
         return $next;
