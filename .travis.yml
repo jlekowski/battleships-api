@@ -15,5 +15,8 @@ before_script:
   - bin/console doctrine:schema:update --force
 
 script:
-  - bin/phpunit
+  - bin/phpunit --coverage-clover=coverage.xml
   - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/ --ignore=tests/bootstrap.php
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)

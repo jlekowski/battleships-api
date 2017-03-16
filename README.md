@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/jlekowski/battleships-api.svg?branch=master)](https://travis-ci.org/jlekowski/battleships-api)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/88d176ba-ffc7-4241-b74b-79ee9d387063/mini.png)](https://insight.sensiolabs.com/projects/88d176ba-ffc7-4241-b74b-79ee9d387063)
+[![codecov](https://codecov.io/gh/jlekowski/battleships-api/branch/master/graph/badge.svg)](https://codecov.io/gh/jlekowski/battleships-api)
 
 # Battleships (API)
 
