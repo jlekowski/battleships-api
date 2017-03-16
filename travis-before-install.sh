@@ -2,6 +2,7 @@
 
 # for PHP7
 pear config-set preferred_state beta
+echo 'extension = apcu.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 echo 'extension = apc.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 yes '' | pecl install apcu_bc
 
