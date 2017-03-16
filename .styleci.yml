@@ -1,0 +1,30 @@
+preset: recommended
+
+risky: false
+
+enabled:
+  - concat_with_spaces
+
+disabled:
+  - concat_without_spaces
+  - phpdoc_separation
+  - phpdoc_summary
+  - phpdoc_align
+
+#finder:
+#  exclude:
+#    - "tests"
+#  name:
+#    - "*.php"
+#  not-name:
+#    - "*Stub.php"
+#  contains:
+#    - "Foo"
+#  not-contains:
+#    - "config"
+#  path:
+#    - "foo/Stuff"
+#  not-path:
+#    - "libraries"
+#  depth:
+#    - "< 3"
