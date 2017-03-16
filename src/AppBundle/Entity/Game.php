@@ -92,7 +92,7 @@ class Game
     private $timestamp;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $playerNumber;
 

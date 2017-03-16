@@ -120,7 +120,7 @@ class User
 
     /**
      * @param \DateTime $timestamp
-     * @return Game
+     * @return User
      */
     public function setTimestamp(\DateTime $timestamp)
     {
