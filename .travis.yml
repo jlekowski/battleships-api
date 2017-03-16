@@ -6,7 +6,6 @@ php:
 
 before_install:
   - ./travis-before-install.sh
-  - composer self-update
 
 install:
   - composer install
