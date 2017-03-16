@@ -50,6 +50,14 @@ bin/phpunit
 3. You can run E2E tests (see https://github.com/jlekowski/battleships-apiclient)
 
 ## === Changelog ===
+* version **1.4**
+ * Added tests to reach 100% code coverage
+ * Added Codecov support
+ * Upgraded dependencies and support for PHP 7.2
+ * Added `step` option to `UserTokenBreakCommand`
+ * Added support for `SYMFONY__VAR_DIR` and `SYMFONY__DEV_ENABLED` env variables (see battleships-vagrant repository)
+ * Changed cache tags format for game events
+
 * version **1.3**
  * Dropped support for PHP 5.* version
  * Added ApiDoc under `/doc` (see http://battleships-api.dev.lekowski.pl/doc)
