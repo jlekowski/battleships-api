@@ -10,6 +10,10 @@ disabled:
   - phpdoc_separation
   - phpdoc_summary
   - phpdoc_align
+  - phpdoc_order
+  - no_singleline_whitespace_before_semicolons
+  - trailing_comma_in_multiline_array
+  - phpdoc_var_without_name
 
 #finder:
 #  exclude:
