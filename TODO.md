@@ -1,5 +1,3 @@
-- Remove tests/bootstrap.php (PHPUnit_Framework_TestCase class declaration) once Symfony's KernelTestCase class is compatible with PHPUnit 6
-
 - ApiDoc
   * to have options explained (e.g. event types)
   * add 403 (missing/invalid token) and 409 (game flow) as generic errors + other error code from exceptions

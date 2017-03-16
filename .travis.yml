@@ -16,7 +16,7 @@ before_script:
 
 script:
   - bin/phpunit --coverage-clover=coverage.xml
-  - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/ --ignore=tests/bootstrap.php
+  - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
