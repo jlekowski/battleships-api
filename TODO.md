@@ -1,3 +1,7 @@
+- user1_ships, but user_id1 :/
+
+- check when `bootstrap.php.cache` is deprecated as well as `$kernel->loadClassCache();` and remove usage (app[_dev].php, composer.json `buildBootstrap`)
+
 - ApiDoc
   * to have options explained (e.g. event types)
   * add 403 (missing/invalid token) and 409 (game flow) as generic errors + other error code from exceptions
