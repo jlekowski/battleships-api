@@ -27,5 +27,5 @@ parameters:
     # varnish config
     varnish_debug:     false
     varnish_enabled:   false
-    varnish_servers:   localhost # comma separated
+    varnish_servers:   [localhost] # array
     varnish_base_url:  battleships-api.dev.lekowski.pl

@@ -5,6 +5,9 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    /**
+     * @inheritdoc
+     */
     public function registerBundles()
     {
         $bundles = array(
@@ -31,24 +34,28 @@ class AppKernel extends Kernel
         return $bundles;
     }
 
-    public function getRootDir()
-    {
-        return __DIR__;
-    }
-
+    /**
+     * @inheritdoc
+     */
     public function getCacheDir()
     {
         return $this->getVarBaseDir() . '/var/cache/' . $this->getEnvironment();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getLogDir()
     {
         return $this->getVarBaseDir() . '/var/logs';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
+        $loader->load($this->getProjectDir() . '/app/config/config_' . $this->getEnvironment() . '.yml');
     }
 
     /**
@@ -57,6 +64,6 @@ class AppKernel extends Kernel
     private function getVarBaseDir(): string
     {
         // for VM with shared files to avoid permission issues (env var must be defined both for CLI and WEB)
-        return $this->getEnvParameters()['var_dir'] ?? dirname(__DIR__);
+        return $_SERVER['BATTLESHIPS_VAR_DIR'] ?? $this->getProjectDir();
     }
 }

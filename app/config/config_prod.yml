@@ -1,12 +1,6 @@
 imports:
     - { resource: config.yml }
 
-framework:
-    validation:
-        cache: app.validator.cache
-    serializer:
-        cache: serializer.mapping.cache.apc
-
 doctrine:
     orm:
         metadata_cache_driver: apc
@@ -46,8 +40,9 @@ fos_http_cache:
         enabled: "%varnish_enabled%"
     proxy_client:
         varnish:
-            servers: "%varnish_servers%"
-            base_url: "%varnish_base_url%"
+            http:
+                servers: "%varnish_servers%"
+                base_url: "%varnish_base_url%"
 
     cache_control:
         rules:

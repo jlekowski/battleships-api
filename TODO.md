@@ -1,6 +1,8 @@
 - user1_ships, but user_id1 :/
 
-- check when `bootstrap.php.cache` is deprecated as well as `$kernel->loadClassCache();` and remove usage (app[_dev].php, composer.json `buildBootstrap`)
+- see how to replace deprecated `ExceptionInterface`
+
+- see if can get rid of APC dependency
 
 - ApiDoc
   * to have options explained (e.g. event types)

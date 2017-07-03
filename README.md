@@ -25,8 +25,8 @@ http://battleships-api.dev.lekowski.pl/doc
 3. Change Symfony environment to production, install dependencies, and provide parameters.
 ```
 export SYMFONY_ENV=prod
-composer install --optimize-autoloader --no-dev
-bin/console cache:clear --env=prod --no-debug
+composer install --optimize-autoloader --no-dev --apcu-autoloader
+bin/console cache:clear --env=prod --no-debug --no-warmup
 
 bin/console doctrine:schema:validate
 bin/console doctrine:schema:update --force
