@@ -21,11 +21,11 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     # loggly token
-    loggly_token:       ~
-    loggly_tag:         battleships-api
+    loggly_token:      ~
+    loggly_tag:        battleships-api
 
     # varnish config
-    varnish_debug:      false
-    varnish_enabled:    false
-    varnish_servers:    localhost # comma separated
-    varnish_base_url:   battleships-api.dev.lekowski.pl
+    varnish_debug:     false
+    varnish_enabled:   false
+    varnish_servers:   localhost # comma separated
+    varnish_base_url:  battleships-api.dev.lekowski.pl
