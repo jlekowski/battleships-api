@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Validator\Constraints\OnlyBeforeStart;
+use AppBundle\Validator\Constraints\OnlyBeforeStartValidator;
 use Symfony\Component\Validator\Constraint;
 
 class OnlyBeforeStartTest extends \PHPUnit\Framework\TestCase
@@ -16,6 +17,6 @@ class OnlyBeforeStartTest extends \PHPUnit\Framework\TestCase
     public function testValidatedBy()
     {
         $constraint = new OnlyBeforeStart();
-        $this->assertEquals('only_before_start_validator', $constraint->validatedBy());
+        $this->assertEquals(OnlyBeforeStartValidator::class, $constraint->validatedBy());
     }
 }

@@ -1,116 +1,54 @@
 services:
-    app.security.api_key_authenticator:
-        class:  AppBundle\Security\ApiKeyAuthenticator
-        arguments: ['@app.security.api_key_manager', '@monolog.logger.security']
+    _defaults:
+        autowire: true
+        autoconfigure: true
         public: false
 
-    app.security.api_key_user_provider:
-        class: AppBundle\Security\ApiKeyUserProvider
-        arguments: ['@app.entity.user_repository']
+    AppBundle\:
+        resource: '../../src/AppBundle/*'
+        exclude: '../../src/AppBundle/{Entity,Repository,Exception}'
 
-    app.security.api_key_manager:
-        class: AppBundle\Security\ApiKeyManager
-        arguments: ['%secret%']
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller'
+        exclude: '../../src/AppBundle/Controller/CorsController.php'
+        public: true
+        calls:
+            - method: setContainer
+        tags: ['controller.service_arguments'] # to inject into controllers actions
 
-    app.entity.user_repository:
-        class: AppBundle\Entity\UserRepository
+    AppBundle\Security\ApiKeyAuthenticator:
+        arguments:
+            $logger: '@monolog.logger.security'
+
+    AppBundle\Security\ApiKeyManager:
+        arguments:
+            $secret: '%secret%'
+
+    AppBundle\Repository\UserRepository:
         factory: ['@doctrine', getRepository]
         arguments: ['AppBundle:User']
 
-    app.entity.game_repository:
-        class: AppBundle\Entity\GameRepository
+    AppBundle\Repository\GameRepository:
         factory: ['@doctrine', getRepository]
         arguments: ['AppBundle:Game']
 
-    app.entity.event_repository:
-        class: AppBundle\Entity\EventRepository
+    AppBundle\Repository\EventRepository:
         factory: ['@doctrine', getRepository]
         arguments: ['AppBundle:Event']
 
-    app.controller.cors:
-        class: AppBundle\Controller\CorsController
-
-    app.controller.exception_controller:
+    AppBundle\Controller\ExceptionController:
         parent: fos_rest.exception.controller
-        class: AppBundle\Controller\ExceptionController
+        autowire: false
+        autoconfigure: false
+        public: true
 
-    app.controller.user:
-        class: AppBundle\Controller\UserController
-        arguments: ['@doctrine.orm.default_entity_manager', '@app.security.api_key_manager']
-        calls:
-            - [setContainer, ['@service_container']]
-
-    app.controller.game:
-        class: AppBundle\Controller\GameController
-        arguments: ['@doctrine.orm.default_entity_manager', '@app.entity.game_repository']
-        calls:
-            - [setContainer, ['@service_container']]
-
-    app.controller.event:
-        class: AppBundle\Controller\EventController
-        arguments: ['@doctrine.orm.default_entity_manager', '@app.entity.event_repository', '@app.battle.battle_manager']
-        calls:
-            - [setContainer, ['@service_container']]
-
-    app.command.user_token_generate_command:
-        class: AppBundle\Command\UserTokenGenerateCommand
-        calls:
-            - [setContainer, ['@service_container']]
-        tags:
-            - { name: console.command }
-
-    app.event_listener.cors:
-        class: AppBundle\EventListener\CorsListener
+    AppBundle\EventListener\CorsListener:
         tags:
            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
-    app.event_subscriber.entity:
-        class: AppBundle\EventSubscriber\EntitySubscriber
-        arguments: ['@security.token_storage', '@validator', '@logger']
+    AppBundle\EventSubscriber\EntitySubscriber:
         tags:
             - { name: doctrine.event_subscriber }
-
-    app.battle.battle_manager:
-        class: AppBundle\Battle\BattleManager
-        arguments: ['@app.entity.event_repository', '@app.battle.coords_manager']
-
-    app.battle.coords_manager:
-        class: AppBundle\Battle\CoordsManager
-
-    app.validator.only_before_start_validator:
-        class: AppBundle\Validator\Constraints\OnlyBeforeStartValidator
-        arguments: ['@doctrine.orm.default_entity_manager']
-        tags:
-            - { name: validator.constraint_validator, alias: only_before_start_validator }
-
-    app.validator.event_value:
-        class: AppBundle\Validator\Constraints\EventValueValidator
-        arguments: ['@app.battle.coords_manager']
-        tags:
-            - { name: validator.constraint_validator, alias: event_value }
-
-    app.validator.unique_event:
-        class: AppBundle\Validator\Constraints\UniqueEventValidator
-        arguments: ['@app.entity.event_repository']
-        tags:
-            - { name: validator.constraint_validator, alias: unique_event }
-
-    app.validator.is_allowed_to_shoot:
-        class: AppBundle\Validator\Constraints\IsAllowedToShootValidator
-        arguments: ['@app.entity.event_repository']
-        tags:
-            - { name: validator.constraint_validator, alias: is_allowed_to_shoot }
-
-    app.validator.is_allowed_to_start:
-        class: AppBundle\Validator\Constraints\IsAllowedToStartValidator
-        tags:
-            - { name: validator.constraint_validator, alias: is_allowed_to_start }
-
-    app.validator.ships:
-        class: AppBundle\Validator\Constraints\ShipsValidator
-        arguments: ['@app.battle.coords_manager']
-        tags:
-            - { name: validator.constraint_validator, alias: ships }
 
     # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
     jms_serializer.camel_case_naming_strategy:

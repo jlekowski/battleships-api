@@ -13,6 +13,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -90,6 +91,7 @@ class EntitySubscriber implements EventSubscriber
         }
 
         if ($entity instanceof Game) {
+            /** @var PreAuthenticatedToken $token */
             $token = $this->tokenStorage->getToken();
             if (!$token) {
                 throw new UserNotFoundException('User has not been authenticated yet');

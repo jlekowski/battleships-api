@@ -3,7 +3,7 @@
 namespace AppBundle\Battle;
 
 use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
+use AppBundle\Repository\EventRepository;
 use AppBundle\Exception\UnexpectedEventTypeException;
 
 class BattleManager

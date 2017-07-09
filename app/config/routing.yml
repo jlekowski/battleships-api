@@ -3,7 +3,7 @@ doc:
     prefix: /doc
 
 cors:
-    resource: app.controller.cors
+    resource: AppBundle\Controller\CorsController
     type: rest
 
 routing_v1:

@@ -63,7 +63,7 @@ fos_rest:
         # to return data instead of Response/JsonResponse object
         view_response_listener: force
     exception:
-        exception_controller: 'app.controller.exception_controller:showAction'
+        exception_controller: 'AppBundle\Controller\ExceptionController:showAction'
         codes:
             'Symfony\Component\Security\Core\Exception\AuthenticationException': 401
         messages:

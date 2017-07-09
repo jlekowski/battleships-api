@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
- * @ORM\Entity(repositoryClass="AppBundle\Entity\EventRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\EventRepository")
  * @ORM\HasLifecycleCallbacks()
  *
  * @AppAssert\IsAllowedToShoot()

@@ -1,8 +1,14 @@
+- replace all class strings with ClassName::class
+
 - user1_ships, but user_id1 :/
 
 - see how to replace deprecated `ExceptionInterface`
 
+- see https://symfony.com/doc/current/controller.html#controller-service-arguments-tag to inject user into action instead of using container
+
 - see if can get rid of APC dependency
+
+- Entity and Repository tests
 
 - ApiDoc
   * to have options explained (e.g. event types)

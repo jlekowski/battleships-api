@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Validator\Constraints\Ships;
+use AppBundle\Validator\Constraints\ShipsValidator;
 use Symfony\Component\Validator\Constraint;
 
 class ShipsTest extends \PHPUnit\Framework\TestCase
@@ -16,6 +17,6 @@ class ShipsTest extends \PHPUnit\Framework\TestCase
     public function testValidatedBy()
     {
         $constraint = new Ships();
-        $this->assertEquals('AppBundle\Validator\Constraints\ShipsValidator', $constraint->validatedBy());
+        $this->assertEquals(ShipsValidator::class, $constraint->validatedBy());
     }
 }

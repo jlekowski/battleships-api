@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Validator\Constraints\IsAllowedToShoot;
+use AppBundle\Validator\Constraints\IsAllowedToShootValidator;
 use Symfony\Component\Validator\Constraint;
 
 class IsAllowedToShootTest extends \PHPUnit\Framework\TestCase
@@ -16,6 +17,6 @@ class IsAllowedToShootTest extends \PHPUnit\Framework\TestCase
     public function testValidatedBy()
     {
         $constraint = new IsAllowedToShoot();
-        $this->assertEquals('is_allowed_to_shoot', $constraint->validatedBy());
+        $this->assertEquals(IsAllowedToShootValidator::class, $constraint->validatedBy());
     }
 }

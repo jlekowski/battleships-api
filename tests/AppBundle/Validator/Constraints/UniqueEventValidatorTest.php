@@ -24,7 +24,7 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->eventRepository = $this->prophesize('AppBundle\Entity\EventRepository');
+        $this->eventRepository = $this->prophesize('AppBundle\Repository\EventRepository');
         $this->context = $this->prophesize('Symfony\Component\Validator\Context\ExecutionContextInterface');
 
         $this->validator = new UniqueEventValidator($this->eventRepository->reveal());

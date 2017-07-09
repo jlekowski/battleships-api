@@ -30,18 +30,7 @@ class UserTokenBreakCommandTest extends \PHPUnit\Framework\TestCase
 
     public function testExecuteSecretFound()
     {
-        $container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
-        $userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
-        $apiKeyManager = $this->prophesize('AppBundle\Security\ApiKeyManager');
-        $user = $this->prophesize('AppBundle\Entity\User');
-
-        $container->get('app.entity.user_repository')->willReturn($userRepository);
-        $container->get('app.security.api_key_manager')->willReturn($apiKeyManager);
-        $apiKeyManager->generateApiKeyForUser($user)->willReturn('apiKey');
-        $userRepository->find(1)->willReturn($user);
-
         $jwt = JWT::encode([], 2);
-        $this->command->setContainer($container->reveal());
         $this->commandTester->execute([
             'command' => $this->command->getName(),
             'jwt' => $jwt,
@@ -53,18 +42,7 @@ class UserTokenBreakCommandTest extends \PHPUnit\Framework\TestCase
 
     public function testExecuteSecretNotFound()
     {
-        $container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
-        $userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
-        $apiKeyManager = $this->prophesize('AppBundle\Security\ApiKeyManager');
-        $user = $this->prophesize('AppBundle\Entity\User');
-
-        $container->get('app.entity.user_repository')->willReturn($userRepository);
-        $container->get('app.security.api_key_manager')->willReturn($apiKeyManager);
-        $apiKeyManager->generateApiKeyForUser($user)->willReturn('apiKey');
-        $userRepository->find(1)->willReturn($user);
-
         $jwt = JWT::encode([], 'zzzzz');
-        $this->command->setContainer($container->reveal());
         $this->commandTester->execute([
             'command' => $this->command->getName(),
             'jwt' => $jwt,

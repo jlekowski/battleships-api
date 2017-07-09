@@ -6,6 +6,8 @@ use AppBundle\Battle\BattleManager;
 use AppBundle\Battle\CoordsCollection;
 use AppBundle\Battle\CoordsManager;
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Game;
+use AppBundle\Repository\EventRepository;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class BattleManagerTest extends \PHPUnit\Framework\TestCase
@@ -22,14 +24,14 @@ class BattleManagerTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->eventRepository = $this->prophesize('AppBundle\Entity\EventRepository');
+        $this->eventRepository = $this->prophesize(EventRepository::class);
         $this->battleManager = new BattleManager($this->eventRepository->reveal(), new CoordsManager());
     }
 
     public function testGetShotResultMiss()
     {
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -42,8 +44,8 @@ class BattleManagerTest extends \PHPUnit\Framework\TestCase
 
     public function testGetShotResultHit()
     {
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -59,9 +61,9 @@ class BattleManagerTest extends \PHPUnit\Framework\TestCase
 
     public function testGetShotResultSunk()
     {
-        $shotEvent = $this->prophesize('AppBundle\Entity\Event');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
+        $shotEvent = $this->prophesize(Event::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
 
         $shotEvent->getValue()->willReturn('D2');
 
@@ -84,7 +86,7 @@ class BattleManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetShotResultThrowsExceptionForNonShotEvent()
     {
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $event = $this->prophesize(Event::class);
         $event->getType()->willReturn('test');
 
         $this->battleManager->getShotResult($event->reveal());

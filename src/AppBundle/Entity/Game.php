@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
- * @ORM\Entity(repositoryClass="AppBundle\Entity\GameRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\GameRepository")
  * @ORM\HasLifecycleCallbacks()
  *
  * @AppAssert\OnlyBeforeStart(groups={"update"})

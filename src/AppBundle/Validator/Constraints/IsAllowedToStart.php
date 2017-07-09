@@ -16,12 +16,4 @@ class IsAllowedToStart extends Constraint
     {
         return self::CLASS_CONSTRAINT;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function validatedBy()
-    {
-        return 'is_allowed_to_start';
-    }
 }

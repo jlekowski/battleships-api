@@ -4,9 +4,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
+use AppBundle\Repository\EventRepository;
 use AppBundle\Entity\Game;
-use AppBundle\Entity\GameRepository;
+use AppBundle\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;

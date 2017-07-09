@@ -16,12 +16,4 @@ class EventValue extends Constraint
     {
         return self::CLASS_CONSTRAINT;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function validatedBy()
-    {
-        return 'event_value';
-    }
 }

@@ -50,6 +50,9 @@ bin/phpunit
 3. You can run E2E tests (see https://github.com/jlekowski/battleships-apiclient)
 
 ## === Changelog ===
+* version **1.5**
+  * Replaced env variables `SYMFONY__*` with `BATTLESHIPS_*` as deprecated in Symfony 3.3
+
 * version **1.4**
   * Added tests to reach 100% code coverage
   * Added Codecov support

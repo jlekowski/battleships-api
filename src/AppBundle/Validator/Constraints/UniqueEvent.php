@@ -21,12 +21,4 @@ class UniqueEvent extends Constraint
     {
         return 'uniqueEvents';
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function validatedBy()
-    {
-        return 'unique_event';
-    }
 }

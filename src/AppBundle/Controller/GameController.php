@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Game;
-use AppBundle\Entity\GameRepository;
+use AppBundle\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\QueryParam;

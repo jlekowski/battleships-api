@@ -1,17 +1,17 @@
 users_v1:
-    resource: app.controller.user
+    resource: AppBundle\Controller\UserController
     type: rest
     prefix: /v1
     name_prefix: api_v1_
 
 games_v1:
-    resource: app.controller.game
+    resource: AppBundle\Controller\GameController
     type: rest
     prefix: /v1
     name_prefix: api_v1_
 
 events_v1:
-    resource: app.controller.event
+    resource: AppBundle\Controller\EventController
     type: rest
     parent: games_v1
     name_prefix: api_v1_

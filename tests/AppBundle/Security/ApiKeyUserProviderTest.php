@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Security;
 
-use AppBundle\Entity\UserRepository;
+use AppBundle\Repository\UserRepository;
 use AppBundle\Security\ApiKeyUserProvider;
 
 class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
@@ -19,7 +19,7 @@ class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
+        $this->userRepository = $this->prophesize('AppBundle\Repository\UserRepository');
         $this->apiKeyUserProvider = new ApiKeyUserProvider($this->userRepository->reveal());
     }
 

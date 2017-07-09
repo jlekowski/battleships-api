@@ -205,9 +205,9 @@ abstract class AbstractApiTestCase extends WebTestCase
     /**
      * @return ApiKeyManager
      */
-    protected function getApiKeyManager()
+    protected function getApiKeyManager(): ApiKeyManager
     {
-        return $this->getContainer()->get('app.security.api_key_manager');
+        return $this->getContainer()->get(ApiKeyManager::class);
     }
 
     /**

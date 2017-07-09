@@ -16,12 +16,4 @@ class OnlyBeforeStart extends Constraint
     {
         return self::CLASS_CONSTRAINT;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function validatedBy()
-    {
-        return 'only_before_start_validator';
-    }
 }

@@ -20,7 +20,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->eventRepository = $this->prophesize('AppBundle\Entity\EventRepository');
+        $this->eventRepository = $this->prophesize('AppBundle\Repository\EventRepository');
         $this->validator = new IsAllowedToShootValidator($this->eventRepository->reveal());
     }
 

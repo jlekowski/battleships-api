@@ -3,6 +3,10 @@
 namespace Tests\AppBundle\Command;
 
 use AppBundle\Command\UserTokenGenerateCommand;
+use AppBundle\Entity\User;
+use AppBundle\Repository\UserRepository;
+use AppBundle\Security\ApiKeyManager;
+use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -18,10 +22,23 @@ class UserTokenGenerateCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected $commandTester;
 
+    /**
+     * @var UserRepository|ObjectProphecy
+     */
+    protected $userRepository;
+
+    /**
+     * @var ApiKeyManager|ObjectProphecy
+     */
+    protected $apiKeyManager;
+
     public function setUp()
     {
+        $this->userRepository = $this->prophesize(UserRepository::class);
+        $this->apiKeyManager = $this->prophesize(ApiKeyManager::class);
+
         $application = new Application();
-        $application->add(new UserTokenGenerateCommand());
+        $application->add(new UserTokenGenerateCommand($this->userRepository->reveal(), $this->apiKeyManager->reveal()));
 
         $this->command = $application->find('user:token:generate');
         $this->commandTester = new CommandTester($this->command);
@@ -29,17 +46,10 @@ class UserTokenGenerateCommandTest extends \PHPUnit\Framework\TestCase
 
     public function testExecute()
     {
-        $container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
-        $userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
-        $apiKeyManager = $this->prophesize('AppBundle\Security\ApiKeyManager');
-        $user = $this->prophesize('AppBundle\Entity\User');
+        $user = $this->prophesize(User::class);
+        $this->userRepository->find(1)->willReturn($user);
+        $this->apiKeyManager->generateApiKeyForUser($user)->willReturn('apiKey');
 
-        $container->get('app.entity.user_repository')->willReturn($userRepository);
-        $container->get('app.security.api_key_manager')->willReturn($apiKeyManager);
-        $apiKeyManager->generateApiKeyForUser($user)->willReturn('apiKey');
-        $userRepository->find(1)->willReturn($user);
-
-        $this->command->setContainer($container->reveal());
         $this->commandTester->execute([
             'command' => $this->command->getName(),
             'user_id' => 1
@@ -54,13 +64,8 @@ class UserTokenGenerateCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecuteThrowsExceptionWhenNoUserFound()
     {
-        $container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
-        $userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
+        $this->userRepository->find(1)->willReturn(null);
 
-        $container->get('app.entity.user_repository')->willReturn($userRepository);
-        $userRepository->find(1)->willReturn(null);
-
-        $this->command->setContainer($container->reveal());
         $this->commandTester->execute([
             'command' => $this->command->getName(),
             'user_id' => 1
@@ -73,14 +78,9 @@ class UserTokenGenerateCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecuteThrowsExceptionWhenUsingNewOptions()
     {
-        $container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
-        $userRepository = $this->prophesize('AppBundle\Entity\UserRepository');
-        $user = $this->prophesize('AppBundle\Entity\User');
+        $user = $this->prophesize(User::class);
+        $this->userRepository->find(1)->willReturn($user);
 
-        $container->get('app.entity.user_repository')->willReturn($userRepository);
-        $userRepository->find(1)->willReturn($user);
-
-        $this->command->setContainer($container->reveal());
         $this->commandTester->execute([
             'command' => $this->command->getName(),
             'user_id' => 1,

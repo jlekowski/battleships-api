@@ -3,7 +3,7 @@
 namespace AppBundle\Command;
 
 use Firebase\JWT\JWT;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * If secret is like 'test', it takes around 15 minutes to find it, but brute forcing anything longer is pointless.
  * Having a properly long secret for JWT is secure enough. I NSA wants to break my API, they will do it anyway :)
  */
-class UserTokenBreakCommand extends ContainerAwareCommand
+class UserTokenBreakCommand extends Command
 {
     /**
      * @var array

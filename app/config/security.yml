@@ -1,7 +1,7 @@
 security:
     providers:
         api_key:
-            id: app.security.api_key_user_provider
+            id: AppBundle\Security\ApiKeyUserProvider
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -27,5 +27,5 @@ security:
             pattern: ^/
             stateless: true
             simple_preauth:
-                authenticator: app.security.api_key_authenticator
+                authenticator: AppBundle\Security\ApiKeyAuthenticator
             provider: api_key

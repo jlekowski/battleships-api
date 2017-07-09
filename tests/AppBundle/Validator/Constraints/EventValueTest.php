@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Validator\Constraints\EventValue;
+use AppBundle\Validator\Constraints\EventValueValidator;
 use Symfony\Component\Validator\Constraint;
 
 class EventValueTest extends \PHPUnit\Framework\TestCase
@@ -16,6 +17,6 @@ class EventValueTest extends \PHPUnit\Framework\TestCase
     public function testValidatedBy()
     {
         $constraint = new EventValue();
-        $this->assertEquals('event_value', $constraint->validatedBy());
+        $this->assertEquals(EventValueValidator::class, $constraint->validatedBy());
     }
 }

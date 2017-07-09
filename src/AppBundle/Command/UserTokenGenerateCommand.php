@@ -3,17 +3,40 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\User;
-use AppBundle\Entity\UserRepository;
+use AppBundle\Repository\UserRepository;
 use AppBundle\Exception\UserNotFoundException;
 use AppBundle\Security\ApiKeyManager;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UserTokenGenerateCommand extends ContainerAwareCommand
+class UserTokenGenerateCommand extends Command
 {
+    /**
+     * @var UserRepository
+     */
+    protected $userRepository;
+
+    /**
+     * @var ApiKeyManager
+     */
+    protected $apiKeyManager;
+
+    /**
+     * @param UserRepository $userRepository
+     * @param ApiKeyManager $apiKeyManager
+     * @param string $name
+     */
+    public function __construct(UserRepository $userRepository, ApiKeyManager $apiKeyManager, $name = null)
+    {
+        parent::__construct($name);
+        $this->userRepository = $userRepository;
+        $this->apiKeyManager = $apiKeyManager;
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -39,7 +62,7 @@ class UserTokenGenerateCommand extends ContainerAwareCommand
         $userId = $input->getArgument('user_id');
 
         /** @var User $user */
-        $user = $this->getUserRepository()->find($userId);
+        $user = $this->userRepository->find($userId);
         if (!$user) {
             throw new UserNotFoundException(sprintf('User `%s` does not exist', $userId));
         }
@@ -48,24 +71,8 @@ class UserTokenGenerateCommand extends ContainerAwareCommand
             throw new \InvalidArgumentException('Parameter `new` is not ready yet - cache invalidation required');
         }
 
-        $apiKey = $this->getApiKeyManager()->generateApiKeyForUser($user);
+        $apiKey = $this->apiKeyManager->generateApiKeyForUser($user);
 
         $output->writeln(sprintf('<info>New API Key:</info> %s', $apiKey));
-    }
-
-    /**
-     * @return UserRepository
-     */
-    protected function getUserRepository()
-    {
-        return $this->getContainer()->get('app.entity.user_repository');
-    }
-
-    /**
-     * @return ApiKeyManager
-     */
-    protected function getApiKeyManager()
-    {
-        return $this->getContainer()->get('app.security.api_key_manager');
     }
 }

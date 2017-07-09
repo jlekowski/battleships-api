@@ -3,7 +3,7 @@
 namespace AppBundle\Security;
 
 use AppBundle\Entity\User;
-use AppBundle\Entity\UserRepository;
+use AppBundle\Repository\UserRepository;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -32,6 +32,7 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function loadUserById($userId)
     {
+        /** @var User $user */
         $user = $this->userRepository->find($userId);
         if (null === $user) {
             throw new AuthenticationException(sprintf('User with id `%s` not found', $userId));

@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Validator\Constraints\UniqueEvent;
+use AppBundle\Validator\Constraints\UniqueEventValidator;
 
 class UniqueEventTest extends \PHPUnit\Framework\TestCase
 {
@@ -15,7 +16,7 @@ class UniqueEventTest extends \PHPUnit\Framework\TestCase
     public function testValidatedBy()
     {
         $constraint = new UniqueEvent();
-        $this->assertEquals('unique_event', $constraint->validatedBy());
+        $this->assertEquals(UniqueEventValidator::class, $constraint->validatedBy());
     }
 
     public function testUniqueEvents()

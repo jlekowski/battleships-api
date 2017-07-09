@@ -3,7 +3,7 @@
 namespace AppBundle\Validator\Constraints;
 
 use AppBundle\Entity\Event;
-use AppBundle\Entity\EventRepository;
+use AppBundle\Repository\EventRepository;
 use AppBundle\Entity\Game;
 use AppBundle\Exception\GameFlowException;
 use Symfony\Component\Validator\Constraint;
