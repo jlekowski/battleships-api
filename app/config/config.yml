@@ -72,6 +72,10 @@ fos_rest:
             'AppBundle\Exception\InvalidCoordinatesException': true
             'Symfony\Component\Security\Core\Exception\AuthenticationException': true
 
+jms_serializer:
+    property_naming:
+        id: jms_serializer.identical_property_naming_strategy # see https://github.com/schmittjoh/serializer/issues/334
+
 nelmio_api_doc:
     name: Battleships API
     sandbox:

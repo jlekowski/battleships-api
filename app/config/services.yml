@@ -49,7 +49,3 @@ services:
     AppBundle\EventSubscriber\EntitySubscriber:
         tags:
             - { name: doctrine.event_subscriber }
-
-    # to set a fallback for SerializedNameAnnotationStrategy https://github.com/schmittjoh/serializer/issues/334
-    jms_serializer.camel_case_naming_strategy:
-        class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
