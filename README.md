@@ -51,7 +51,9 @@ bin/phpunit
 
 ## === Changelog ===
 * version **1.5**
+  * Upgraded code to Symfony 3.3
   * Replaced env variables `SYMFONY__*` with `BATTLESHIPS_*` as deprecated in Symfony 3.3
+  * Updated all dependencies
 
 * version **1.4**
   * Added tests to reach 100% code coverage
