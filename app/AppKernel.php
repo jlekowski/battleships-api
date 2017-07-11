@@ -64,6 +64,6 @@ class AppKernel extends Kernel
     private function getVarBaseDir(): string
     {
         // for VM with shared files to avoid permission issues (env var must be defined both for CLI and WEB)
-        return $_SERVER['BATTLESHIPS_VAR_DIR'] ?? $this->getProjectDir();
+        return getenv('BATTLESHIPS_VAR_DIR') ?: $this->getProjectDir();
     }
 }
