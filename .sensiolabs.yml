@@ -1,0 +1,23 @@
+php_version: 7
+
+php_ini: |
+    extension=apcu.so
+    extension=apc.so
+
+exclude_patterns:
+    - web/app_*.php
+
+pre_composer_script: |
+    #!/bin/bash
+    cp app/config/parameters.yml.dist app/config/parameters.yml
+    sed -i -e "s/loggly_token:.*/loggly_token: insightT0k3n/" app/config/parameters.yml
+    sed -i -e "s/loggly_tag:.*/loggly_tag: battleships-api-insight/" app/config/parameters.yml
+    sed -i -e "s/secret:.*/secret: insightT0k3n/" app/config/parameters.yml
+    pear config-set preferred_state beta
+    yes '' | pecl install apcu_bc
+
+rules:
+    symfony.request.session_cookie_default_name:
+        enabled: false # sessions not used
+    web.missing_favicon:
+        enabled: false # no browser access (besides Docs)
