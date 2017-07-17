@@ -16,6 +16,12 @@ services:
             - method: setContainer
         tags: ['controller.service_arguments'] # to inject into controllers actions
 
+    AppBundle\Controller\ExceptionController:
+        parent: fos_rest.exception.controller
+        autowire: false
+        autoconfigure: false
+        public: true
+
     AppBundle\Security\ApiKeyAuthenticator:
         arguments:
             $logger: '@monolog.logger.security'
@@ -36,15 +42,9 @@ services:
         factory: ['@doctrine', getRepository]
         arguments: ['AppBundle:Event']
 
-    AppBundle\Controller\ExceptionController:
-        parent: fos_rest.exception.controller
-        autowire: false
-        autoconfigure: false
-        public: true
-
     AppBundle\EventListener\CorsListener:
         tags:
-           - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
     AppBundle\EventSubscriber\EntitySubscriber:
         tags:
