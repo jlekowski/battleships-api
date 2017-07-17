@@ -2,8 +2,15 @@
 
 namespace Tests\AppBundle\Validator\Constraints;
 
+use AppBundle\Entity\Event;
+use AppBundle\Entity\Game;
+use AppBundle\Repository\EventRepository;
+use AppBundle\Validator\Constraints\UniqueEvent;
 use AppBundle\Validator\Constraints\UniqueEventValidator;
+use Doctrine\Common\Collections\Collection;
 use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,8 +31,8 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->eventRepository = $this->prophesize('AppBundle\Repository\EventRepository');
-        $this->context = $this->prophesize('Symfony\Component\Validator\Context\ExecutionContextInterface');
+        $this->eventRepository = $this->prophesize(EventRepository::class);
+        $this->context = $this->prophesize(ExecutionContextInterface::class);
 
         $this->validator = new UniqueEventValidator($this->eventRepository->reveal());
         $this->validator->initialize($this->context->reveal());
@@ -37,7 +44,7 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidConstraintProvided()
     {
-        $constraint = $this->prophesize('Symfony\Component\Validator\Constraint');
+        $constraint = $this->prophesize(Constraint::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
@@ -48,7 +55,7 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionInNonEventContext()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\UniqueEvent');
+        $constraint = $this->prophesize(UniqueEvent::class);
 
         $this->context->getRoot()->willReturn('test');
 
@@ -57,8 +64,8 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidateForNonUniqueValue()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\UniqueEvent');
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(UniqueEvent::class);
+        $event = $this->prophesize(Event::class);
 
         $constraint->uniqueEvents = ['unique event'];
         $this->context->getRoot()->willReturn($event);
@@ -72,10 +79,10 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenUniqueEventAlreadyExists()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\UniqueEvent');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
+        $constraint = $this->prophesize(UniqueEvent::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
 
         $constraint->uniqueEvents = ['unique event1', 'unique event2'];
         $this->context->getRoot()->willReturn($event);
@@ -89,10 +96,10 @@ class UniqueEventValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidateWhenEventNotCreatedYet()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\UniqueEvent');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
+        $constraint = $this->prophesize(UniqueEvent::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
 
         $constraint->uniqueEvents = ['unique event1', 'unique event2'];
         $this->context->getRoot()->willReturn($event);

@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\Game;
+use AppBundle\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class GameTest extends \PHPUnit\Framework\TestCase
@@ -19,8 +20,8 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
     public function testGetPlayerAndOther()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
 
         $user1->getId()->willReturn(1);
         $user2->getId()->willReturn(2);
@@ -38,8 +39,8 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
     public function testGetPlayerNumberAndOtherNumber()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
 
         $user1->getId()->willReturn(1);
         $user2->getId()->willReturn(2);
@@ -81,9 +82,9 @@ class GameTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPlayerNumberThrowsExceptionWhenGameDoesNotBelongToLoggedUser()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
-        $user3 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
+        $user3 = $this->prophesize(User::class);
 
         $user1->getId()->willReturn(1);
         $user2->getId()->willReturn(2);
@@ -98,9 +99,9 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
     public function testBelongsToUser()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
-        $user3 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
+        $user3 = $this->prophesize(User::class);
 
         $user1->getId()->willReturn(1);
         $user2->getId()->willReturn(2);
@@ -116,8 +117,8 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
     public function testSetUserSetsUserId()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
 
         $user1->getId()->willReturn(1);
         $user2->getId()->willReturn(2);
@@ -154,9 +155,9 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
     public function testCanJoin()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
-        $user3 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
+        $user3 = $this->prophesize(User::class);
 
         $user1->getId()->willReturn(1);
         $user2->getId()->willReturn(2);
@@ -183,8 +184,8 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
     public function testPlayerShipsAndOtherShips()
     {
-        $user1 = $this->prophesize('AppBundle\Entity\User');
-        $user2 = $this->prophesize('AppBundle\Entity\User');
+        $user1 = $this->prophesize(User::class);
+        $user2 = $this->prophesize(User::class);
         $user1Ships = ['A1'];
         $user2Ships = ['B2'];
 

@@ -33,11 +33,11 @@ class OnlyBeforeStartValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof OnlyBeforeStart) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\OnlyBeforeStart', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, OnlyBeforeStart::class);
         }
 
         if (!$value instanceof Game) {
-            throw new UnexpectedTypeException($value, 'AppBundle\Entity\Game');
+            throw new UnexpectedTypeException($value, Game::class);
         }
 
         if ($this->hasGameAlreadyStarted($value)) {

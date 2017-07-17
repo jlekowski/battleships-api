@@ -2,10 +2,13 @@
 
 namespace Tests\AppBundle\Validator\Constraints;
 
+use AppBundle\Battle\CoordsManager;
 use AppBundle\Entity\Event;
+use AppBundle\Validator\Constraints\EventValue;
 use AppBundle\Validator\Constraints\EventValueValidator;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\Validator\Constraint;
 
 class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
 {
@@ -21,7 +24,7 @@ class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->coordsManager = $this->prophesize('AppBundle\Battle\CoordsManager');
+        $this->coordsManager = $this->prophesize(CoordsManager::class);
         $this->validator = new EventValueValidator($this->coordsManager->reveal());
     }
 
@@ -31,7 +34,7 @@ class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidConstraintProvided()
     {
-        $constraint = $this->prophesize('Symfony\Component\Validator\Constraint');
+        $constraint = $this->prophesize(Constraint::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
@@ -42,15 +45,15 @@ class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidValueProvided()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\EventValue');
+        $constraint = $this->prophesize(EventValue::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
 
     public function testValidateForAnyEvent()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\EventValue');
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(EventValue::class);
+        $event = $this->prophesize(Event::class);
 
         $event->getType()->willReturn('any');
         $event->getValue()->shouldNotBeCalled();
@@ -66,8 +69,8 @@ class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionForIncorrectCoords()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\EventValue');
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(EventValue::class);
+        $event = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getValue()->willReturn('invalidCoord');
@@ -78,8 +81,8 @@ class EventValueValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidateForShotEventWithCorrectCoords()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\EventValue');
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(EventValue::class);
+        $event = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getValue()->willReturn('validCoord');

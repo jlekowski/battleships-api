@@ -2,8 +2,17 @@
 
 namespace Tests\AppBundle\EventSubscriber;
 
+use AppBundle\Entity\Game;
+use AppBundle\Entity\User;
 use AppBundle\EventSubscriber\EntitySubscriber;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Prophecy\Prophecy\ObjectProphecy;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
 {
@@ -29,16 +38,16 @@ class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->tokenStorage = $this->prophesize('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage');
-        $this->validator = $this->prophesize('Symfony\Component\Validator\Validator\ValidatorInterface');
-        $this->logger = $this->prophesize('Psr\Log\LoggerInterface');
+        $this->tokenStorage = $this->prophesize(TokenStorage::class);
+        $this->validator = $this->prophesize(ValidatorInterface::class);
+        $this->logger = $this->prophesize(LoggerInterface::class);
 
         $this->subscriber = new EntitySubscriber($this->tokenStorage->reveal(), $this->validator->reveal(), $this->logger->reveal());
     }
 
     public function testPreUpdate()
     {
-        $eventArgs = $this->prophesize('Doctrine\ORM\Event\PreUpdateEventArgs');
+        $eventArgs = $this->prophesize(PreUpdateEventArgs::class);
         $eventArgs->getEntity()->willReturn('entity');
 
         $this->validator->validate('entity', null, ['update'])->shouldBeCalled();
@@ -47,7 +56,7 @@ class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
 
     public function testPrePersist()
     {
-        $eventArgs = $this->prophesize('Doctrine\ORM\Event\LifecycleEventArgs');
+        $eventArgs = $this->prophesize(LifecycleEventArgs::class);
         $eventArgs->getEntity()->willReturn('entity');
 
         $this->validator->validate('entity')->shouldBeCalled();
@@ -56,8 +65,8 @@ class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
 
     public function testPostLoadSetsLoggerForLoggerAwareEntities()
     {
-        $eventArgs = $this->prophesize('Doctrine\ORM\Event\LifecycleEventArgs');
-        $entity = $this->prophesize('Psr\Log\LoggerAwareInterface');
+        $eventArgs = $this->prophesize(LifecycleEventArgs::class);
+        $entity = $this->prophesize(LoggerAwareInterface::class);
         $eventArgs->getEntity()->willReturn($entity);
 
         $entity->setLogger($this->logger)->shouldBeCalled();
@@ -67,10 +76,10 @@ class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
 
     public function testPostLoadSetsLoggedUser()
     {
-        $eventArgs = $this->prophesize('Doctrine\ORM\Event\LifecycleEventArgs');
-        $entity = $this->prophesize('AppBundle\Entity\Game');
-        $token = $this->prophesize('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
-        $user = $this->prophesize('AppBundle\Entity\User');
+        $eventArgs = $this->prophesize(LifecycleEventArgs::class);
+        $entity = $this->prophesize(Game::class);
+        $token = $this->prophesize(TokenInterface::class);
+        $user = $this->prophesize(User::class);
 
         $eventArgs->getEntity()->willReturn($entity);
         $this->tokenStorage->getToken()->willReturn($token);
@@ -87,8 +96,8 @@ class EntitySubscriberTest extends \PHPUnit\Framework\TestCase
      */
     public function testPostLoadThrowsExceptionWhenTokenNotPresent()
     {
-        $eventArgs = $this->prophesize('Doctrine\ORM\Event\LifecycleEventArgs');
-        $entity = $this->prophesize('AppBundle\Entity\Game');
+        $eventArgs = $this->prophesize(LifecycleEventArgs::class);
+        $entity = $this->prophesize(Game::class);
 
         $eventArgs->getEntity()->willReturn($entity);
         $this->tokenStorage->getToken()->willReturn(null);

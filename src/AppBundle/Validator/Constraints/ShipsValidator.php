@@ -36,7 +36,7 @@ class ShipsValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof Ships) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\Ships', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, Ships::class);
         }
 
         if (count($value) === 0) {

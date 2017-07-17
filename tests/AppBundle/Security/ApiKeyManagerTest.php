@@ -2,6 +2,7 @@
 
 namespace Tests\AppBundle\Security;
 
+use AppBundle\Entity\User;
 use AppBundle\Security\ApiKeyManager;
 
 class ApiKeyManagerTest extends \PHPUnit\Framework\TestCase
@@ -18,7 +19,7 @@ class ApiKeyManagerTest extends \PHPUnit\Framework\TestCase
 
     public function testGenerateApiKeyForUserAndGetInfoFromApiKey()
     {
-        $user = $this->prophesize('AppBundle\Entity\User');
+        $user = $this->prophesize(User::class);
 
         $user->getId()->willReturn(1);
         $user->getToken()->willReturn('token');

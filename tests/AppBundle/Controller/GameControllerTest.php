@@ -200,7 +200,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(404, $response->getStatusCode(), $response);
         $this->assertEquals(404, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('AppBundle\\Entity\\Game object not found.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('%sGame object not found.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -249,7 +249,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(404, $response->getStatusCode(), $response);
         $this->assertEquals(404, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('AppBundle\\Entity\\Game object not found.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('%sGame object not found.', $jsonResponse['message'], $response->getContent());
     }
 
     /**

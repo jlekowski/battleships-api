@@ -19,11 +19,11 @@ class IsAllowedToStartValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof IsAllowedToStart) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\IsAllowedToStart', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, IsAllowedToStart::class);
         }
 
         if (!$value instanceof Event) {
-            throw new UnexpectedTypeException($value, 'AppBundle\Entity\Event');
+            throw new UnexpectedTypeException($value, Event::class);
         }
 
         if ($value->getType() !== Event::TYPE_START_GAME) {

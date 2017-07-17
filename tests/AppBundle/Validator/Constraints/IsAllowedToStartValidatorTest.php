@@ -3,7 +3,10 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Game;
+use AppBundle\Validator\Constraints\IsAllowedToStart;
 use AppBundle\Validator\Constraints\IsAllowedToStartValidator;
+use Symfony\Component\Validator\Constraint;
 
 class IsAllowedToStartValidatorTest extends \PHPUnit\Framework\TestCase
 {
@@ -23,7 +26,7 @@ class IsAllowedToStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidConstraintProvided()
     {
-        $constraint = $this->prophesize('Symfony\Component\Validator\Constraint');
+        $constraint = $this->prophesize(Constraint::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
@@ -34,15 +37,15 @@ class IsAllowedToStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidValueProvided()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToStart');
+        $constraint = $this->prophesize(IsAllowedToStart::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
 
     public function testValidateForNonStartEvent()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToStart');
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(IsAllowedToStart::class);
+        $event = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_NEW_GAME);
         $event->getGame()->shouldNotBeCalled();
@@ -56,9 +59,9 @@ class IsAllowedToStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenShipsNotSet()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToStart');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
+        $constraint = $this->prophesize(IsAllowedToStart::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
 
         $event->getType()->willReturn(Event::TYPE_START_GAME);
         $event->getGame()->willReturn($game);
@@ -69,9 +72,9 @@ class IsAllowedToStartValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidateAfterShipsSet()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToStart');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
+        $constraint = $this->prophesize(IsAllowedToStart::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
 
         $event->getType()->willReturn(Event::TYPE_START_GAME);
         $event->getGame()->willReturn($game);

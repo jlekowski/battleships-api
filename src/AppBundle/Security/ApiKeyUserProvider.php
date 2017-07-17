@@ -66,6 +66,6 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function supportsClass($class)
     {
-        return 'AppBundle\Entity\User' === $class;
+        return User::class === $class;
     }
 }

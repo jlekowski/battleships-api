@@ -32,11 +32,11 @@ class EventValueValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof EventValue) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\EventValue', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, EventValue::class);
         }
 
         if (!$value instanceof Event) {
-            throw new UnexpectedTypeException($value, 'AppBundle\Entity\Event');
+            throw new UnexpectedTypeException($value, Event::class);
         }
 
         switch ($value->getType()) {

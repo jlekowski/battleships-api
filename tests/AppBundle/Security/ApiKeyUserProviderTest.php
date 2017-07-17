@@ -2,8 +2,10 @@
 
 namespace Tests\AppBundle\Security;
 
+use AppBundle\Entity\User;
 use AppBundle\Repository\UserRepository;
 use AppBundle\Security\ApiKeyUserProvider;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
 {
@@ -19,13 +21,13 @@ class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->userRepository = $this->prophesize('AppBundle\Repository\UserRepository');
+        $this->userRepository = $this->prophesize(UserRepository::class);
         $this->apiKeyUserProvider = new ApiKeyUserProvider($this->userRepository->reveal());
     }
 
     public function testLoadUserById()
     {
-        $user = $this->prophesize('AppBundle\Entity\User');
+        $user = $this->prophesize(User::class);
         $this->userRepository->find(1)->willReturn($user);
 
         $this->assertEquals($user->reveal(), $this->apiKeyUserProvider->loadUserById(1));
@@ -55,15 +57,15 @@ class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
      */
     public function testRefreshUserThrowsExceptionBecauseItIsNotImplemented()
     {
-        $user = $this->prophesize('Symfony\Component\Security\Core\User\UserInterface');
+        $user = $this->prophesize(UserInterface::class);
 
         $this->apiKeyUserProvider->refreshUser($user->reveal());
     }
 
     public function testSupportsClass()
     {
-        $this->assertTrue($this->apiKeyUserProvider->supportsClass('AppBundle\Entity\User'));
-        $this->assertFalse($this->apiKeyUserProvider->supportsClass('AppBundle\Entity\Entity'));
-        $this->assertFalse($this->apiKeyUserProvider->supportsClass('Symfony\Component\Security\Core\User\UserInterface'));
+        $this->assertTrue($this->apiKeyUserProvider->supportsClass(User::class));
+        $this->assertFalse($this->apiKeyUserProvider->supportsClass('AppBundle\Entity\Entity')); // non-existing class
+        $this->assertFalse($this->apiKeyUserProvider->supportsClass(UserInterface::class));
     }
 }

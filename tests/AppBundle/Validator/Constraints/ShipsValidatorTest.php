@@ -3,7 +3,9 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Battle\CoordsManager;
+use AppBundle\Validator\Constraints\Ships;
 use AppBundle\Validator\Constraints\ShipsValidator;
+use Symfony\Component\Validator\Constraint;
 
 class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
 {
@@ -23,21 +25,21 @@ class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidConstraintProvided()
     {
-        $constraint = $this->prophesize('Symfony\Component\Validator\Constraint');
+        $constraint = $this->prophesize(Constraint::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
 
     public function testValidateForNoShips()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $this->validator->validate([], $constraint->reveal());
     }
 
     public function testValidateCorrectShips()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $ships = ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
 
@@ -50,7 +52,7 @@ class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenNotEnoughMasts()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $ships = ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10'];
 
@@ -63,7 +65,7 @@ class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenTooManyMasts()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $ships = ['A1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10','A10'];
 
@@ -76,7 +78,7 @@ class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenEdgeConnection()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $ships = ['B1','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
 
@@ -89,7 +91,7 @@ class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenShipTooLong()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $ships = ['F4','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
 
@@ -102,7 +104,7 @@ class ShipsValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenShipsTypesIncorrect()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\Ships');
+        $constraint = $this->prophesize(Ships::class);
 
         $ships = ['B2','C2','D2','F2','H2','J2','F5','F6','I6','J6','A7','B7','C7','F7','F8','I9','J9','E10','F10','G10'];
 

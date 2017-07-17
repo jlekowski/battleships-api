@@ -34,11 +34,11 @@ class IsAllowedToShootValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof IsAllowedToShoot) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\IsAllowedToShoot', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, IsAllowedToShoot::class);
         }
 
         if (!$value instanceof Event) {
-            throw new UnexpectedTypeException($value, 'AppBundle\Entity\Event');
+            throw new UnexpectedTypeException($value, Event::class);
         }
 
         if ($value->getType() !== Event::TYPE_SHOT) {

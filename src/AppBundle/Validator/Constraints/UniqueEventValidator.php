@@ -34,12 +34,12 @@ class UniqueEventValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof UniqueEvent) {
-            throw new UnexpectedTypeException($constraint, sprintf('%s\UniqueEvent', __NAMESPACE__));
+            throw new UnexpectedTypeException($constraint, UniqueEvent::class);
         }
 
         $root = $this->context->getRoot();
         if (!$root instanceof Event) {
-            throw new UnexpectedTypeException($root, 'AppBundle\Entity\Event');
+            throw new UnexpectedTypeException($root, Event::class);
         }
 
         if (!in_array($value, $constraint->uniqueEvents)) {

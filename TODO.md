@@ -1,5 +1,3 @@
-- replace all class strings with ClassName::class
-
 - user1_ships, but user_id1 :/
 
 - see how to replace deprecated `ExceptionInterface`

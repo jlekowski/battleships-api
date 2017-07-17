@@ -3,8 +3,13 @@
 namespace Tests\AppBundle\Validator\Constraints;
 
 use AppBundle\Entity\Event;
+use AppBundle\Entity\Game;
+use AppBundle\Repository\EventRepository;
+use AppBundle\Validator\Constraints\IsAllowedToShoot;
 use AppBundle\Validator\Constraints\IsAllowedToShootValidator;
+use Doctrine\Common\Collections\Collection;
 use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\Validator\Constraint;
 
 class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 {
@@ -20,7 +25,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->eventRepository = $this->prophesize('AppBundle\Repository\EventRepository');
+        $this->eventRepository = $this->prophesize(EventRepository::class);
         $this->validator = new IsAllowedToShootValidator($this->eventRepository->reveal());
     }
 
@@ -30,7 +35,7 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidConstraintProvided()
     {
-        $constraint = $this->prophesize('Symfony\Component\Validator\Constraint');
+        $constraint = $this->prophesize(Constraint::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
@@ -41,15 +46,15 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidValueProvided()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
 
     public function testValidateForNonShotEvent()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_START_GAME);
         $event->getGame()->shouldNotBeCalled();
@@ -63,10 +68,10 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenOtherPlayerHasNotStarted()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -85,10 +90,10 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenOtherPlayersTurnBecauseNoShots()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
         $lastShotEvent = false;
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
@@ -109,11 +114,11 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenOtherPlayersTurnBecauseLastPlayerMiss()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
-        $lastShotEvent = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
+        $lastShotEvent = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -136,11 +141,11 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenOtherPlayersTurnBecauseLastOtherHit()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
-        $lastShotEvent = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
+        $lastShotEvent = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -159,11 +164,11 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidatePlayerTurnBecauseLastPlayerHit()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
-        $lastShotEvent = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
+        $lastShotEvent = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -182,11 +187,11 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidatePlayerTurnBecauseLastOtherMiss()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
-        $lastShotEvent = $this->prophesize('AppBundle\Entity\Event');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
+        $lastShotEvent = $this->prophesize(Event::class);
 
         $event->getType()->willReturn(Event::TYPE_SHOT);
         $event->getGame()->willReturn($game);
@@ -205,10 +210,10 @@ class IsAllowedToShootValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidatePlayerTurnBecauseFirstShot()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\IsAllowedToShoot');
-        $event = $this->prophesize('AppBundle\Entity\Event');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $collection = $this->prophesize('Doctrine\Common\Collections\Collection');
+        $constraint = $this->prophesize(IsAllowedToShoot::class);
+        $event = $this->prophesize(Event::class);
+        $game = $this->prophesize(Game::class);
+        $collection = $this->prophesize(Collection::class);
         $lastShotEvent = false;
 
         $event->getType()->willReturn(Event::TYPE_SHOT);

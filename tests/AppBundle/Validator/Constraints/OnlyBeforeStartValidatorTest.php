@@ -2,8 +2,13 @@
 
 namespace Tests\AppBundle\Validator\Constraints;
 
+use AppBundle\Entity\Game;
+use AppBundle\Validator\Constraints\OnlyBeforeStart;
 use AppBundle\Validator\Constraints\OnlyBeforeStartValidator;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\UnitOfWork;
 use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\Validator\Constraint;
 
 class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
 {
@@ -19,7 +24,7 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->entityManager = $this->prophesize('Doctrine\ORM\EntityManagerInterface');
+        $this->entityManager = $this->prophesize(EntityManagerInterface::class);
         $this->validator = new OnlyBeforeStartValidator($this->entityManager->reveal());
     }
 
@@ -29,7 +34,7 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidConstraintProvided()
     {
-        $constraint = $this->prophesize('Symfony\Component\Validator\Constraint');
+        $constraint = $this->prophesize(Constraint::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
@@ -40,7 +45,7 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenInvalidValueProvided()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\OnlyBeforeStart');
+        $constraint = $this->prophesize(OnlyBeforeStart::class);
 
         $this->validator->validate('test', $constraint->reveal());
     }
@@ -51,9 +56,9 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenShipsAlreadySet()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\OnlyBeforeStart');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $unitOfWork = $this->prophesize('Doctrine\ORM\UnitOfWork');
+        $constraint = $this->prophesize(OnlyBeforeStart::class);
+        $game = $this->prophesize(Game::class);
+        $unitOfWork = $this->prophesize(UnitOfWork::class);
         $changes = [];
 
         $this->entityManager->getUnitOfWork()->willReturn($unitOfWork);
@@ -70,9 +75,9 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateThrowsExceptionWhenShipsToBeSet()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\OnlyBeforeStart');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $unitOfWork = $this->prophesize('Doctrine\ORM\UnitOfWork');
+        $constraint = $this->prophesize(OnlyBeforeStart::class);
+        $game = $this->prophesize(Game::class);
+        $unitOfWork = $this->prophesize(UnitOfWork::class);
         $changes = ['user1Ships' => [['non-empty array']]];
 
         $this->entityManager->getUnitOfWork()->willReturn($unitOfWork);
@@ -84,9 +89,9 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
 
     public function testValidateWhenShipsNotSetYet()
     {
-        $constraint = $this->prophesize('AppBundle\Validator\Constraints\OnlyBeforeStart');
-        $game = $this->prophesize('AppBundle\Entity\Game');
-        $unitOfWork = $this->prophesize('Doctrine\ORM\UnitOfWork');
+        $constraint = $this->prophesize(OnlyBeforeStart::class);
+        $game = $this->prophesize(Game::class);
+        $unitOfWork = $this->prophesize(UnitOfWork::class);
         $changes = [];
 
         $this->entityManager->getUnitOfWork()->willReturn($unitOfWork);
