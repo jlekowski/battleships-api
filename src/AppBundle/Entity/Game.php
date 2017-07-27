@@ -33,32 +33,18 @@ class Game
     private $id;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="user_id1", type="integer")
-     */
-    private $userId1;
-
-    /**
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="user_id1", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="user1_id", referencedColumnName="id", nullable=false)
      */
     private $user1;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="user_id2", type="integer", nullable=true)
-     */
-    private $userId2;
 
     /**
      * @var User|null
      *
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="user_id2", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user2_id", referencedColumnName="id")
      */
     private $user2;
 
@@ -117,14 +103,6 @@ class Game
     }
 
     /**
-     * @return int
-     */
-    public function getUserId1()
-    {
-        return $this->userId1;
-    }
-
-    /**
      * @return User
      */
     public function getUser1()
@@ -139,19 +117,8 @@ class Game
     public function setUser1(User $user)
     {
         $this->user1 = $user;
-        if ($this->getUserId1() !== $user->getId()) {
-            $this->userId1 = $user->getId();
-        }
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId2()
-    {
-        return $this->userId2;
     }
 
     /**
@@ -169,9 +136,6 @@ class Game
     public function setUser2(User $user)
     {
         $this->user2 = $user;
-        if ($this->getUserId2() !== $user->getId()) {
-            $this->userId2 = $user->getId();
-        }
 
         return $this;
     }
@@ -327,8 +291,8 @@ class Game
         }
 
         $loggedUserId = $this->loggedUser->getId();
-        $isUser1 = $loggedUserId === $this->getUserId1();
-        if (!$isUser1 && $this->getUserId2() && $loggedUserId !== $this->getUserId2()) {
+        $isUser1 = $loggedUserId === $this->user1->getId();
+        if (!$isUser1 && $this->user2 && ($loggedUserId !== $this->user2->getId())) {
             throw new \RuntimeException('Game belongs to other users');
         }
 
@@ -361,7 +325,12 @@ class Game
      */
     public function belongsToUser(User $user)
     {
-        return in_array($user->getId(), [$this->getUserId1(), $this->getUserId2()], true);
+        $gameUsers = [$this->user1->getId()];
+        if ($this->user2) {
+            $gameUsers[] = $this->user2->getId();
+        }
+
+        return in_array($user->getId(), $gameUsers, true);
     }
 
     /**
@@ -370,7 +339,7 @@ class Game
      */
     public function canJoin(User $user)
     {
-        return $this->isAvailable() && ($this->getUserId2() === null) && ($this->getUserId1() !== $user->getId());
+        return $this->isAvailable() && ($this->user2 === null) && ($this->user1->getId() !== $user->getId());
     }
 
     /**

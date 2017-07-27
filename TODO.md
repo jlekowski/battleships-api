@@ -1,4 +1,5 @@
-- user1_ships, but user_id1 :/
+- see tags:
+    - custom tags https://symfony.com/doc/current/service_container/tags.html (maybe repositories)
 
 - see how to replace deprecated `ExceptionInterface`
 

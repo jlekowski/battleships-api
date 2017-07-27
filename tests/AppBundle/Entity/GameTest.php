@@ -115,27 +115,20 @@ class GameTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->game->belongsToUser($user3->reveal()));
     }
 
-    public function testSetUserSetsUserId()
+    public function testSetUser()
     {
         $user1 = $this->prophesize(User::class);
         $user2 = $this->prophesize(User::class);
-
-        $user1->getId()->willReturn(1);
-        $user2->getId()->willReturn(2);
 
         $this->game->setUser1($user1->reveal());
         $this->game->setUser2($user2->reveal());
         $this->assertEquals($user1->reveal(), $this->game->getUser1());
         $this->assertEquals($user2->reveal(), $this->game->getUser2());
-        $this->assertEquals(1, $this->game->getUserId1());
-        $this->assertEquals(2, $this->game->getUserId2());
 
         $this->game->setUser1($user2->reveal());
         $this->game->setUser2($user1->reveal());
         $this->assertEquals($user2->reveal(), $this->game->getUser1());
         $this->assertEquals($user1->reveal(), $this->game->getUser2());
-        $this->assertEquals(2, $this->game->getUserId1());
-        $this->assertEquals(1, $this->game->getUserId2());
     }
 
     public function testApplyCurrentTimestamp()
