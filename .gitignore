@@ -1,11 +1,11 @@
 /app/config/parameters.yml
 /web/bundles/
 /vendor/
-/var/
+/var/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 !var/sessions/.gitkeep
-/bin/
+/bin/*
 !bin/console
 !bin/symfony_requirements
 /phpunit.xml
