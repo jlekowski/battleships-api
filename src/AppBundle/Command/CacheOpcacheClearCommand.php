@@ -2,26 +2,26 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Cache\ApcClearer;
+use AppBundle\Cache\OpcacheClearer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CacheApcClearCommand extends Command
+class CacheOpcacheClearCommand extends Command
 {
     /**
-     * @var ApcClearer
+     * @var OpcacheClearer
      */
-    protected $apcClearer;
+    protected $opcacheClearer;
 
     /**
-     * @param ApcClearer $opcacheClearer
+     * @param OpcacheClearer $opcacheClearer
      * @param string $name
      */
-    public function __construct(ApcClearer $opcacheClearer, $name = null)
+    public function __construct(OpcacheClearer $opcacheClearer, $name = null)
     {
         parent::__construct($name);
-        $this->apcClearer = $opcacheClearer;
+        $this->opcacheClearer = $opcacheClearer;
     }
 
     /**
@@ -30,8 +30,8 @@ class CacheApcClearCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('cache:apc:clear')
-            ->setDescription('Clears APC cache')
+            ->setName('cache:opcache:clear')
+            ->setDescription('Clears OPcache cache')
         ;
     }
 
@@ -40,7 +40,7 @@ class CacheApcClearCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->apcClearer->clear();
+        $this->opcacheClearer->clear();
 
         $output->writeln('<info>OK</info>');
     }

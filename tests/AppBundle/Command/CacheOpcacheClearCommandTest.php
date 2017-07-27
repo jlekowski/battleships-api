@@ -2,22 +2,22 @@
 
 namespace Tests\AppBundle\Command;
 
-use AppBundle\Cache\ApcClearer;
-use AppBundle\Command\CacheApcClearCommand;
+use AppBundle\Cache\OpcacheClearer;
+use AppBundle\Command\CacheOpcacheClearCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CacheApcClearCommandTest extends \PHPUnit\Framework\TestCase
+class CacheOpcacheClearCommandTest extends \PHPUnit\Framework\TestCase
 {
     public function testExecute()
     {
-        $apcClearer = $this->prophesize(ApcClearer::class);
-        $apcClearer->clear()->shouldBeCalled();
+        $opcacheClearer = $this->prophesize(OpcacheClearer::class);
+        $opcacheClearer->clear()->shouldBeCalled();
 
         $application = new Application();
-        $application->add(new CacheApcClearCommand($apcClearer->reveal()));
+        $application->add(new CacheOpcacheClearCommand($opcacheClearer->reveal()));
 
-        $command = $application->find('cache:apc:clear');
+        $command = $application->find('cache:opcache:clear');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName()
