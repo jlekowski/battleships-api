@@ -4,6 +4,7 @@
 pear config-set preferred_state beta
 echo 'extension = apcu.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 echo 'extension = apc.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+echo 'apc.enable_cli = 1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 yes '' | pecl install apcu_bc
 
 cp app/config/parameters.yml.dist app/config/parameters.yml
