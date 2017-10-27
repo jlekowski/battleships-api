@@ -32,18 +32,6 @@ monolog:
             type:  console
 
 fos_http_cache:
-    debug:
-        enabled: "%varnish_debug%"
-    tags:
-        enabled: "%varnish_enabled%"
-    cache_manager:
-        enabled: "%varnish_enabled%"
-    proxy_client:
-        varnish:
-            http:
-                servers: "%varnish_servers%"
-                base_url: "%varnish_base_url%"
-
     cache_control:
         rules:
             # match everything to set defaults
