@@ -1,13 +1,11 @@
 users_v1:
     resource: AppBundle\Controller\UserController
     type: rest
-    prefix: /v1
     name_prefix: api_v1_
 
 games_v1:
     resource: AppBundle\Controller\GameController
     type: rest
-    prefix: /v1
     name_prefix: api_v1_
 
 events_v1:

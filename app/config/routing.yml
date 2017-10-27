@@ -9,3 +9,4 @@ cors:
 routing_v1:
     resource: routing_v1.yml
     type: rest
+    prefix: /v1
