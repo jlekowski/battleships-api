@@ -8,5 +8,6 @@ bin/console cache:clear --env=prod --no-debug --no-warmup
 bin/console cache:warmup --env=prod
 
 bin/console doctrine:schema:validate
+bin/console doctrine:schema:update --force
 
 bin/console fos:httpcache:invalidate:regex / --env=prod
