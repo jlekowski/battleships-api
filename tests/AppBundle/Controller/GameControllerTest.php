@@ -200,7 +200,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(404, $response->getStatusCode(), $response);
         $this->assertEquals(404, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('%sGame object not found.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('%sGame object not found by the @%s annotation.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -249,7 +249,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(404, $response->getStatusCode(), $response);
         $this->assertEquals(404, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('%sGame object not found.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('%sGame object not found by the @%s annotation.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -325,7 +325,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('Access denied.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -376,7 +376,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('Access denied.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -402,7 +402,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('Access denied.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -428,7 +428,7 @@ class GameControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('Access denied.', $jsonResponse['message'], $response->getContent());
     }
 
     /**

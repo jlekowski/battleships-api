@@ -189,7 +189,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('Access denied.', $jsonResponse['message'], $response->getContent());
     }
 
     /**
@@ -325,7 +325,7 @@ class UserControllerTest extends AbstractApiTestCase
 
         $this->assertEquals(403, $response->getStatusCode(), $response);
         $this->assertEquals(403, $jsonResponse['code'], $response->getContent());
-        $this->assertStringMatchesFormat('Expression "%s" denied access.', $jsonResponse['message'], $response->getContent());
+        $this->assertStringMatchesFormat('Access denied.', $jsonResponse['message'], $response->getContent());
     }
 
     /**

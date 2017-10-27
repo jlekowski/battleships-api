@@ -1,8 +1,7 @@
 <?php
 
-use Composer\Autoload\ClassLoader;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
+use Symfony\Component\HttpFoundation\Request;
 
 ini_set('html_errors', 0);
 
@@ -20,8 +19,7 @@ if (!$isDevAllowed) {
     exit('You are not allowed to access this file. Check ' . basename(__FILE__) . ' for more information.');
 }
 
-/** @var ClassLoader $loader */
-$loader = require __DIR__ . '/../app/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 Debug::enable();
 
 $kernel = new AppKernel('dev', true);
