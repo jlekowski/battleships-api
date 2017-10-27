@@ -32,9 +32,9 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function loadUserById($userId)
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->userRepository->find($userId);
-        if (null === $user) {
+        if ($user === null) {
             throw new AuthenticationException(sprintf('User with id `%s` not found', $userId));
         }
 
