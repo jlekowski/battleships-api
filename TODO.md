@@ -1,3 +1,5 @@
+- clean *.md files
+
 - see tags:
     - custom tags https://symfony.com/doc/current/service_container/tags.html (maybe repositories)
 
