@@ -139,7 +139,7 @@ class GameTest extends \PHPUnit\Framework\TestCase
 
         $this->assertInstanceOf(\DateTime::class, $this->game->getTimestamp());
         $timeDiff = time() - $this->game->getTimestamp()->getTimestamp();
-        $this->assertTrue($timeDiff < 1 && $timeDiff >=0);
+        $this->assertTrue($timeDiff < 1 && $timeDiff >=0, sprintf('Time difference after applying current timestamp is %s', $timeDiff));
 
         $now = new \DateTime();
         $this->game->setTimestamp($now);
