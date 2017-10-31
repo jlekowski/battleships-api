@@ -7,7 +7,7 @@ sudo mv composer.phar /usr/local/bin/composer
 
 #### Install APCu (for compatibility with APC in PHP >= 5.5)
 ```
-sudo apt-get install php5-apcu
+sudo apt-get install php-apcu
 ```
 
 #### Install Varnish (optional)
@@ -256,7 +256,7 @@ sudo varnishadm "ban req.url ~ /" # ban/clear cache
 sudo add-apt-repository ppa:ondrej/php
 sudo apt-get update
 sudo apt-get purge php5-fpm -y
-sudo apt-get install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php-apcu php-apcu-bc -y
+sudo apt-get install php7.1 php7.1-fpm php7.1-mysql php7.1-curl php-apcu php-apcu-bc -y
 sudo apt-get --purge autoremove -y
 
 php -v
@@ -265,14 +265,14 @@ php -m | grep apc
 
 #### Setup OPCache in new files
 ```
-sudo vim /etc/php/7.0/fpm/php.ini
-sudo vim /etc/php/7.0/cli/php.ini
+sudo vim /etc/php/7.1/fpm/php.ini
+sudo vim /etc/php/7.1/cli/php.ini
 ```
 
-#### For Nginx with PHP-FPM replace socket with /var/run/php/php7.0-fpm.sock
+#### For Nginx with PHP-FPM replace socket with /var/run/php/php7.1-fpm.sock
 ```
 grep php5 /etc/nginx/sites-enabled/*
 
 sudo service nginx restart
-sudo service php7.0-fpm restart
+sudo service php7.1-fpm restart
 ```

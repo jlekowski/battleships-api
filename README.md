@@ -51,9 +51,12 @@ bin/phpunit
 
 ## === Changelog ===
 * version **1.5**
-  * Upgraded code to Symfony 3.3
+  * Upgraded to PHP 7.1 (composer.lock - `composer update --ignore-platform-reqs` on 7.0 still works)
+  * Upgraded to Symfony 3.3 and all bundles and dependencies
   * Replaced env variables `SYMFONY__*` with `BATTLESHIPS_*` as deprecated in Symfony 3.3
-  * Updated all dependencies
+  * Renamed game fields user_id1|2 to user1|2_id
+  * Added cache clearers (opcache, varnish, apc) run on Symfony `cache:clear` command
+  * Added phpstan to travis build
 
 * version **1.4**
   * Added tests to reach 100% code coverage
