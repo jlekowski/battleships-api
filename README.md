@@ -17,6 +17,7 @@ http://battleships-api.dev.lekowski.pl/doc
 * https://github.com/jlekowski/battleships-webclient - web client for the API
 * https://github.com/jlekowski/battleships-apiclient - PHP client for the API
 * https://github.com/jlekowski/battleships-offline - offline version
+* https://github.com/jlekowski/battleships-vagrant - vagrant setup for Battleships testing and development
 * https://github.com/jlekowski/battleships - legacy full web version
 
 ## === Installation ===
