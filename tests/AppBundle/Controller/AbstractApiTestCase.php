@@ -215,6 +215,7 @@ abstract class AbstractApiTestCase extends WebTestCase
      */
     private function getContainer()
     {
+        // :/ - different container than the one use on request after another static::createClient() call
         if (!self::$container) {
             self::$container = static::createClient()->getContainer();
         }

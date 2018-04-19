@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class User
+class User implements UserInterface
 {
     /**
      * @var integer
@@ -140,11 +141,39 @@ class User
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getRoles()
     {
         return ['ROLE_USER'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPassword()
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSalt()
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUsername()
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function eraseCredentials()
+    {
     }
 
     /**
