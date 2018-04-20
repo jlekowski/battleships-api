@@ -21,8 +21,6 @@
 - CoordsManager
   * maybe mock it for ShipsValidatorTest and BattleManagerTest
 
-- CoordsManager::AXIS_Y - set to protected when PHP 7.1
-
 - GameController::patchGameAction - do we need both events if both parameters set in one request?
 
 - exception when accessing not existing game currently is "AppBundle\\Entity\\Game object not found"

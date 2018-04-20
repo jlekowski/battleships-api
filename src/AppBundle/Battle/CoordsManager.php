@@ -17,9 +17,9 @@ class CoordsManager
     const OFFSET_BOTTOM_RIGHT = 'BOTTOM_RIGHT';
     const OFFSET_BOTTOM_LEFT = 'BOTTOM_LEFT';
     /** Array with Y axis elements */
-    /* protected */ const AXIS_Y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    protected const AXIS_Y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
     /** Array with X axis elements */
-    /* protected */ const AXIS_X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+    protected const AXIS_X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
     /**
      * @param string $coords
