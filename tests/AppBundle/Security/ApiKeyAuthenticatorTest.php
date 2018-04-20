@@ -7,6 +7,7 @@ use AppBundle\Security\ApiKeyAuthenticator;
 use AppBundle\Security\ApiKeyManager;
 use AppBundle\Security\ApiKeyUserProvider;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +25,12 @@ class ApiKeyAuthenticatorTest extends \PHPUnit\Framework\TestCase
     protected $apiKeyAuthenticator;
 
     /**
-     * @var ApiKeyManager
+     * @var ApiKeyManager|ObjectProphecy
      */
     protected $apiKeyManager;
 
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|ObjectProphecy
      */
     protected $logger;
 

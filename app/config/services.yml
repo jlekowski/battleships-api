@@ -49,7 +49,3 @@ services:
     AppBundle\EventSubscriber\EntitySubscriber:
         tags:
             - { name: doctrine.event_subscriber }
-
-    # aliases for friendsofsymfony/http-cache-bundle to work with newest (autowire) sensio/framework-extra-bundle
-    sensio_framework_extra.controller.listener: '@Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener'
-    sensio_framework_extra.view.listener: '@Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener'

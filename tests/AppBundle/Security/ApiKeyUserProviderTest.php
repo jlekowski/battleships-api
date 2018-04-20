@@ -5,6 +5,7 @@ namespace Tests\AppBundle\Security;
 use AppBundle\Entity\User;
 use AppBundle\Repository\UserRepository;
 use AppBundle\Security\ApiKeyUserProvider;
+use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
@@ -15,7 +16,7 @@ class ApiKeyUserProviderTest extends \PHPUnit\Framework\TestCase
     protected $apiKeyUserProvider;
 
     /**
-     * @var UserRepository
+     * @var UserRepository|ObjectProphecy
      */
     protected $userRepository;
 

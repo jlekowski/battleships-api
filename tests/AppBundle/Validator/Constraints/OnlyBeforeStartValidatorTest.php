@@ -6,7 +6,6 @@ use AppBundle\Entity\Game;
 use AppBundle\Validator\Constraints\OnlyBeforeStart;
 use AppBundle\Validator\Constraints\OnlyBeforeStartValidator;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\UnitOfWork;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Validator\Constraint;
 
@@ -58,11 +57,9 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
     {
         $constraint = $this->prophesize(OnlyBeforeStart::class);
         $game = $this->prophesize(Game::class);
-        $unitOfWork = $this->prophesize(UnitOfWork::class);
-        $changes = [];
+        $unitOfWork = $this->getUnitOfWork([]);
 
         $this->entityManager->getUnitOfWork()->willReturn($unitOfWork);
-        $unitOfWork->getEntityChangeSet($game)->willReturn($changes);
         $game->getPlayerNumber()->willReturn(1);
         $game->getPlayerShips()->willReturn(['A1']);
 
@@ -77,11 +74,9 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
     {
         $constraint = $this->prophesize(OnlyBeforeStart::class);
         $game = $this->prophesize(Game::class);
-        $unitOfWork = $this->prophesize(UnitOfWork::class);
-        $changes = ['user1Ships' => [['non-empty array']]];
+        $unitOfWork = $this->getUnitOfWork(['user1Ships' => [['non-empty array']]]);
 
         $this->entityManager->getUnitOfWork()->willReturn($unitOfWork);
-        $unitOfWork->getEntityChangeSet($game)->willReturn($changes);
         $game->getPlayerNumber()->willReturn(1);
 
         $this->validator->validate($game->reveal(), $constraint->reveal());
@@ -91,14 +86,33 @@ class OnlyBeforeStartValidatorTest extends \PHPUnit\Framework\TestCase
     {
         $constraint = $this->prophesize(OnlyBeforeStart::class);
         $game = $this->prophesize(Game::class);
-        $unitOfWork = $this->prophesize(UnitOfWork::class);
-        $changes = [];
+        $unitOfWork = $this->getUnitOfWork([]);
 
         $this->entityManager->getUnitOfWork()->willReturn($unitOfWork);
-        $unitOfWork->getEntityChangeSet($game)->willReturn($changes);
         $game->getPlayerNumber()->willReturn(1);
         $game->getPlayerShips()->willReturn([]);
 
         $this->validator->validate($game->reveal(), $constraint->reveal());
+    }
+
+    /**
+     * @param array $changes
+     * @return object
+     */
+    protected function getUnitOfWork(array $changes)//: object
+    {
+        return new class ($changes) {
+            private $changes;
+
+            public function __construct(array $changes)
+            {
+                $this->changes = $changes;
+            }
+
+            public function getEntityChangeSet($entity)
+            {
+                return $this->changes;
+            }
+        };
     }
 }

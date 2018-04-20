@@ -36,7 +36,7 @@ class ApiKeyManager
     }
 
     /**
-     * @param $apiKey
+     * @param string $apiKey
      * @return \stdClass
      * @throws InvalidApiKeyException
      */

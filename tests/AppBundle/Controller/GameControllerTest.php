@@ -156,7 +156,7 @@ class GameControllerTest extends AbstractApiTestCase
 
     /**
      * @depends testAddGameWithShips
-     * @param $gameDetails
+     * @param array $gameDetails
      */
     public function testGetGameWithShips(array $gameDetails)
     {

@@ -1,0 +1,6 @@
+parameters:
+    polluteScopeWithLoopInitialAssignments: true
+    ignoreErrors:
+        - '#Parameter \#\d+ $coords of method .* expects string, string|null given.#'
+        - '#Method AppBundle\\Entity\\Game::get(Player|Other)\(\) should return AppBundle\\Entity\\User but returns AppBundle\\Entity\\User|null#'
+        - '#Method AppBundle\\Security\\ApiKeyManager::getInfoFromApiKey\(\) should return stdClass but returns object#'

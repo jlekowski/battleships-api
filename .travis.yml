@@ -15,8 +15,8 @@ before_script:
 script:
   - bin/phpunit --coverage-clover=coverage.xml
   - bin/phpcs -p --standard=PSR2 --exclude=Generic.Files.LineLength src/ tests/
-  - bin/phpstan analyse -c phpstan.neon tests/AppBundle/ -l 1
-  - bin/phpstan analyse -c phpstan.neon src/AppBundle/ -l 6
+  - bin/phpstan analyse -c .phpstan/src.neon src/AppBundle/ -l max
+  - bin/phpstan analyse -c .phpstan/tests.neon tests/AppBundle/ -l max
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)

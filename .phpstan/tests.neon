@@ -1,0 +1,11 @@
+parameters:
+    ignoreErrors:
+        - '#Call to an undefined method .*Prophecy\\Prophecy\\ObjectProphecy#'
+        - '#Access to an undefined property Prophecy\\Prophecy\\ObjectProphecy#'
+        - '#Calling method .* on possibly null value of type .*#'
+        - '#Accessing property .* on possibly null value of type .*#'
+        - '#Cannot call method getCollector\(\) on false\|Symfony\\Component\\HttpKernel\\Profiler\\Profile#'
+        - '#Property .* does not accept Symfony\\Component\\Console\\Command\\Command#'
+        - '#Static property .* does not accept Symfony\\Component\\DependencyInjection\\ContainerInterface\|null#'
+        - '#Method .* should return .* but returns#'
+        - '#Parameter \#.* of .* expects .*, .*given#'
