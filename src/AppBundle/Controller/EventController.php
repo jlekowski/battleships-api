@@ -13,7 +13,9 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Operation;
+use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -56,29 +58,27 @@ class EventController extends FOSRestController
     }
 
     /**
-     * Example response:<pre>
-     * {
-     *     "id": 1,
-     *     "player": 1,
-     *     "type": "start_game",
-     *     "value": "1",
-     *     "timestamp": "2016-10-18T16:08:37+0000"
-     * }</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Get event data",
-     *  section="Event",
-     *  requirements={
-     *     {"name"="game", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Game id"},
-     *     {"name"="event", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Event id"}
-     *  },
-     *  statusCodes = {
-     *     200="Event data received",
-     *     403="Requested details someone else's game",
-     *     404="Game|Event not found",
-     *   }
+     * @Operation(
+     *     tags={"Event"},
+     *     summary="Get event data",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Event data received",
+     *         @SWG\Schema(
+     *             type="object",
+     *             ref=@Model(type=Event::class)
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Requested details someone else's game"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Game|Event not found"
+     *     )
      * )
+     *
      *
      * @Security("game.belongsToUser(user) && (game === event.getGame())")
      *
@@ -92,31 +92,48 @@ class EventController extends FOSRestController
     }
 
     /**
-     * Example response:<pre>
-     * [
-     *     {
-     *         "id": 5,
-     *         "player": 2,
-     *         "type": "shot",
-     *         "value": "A10|sunk",
-     *         "timestamp": "2016-10-18T16:08:47+0000"
-     *     },
-     *     ...
-     * ]</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Get events data",
-     *  section="Event",
-     *  requirements={
-     *     {"name"="game", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Game id"}
-     *  },
-     *  statusCodes = {
-     *     200="Events data received",
-     *     403="Requested details someone else's game",
-     *     404="Game not found"
-     *   }
+     * @Operation(
+     *     tags={"Event"},
+     *     summary="Get events data",
+     *     @SWG\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by type",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="gt",
+     *         in="query",
+     *         description="Filter by id greater than",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player",
+     *         in="query",
+     *         description="Filter by player number",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Events data received",
+     *         @SWG\Schema(
+     *             type="array",
+     *             @SWG\Items(ref=@Model(type=Event::class))
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Requested details someone else's game"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Game not found"
+     *     )
      * )
+     *
      *
      * @Tag(expression="'game-' ~ game.getId() ~ '-events'")
      * @Security("game.belongsToUser(user)")
@@ -132,7 +149,7 @@ class EventController extends FOSRestController
      *
      * @param ParamFetcher $paramFetcher
      * @param Game $game
-     * @return array
+     * @return array|Event[]
      */
     public function getEventsAction(ParamFetcher $paramFetcher, Game $game)
     {
@@ -145,21 +162,49 @@ class EventController extends FOSRestController
     }
 
     /**
-     * Example response:<pre>
-     *  {"timestamp":"2016-11-11T16:21:16+0000"} # for chat
-     *  {"result":"miss"} # for shot</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Create new event",
-     *  section="Event",
-     *  statusCodes={
-     *     201="Event created",
-     *     400="Incorrect parameter provided",
-     *     404="Game not found",
-     *     409="Action not allow due to game flow restrictions"
-     *  }
+     * @Operation(
+     *     tags={"Event"},
+     *     summary="Create new event",
+     *     @SWG\Parameter(
+     *         name="body",
+     *         in="body",
+     *         required=true,
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="shot"
+     *             ),
+     *             @SWG\Property(
+     *                 property="value",
+     *                 default=true,
+     *                 example="B9"
+     *             )
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="201",
+     *         description="Event created",
+     *         examples={
+     *             "For ""chat"":":{"timestamp":"2016-11-11T16:21:16+0000"},
+     *             "For ""shot"":":{"result":"miss"},
+     *             "Otherwise empty:":""
+     *         }
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Incorrect parameter provided"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Game not found"
+     *     ),
+     *     @SWG\Response(
+     *         response="409",
+     *         description="Action not allow due to game flow restrictions"
+     *     )
      * )
+     *
      *
      * @Tag(expression="'game-' ~ game.getId() ~ '-events'")
      * @Security("game.belongsToUser(user)")

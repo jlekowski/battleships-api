@@ -90,14 +90,19 @@ jms_serializer:
         id: jms_serializer.identical_property_naming_strategy # see https://github.com/schmittjoh/serializer/issues/334
 
 nelmio_api_doc:
-    name: Battleships API
-    sandbox:
-        authentication:
-            name: Authorization
-            delivery: header
-        body_format:
-            formats: ~
-            default_format: json
-        request_format:
-            formats:
-                json: application/json
+    documentation:
+        info:
+            title: Battleships API
+            description: More on https://github.com/jlekowski/battleships-api
+            version: v1
+        securityDefinitions:
+            Bearer:
+                type: apiKey
+                description: 'Value: Bearer {jwt}'
+                name: Authorization
+                in: header
+        security:
+            - Bearer: []
+    areas:
+        path_patterns: # an array of regexps
+            - /v\d+

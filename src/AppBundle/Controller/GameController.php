@@ -11,7 +11,9 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Operation;
+use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -40,33 +42,27 @@ class GameController extends FOSRestController
     }
 
     /**
-     * Example response:<pre>
-     * {
-     *     "player": {
-     *         "name": "My Player"
-     *     },
-     *     "other": {
-     *         "name": "Opponent Name"
-     *     },
-     *     "playerShips": ["A1", "C2", "D2", "F2", "H2", "J2", "F5", "F6", "I6", "J6", "A7", "B7", "C7", "F7", "F8", "I9", "J9", "E10", "F10", "G10"],
-     *     "playerNumber": 1,
-     *     "id": 1,
-     *     "timestamp": "2016-10-18T16:08:32+0000"
-     * }</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Get game data",
-     *  section="Game",
-     *  requirements={
-     *     {"name"="game", "dataType"="integer", "requirement"="\d+", "required"=true, "description"="Game id"}
-     *  },
-     *  statusCodes = {
-     *     200="Game data received",
-     *     403="Requested details someone else's game",
-     *     404="Game not found",
-     *   }
+     * @Operation(
+     *     tags={"Game"},
+     *     summary="Get game data",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Game data received",
+     *         @SWG\Schema(
+     *             type="object",
+     *             ref=@Model(type=Game::class)
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Requested details someone else's game"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Game not found"
+     *     )
      * )
+     *
      * @Tag(expression="'game-' ~ game.getId()")
      * @Security("game.belongsToUser(user) || game.canJoin(user)")
      *
@@ -79,29 +75,30 @@ class GameController extends FOSRestController
     }
 
     /**
-     * Example response:<pre>
-     * [
-     *     {
-     *         "other": {
-     *             "name": "New Player"
-     *         },
-     *         "playerShips": ["A1", "C2", "D2", "F2", "H2", "J2", "F5", "F6", "I6", "J6", "A7", "B7", "C7", "F7", "F8", "I9", "J9", "E10", "F10", "G10"],
-     *         "playerNumber": 2,
-     *         "id": 102,
-     *         "timestamp": "2016-10-24T14:26:48+0000"
-     *     },
-     *     ...
-     * ]</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Get list of games",
-     *  section="Game",
-     *  statusCodes={
-     *     200="Games data received",
-     *     400="Parameter 'available' is not true"
-     *  }
+     * @Operation(
+     *     tags={"Game"},
+     *     summary="Get list of games",
+     *     @SWG\Parameter(
+     *         name="available",
+     *         in="query",
+     *         description="Filter games available to join",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Games data received",
+     *         @SWG\Schema(
+     *             type="array",
+     *             @SWG\Items(ref=@Model(type=Game::class))
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Parameter 'available' is not true"
+     *     )
      * )
+     *
      * @Tag("games")
      * @QueryParam(name="available", requirements=@Assert\EqualTo("true"), nullable=true, strict=true, description="Filter games available to join")
      *
@@ -142,18 +139,32 @@ class GameController extends FOSRestController
     }
 
     /**
-     * Example request in <strong>Content</strong> (not required):
-     *  <pre>{"playerShips":["A1","C2","D2","F2","H2","J2","F5","F6","I6","J6","A7","B7","C7","F7","F8","I9","J9","E10","F10","G10"]}</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Create new game",
-     *  section="Game",
-     *  statusCodes={
-     *     201="Game created",
-     *     400="Incorrect 'playerShips' provided"
-     *  }
+     * @Operation(
+     *     tags={"Game"},
+     *     summary="Create new game",
+     *     @SWG\Parameter(
+     *         name="body",
+     *         in="body",
+     *         required=false,
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="playerShips",
+     *                 type="array",
+     *                 @SWG\Items(type="string"),
+     *                 example={"A1","C2","D2","F2","H2","J2","F5","F6","I6","J6","A7","B7","C7","F7","F8","I9","J9","E10","F10","G10"}
+     *             )
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="201",
+     *         description="Game created"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Incorrect 'playerShips' provided"
+     *     )
      * )
+     *
      *
      * @Tag("games")
      * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=false, nullable=true, map=true)
@@ -185,20 +196,45 @@ class GameController extends FOSRestController
     }
 
     /**
-     * Example request in <strong>Content</strong>:
-     *  <pre>{"joinGame":true,"playerShips":["A1","C2","D2","F2","H2","J2","F5","F6","I6","J6","A7","B7","C7","F7","F8","I9","J9","E10","F10","G10"]}</pre>
-     *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Update game",
-     *  section="Game",
-     *  statusCodes={
-     *     204="Game updated",
-     *     400="Incorrect parameter provided",
-     *     403="No access to game",
-     *     404="Game not found",
-     *  }
+     * @Operation(
+     *     tags={"Game"},
+     *     summary="Update game",
+     *     @SWG\Parameter(
+     *         name="body",
+     *         in="body",
+     *         required=false,
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="joinGame",
+     *                 type="boolean",
+     *                 example=true
+     *             ),
+     *             @SWG\Property(
+     *                 property="playerShips",
+     *                 type="array",
+     *                 @SWG\Items(type="string"),
+     *                 example={"A1","C2","D2","F2","H2","J2","F5","F6","I6","J6","A7","B7","C7","F7","F8","I9","J9","E10","F10","G10"}
+     *             )
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Game updated"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Incorrect parameter provided"
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="No access to game"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Game not found"
+     *     )
      * )
+     *
      *
      * @Tag(expression="'game-' ~ game.getId()")
      * @Tag(expression="'game-' ~ game.getId() ~ '-events'"))

@@ -12,6 +12,7 @@
 - Entity and Repository tests
 
 - ApiDoc
+  * when 3.3 available, check formData duplicating body, and no values provided for filters (gt, player, type) 
   * to have options explained (e.g. event types)
   * add 403 (missing/invalid token) and 409 (game flow) as generic errors + other error code from exceptions
   * explain key being `Bearer key.jtw.format`

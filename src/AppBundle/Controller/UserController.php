@@ -10,7 +10,9 @@ use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Operation;
+use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,17 +41,27 @@ class UserController extends FOSRestController
     /**
      * Example response:<pre>{"name": "John Player"}</pre>
      *
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Get user details",
-     *  section="User",
-     *  output="AppBundle\Entity\User",
-     *  statusCodes={
-     *     200="User data received",
-     *     403="No access to the other user",
-     *     404="User not found",
-     *  }
+     * @Operation(
+     *     tags={"User"},
+     *     summary="Get user details",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="User data received",
+     *         @SWG\Schema(
+     *             type="object",
+     *             ref=@Model(type=User::class)
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="No access to the other user"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="User not found"
+     *     )
      * )
+     *
      * @Tag(expression="'user-' ~ requestedUser.getId()")
      * @Security("user.getId() === requestedUser.getId()")
      *
@@ -62,15 +74,31 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Create new user",
-     *  section="User",
-     *  statusCodes={
-     *     201="User created",
-     *     400="Incorrect 'name' provided"
-     *  }
+     * @Operation(
+     *     tags={"User"},
+     *     summary="Create new user",
+     *     @SWG\Parameter(
+     *         name="body",
+     *         in="body",
+     *         required=true,
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 example="John Ship"
+     *             )
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="201",
+     *         description="User created"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Incorrect 'name' provided"
+     *     )
      * )
+     *
      * @RequestParam(name="name", requirements=".*\S.*", allowBlank=false)
      *
      * @param ParamFetcher $paramFetcher
@@ -94,17 +122,39 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @ApiDoc(
-     *  resource=true,
-     *  description="Update user",
-     *  section="User",
-     *  statusCodes={
-     *     204="User updated",
-     *     400="Incorrect 'name' provided",
-     *     403="No access to user",
-     *     404="User not found",
-     *  }
+     * @Operation(
+     *     tags={"User"},
+     *     summary="Update user",
+     *     @SWG\Parameter(
+     *         name="body",
+     *         in="body",
+     *         required=false,
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 example="John Ship"
+     *             )
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="User updated"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Incorrect 'name' provided"
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="No access to user"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="User not found"
+     *     )
      * )
+     *
      *
      * @Tag(expression="'user-' ~ requestedUser.getId()")
      * @Security("user.getId() === requestedUser.getId()")
