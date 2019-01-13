@@ -244,7 +244,7 @@ class GameController extends FOSRestController
      *     message="User cannot join the game or game does not belong to the user"
      * )
      * @RequestParam(name="joinGame", requirements=@Assert\EqualTo("true"), allowBlank=true, nullable=true)
-     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=true, map=true)
+     * @RequestParam(name="playerShips", requirements="[A-J]([1-9]|10)", allowBlank=true, nullable=true, map=true)
      *
      * @param ParamFetcher $paramFetcher
      * @param Game $game

@@ -57,7 +57,7 @@ class Event
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @Assert\Choice(callback = "getTypes", strict=true)
+     * @Assert\Choice(callback={"AppBundle\Entity\Event", "getTypes"}, strict=true)
      * @AppAssert\UniqueEvent({Event::TYPE_JOIN_GAME, Event::TYPE_START_GAME, Event::TYPE_NEW_GAME})
      */
     private $type;
