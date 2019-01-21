@@ -2,7 +2,17 @@ language: php
 php:
   - 7.1
   - 7.2
+  - 7.3
   - nightly
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
 before_install:
   - ./travis-before-install.sh

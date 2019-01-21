@@ -1,5 +1,7 @@
 - clean *.md files
 
+- Upgrade PHPUnit when PHP >= 7.2
+
 - see tags:
     - custom tags https://symfony.com/doc/current/service_container/tags.html (maybe repositories)
 
